@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lge.crawling.admin.management.sensorData.mapper.SensorDataTaggingGetInfoMapper">
+
+    <sql id="field">
+        A.SD_TAGGING_GET_SQ                    AS sensorDataTaggingGetSq
+        , A.SD_FILE_SQ                         AS sensorDataFileSq
+        , A.FIRST_SD_TAGGING_DATA_DIC_ID_SQ    AS firstSensorDataTaggingDataDicIdSq
+        , A.SECOND_SD_TAGGING_DATA_DIC_ID_SQ   AS secondSensorDataTaggingDataDicIdSq
+        , A.THIRD_SD_TAGGING_DATA_DIC_ID_SQ    AS thirdSensorDataTaggingDataDicIdSq
+        , A.SD_TAGGING_TYPE_CD                 AS sensorDataTaggingTypeCd
+        , A.SD_TAGGING_GET_DT                  AS sensorDataTaggingGetDt
+        , A.INSERT_DT                             AS insertDt
+        , A.INSERT_ID                             AS insertId
+        , A.UPDATE_DT                             AS updateDt
+        , A.UPDATE_ID                             AS updateId
+    </sql>
+
+    <sql id="fragment">
+        FROM TA_SD_TAGGING_GET_INFO A
+        <where>
+            <trim prefixOverrides="AND|OR">
+                <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(sensorDataFileSq)">
+                    AND A.SD_FILE_SQ = #{sensorDataFileSq}
+                </if>
+                <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(sensorDataTaggingGetSq)">
+                    AND A.SD_TAGGING_GET_SQ = #{sensorDataTaggingGetSq}
+                </if>
+            </trim>
+        </where>
+    </sql>
+
+    <select id="get" parameterType="SensorDataTaggingGetInfoEntity" resultType="SensorDataTaggingGetInfoEntity">
+        SELECT /* SensorDataTagginMapper.get */
+            <include refid="field" />
+            <include refid="fragment" />
+    </select>
+
+    <select id="getList" parameterType="SensorDataTaggingGetInfoEntity" resultType="SensorDataTaggingGetInfoEntity">
+        <include refid="Common.PagingStart" />
+            SELECT /* SensorDataTagginMapper.getList */
+                <include refid="field" />
+                <include refid="fragment" />
+            ORDER BY A.INSERT_DT DESC
+        <include refid="Common.PagingEnd" />
+    </select>
+
+    <select id="getAllList" parameterType="SensorDataTaggingGetInfoEntity" resultType="SensorDataTaggingGetInfoEntity">
+        SELECT /* SensorDataTagginMapper.getAllList */
+            <include refid="field" />
+            <include refid="fragment" />
+        ORDER BY A.INSERT_DT DESC
+    </select>
+
+    <select id="count" parameterType="SensorDataTaggingGetInfoEntity" resultType="Integer">
+        SELECT /* SensorDataTagginMapper.count */
+              COUNT(1) AS CNT
+            <include refid="fragment" />
+    </select>
+
+    <insert id="insert" parameterType="SensorDataTaggingGetInfoEntity">
+        INSERT /* SensorDataTagginMapper.insert */
+        INTO TA_SD_TAGGING_GET_INFO (
+            SD_TAGGING_GET_SQ
+            , SD_FILE_SQ
+            , FIRST_SD_TAGGING_DATA_DIC_ID_SQ
+            , SECOND_SD_TAGGING_DATA_DIC_ID_SQ
+            , THIRD_SD_TAGGING_DATA_DIC_ID_SQ
+            , SD_TAGGING_TYPE_CD
+            , SD_TAGGING_GET_DT
+            , INSERT_DT
+            , INSERT_ID
+            , UPDATE_DT
+            , UPDATE_ID
+        ) VALUES (
+            #{sensorDataTaggingGetSq}
+            , #{sensorDataFileSq}
+            , #{firstSensorDataTaggingDataDicIdSq}
+            , #{secondSensorDataTaggingDataDicIdSq}
+            , #{thirdSensorDataTaggingDataDicIdSq}
+            , #{sensorDataTaggingTypeCd}
+            , DATE_FORMAT(NOW(), '%Y%m%d%H%i%s')
+            , NOW()
+            , #{loginIDInSession}
+            , NOW()
+            , #{loginIDInSession}
+        )
+    </insert>
+
+    <delete id="delete" parameterType="SensorDataTaggingGetInfoEntity">
+        DELETE /* SensorDataTagginMapper.delete */
+        FROM TA_SD_TAGGING_GET_INFO
+        WHERE SD_FILE_SQ = #{sensorDataFileSq}
+    </delete>
+
+</mapper>

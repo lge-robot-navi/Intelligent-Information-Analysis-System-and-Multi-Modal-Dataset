@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lge.crawling.admin.management.sensorData.mapper.SensorDataTaggingMapper">
+
+    <sql id="field">
+        A.SD_FILE_SQ                                         AS sensorDataFileSq
+        , A.SD_FILE_PACKAGE_ID_SQ							 AS sensorDataFilePackageIdSq
+        , A.SD_FILE_AGENT                                    AS sensorDataFileAgent
+        , A.SD_FILE_GROUP                                    AS sensorDataFileGroup
+        , A.SD_FILE_NM                                       AS sensorDataFileNm
+        , A.SD_FILE_PATH                                     AS sensorDataFilePath
+        , A.SD_FILE_SIZE                                     AS sensorDataFileSize
+        , A.SD_FILE_SCALE_X                                  AS sensorDataFileScaleX
+        , A.SD_FILE_SCALE_Y                                  AS sensorDataFileScaleY
+        , A.SD_FILE_TYPE_CD                                  AS sensorDataFileTypeCd
+        , GET_CODE_NAME('TA007', A.SD_FILE_TYPE_CD)          AS sensorDataFileTypeCdNm
+       <!--  , A.LAST_UPDATE_SD_MAGNIFICATION                     AS lastUpdateImageMagnification -->
+        , A.LAST_UPDATE_IMAGE_MAGNIFICATION                  AS lastUpdateImageMagnification
+        , B.SD_JSON_FILE_SQ                                  AS sensorDataJsonFileSq
+        , CONVERT(B.SD_JSON_FILE_DESC USING utf8)            AS sensorDataJsonFileDesc
+        , B.SD_JSON_FILE_NM                                  AS sensorDataJsonFileNm
+        , B.SD_JSON_FILE_PATH                                AS sensorDataJsonFilePath
+        , B.SD_JSON_FILE_SIZE                                AS sensorDataJsonFileSize
+        , B.SD_JSON_XML_CONV_FILE_DESC                       AS sensorDataJsonXmlConvFileDesc
+    </sql>
+
+    <sql id="fragment">
+        FROM TA_SD_FILE_INFO A LEFT OUTER JOIN TA_SD_JSON_FILE_INFO B
+        ON A.SD_FILE_SQ = B.SD_FILE_SQ
+        <!-- ON A.SD_FILE_SQ = B.SD_JSON_FILE_SQ -->
+        <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(loginCdInSession) and !@org.apache.commons.lang.StringUtils@equals(loginCdInSession, 100)">
+       	INNER JOIN TA_SD_FILE_WORKER_INFO C
+       	ON A.SD_FILE_SQ = C.SD_FILE_SQ
+       	</if>
+        <where>
+            <trim prefixOverrides="AND|OR">
+            	<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(startDt)">
+            		<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(endDt)">
+						AND A.SD_FILE_REGIST_DT BETWEEN RPAD(REPLACE(#{startDt},'-',''),14,'000000')
+						                   AND RPAD(REPLACE(#{endDt}, '-', ''), 14, '235959')
+					</if>
+				</if>
+				<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(cStartDt)">
+            		<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(cEndDt)">
+						AND A.SD_FILE_CREATE_DT BETWEEN RPAD(REPLACE(#{cStartDt},'-',''),14,'000000')
+						                   AND RPAD(REPLACE(#{cEndDt}, '-', ''), 14, '235959')
+					</if>
+				</if>
+	            <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(loginCdInSession) and !@org.apache.commons.lang.StringUtils@equals(loginCdInSession, 100)">
+		 			AND C.SD_FILE_WORKER_ID = #{loginIDInSession}
+	        	</if>
+	        	<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(sensorDataFileAgent)">
+                    AND A.SD_FILE_AGENT = #{sensorDataFileAgent}
+                </if>
+                <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(sensorDataFileSq)">
+                    AND A.SD_FILE_SQ = #{sensorDataFileSq}
+                </if>
+                <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(sensorDataFileNm)">
+                    AND A.SD_FILE_NM = #{sensorDataFileNm}
+                </if>
+                <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(sensorDataFileTypeCd)">
+                    AND A.SD_FILE_TYPE_CD = #{sensorDataFileTypeCd}
+                </if>
+                <if test="@org.apache.commons.lang.StringUtils@equals(taggingYn, 'Y')">
+                    AND B.SD_JSON_FILE_DESC IS NOT NULL
+                </if>
+                <if test="@org.apache.commons.lang.StringUtils@equals(taggingYn, 'N')">
+                    AND B.SD_JSON_FILE_DESC IS NULL
+                </if>
+            </trim>
+        </where>
+    </sql>
+
+    <select id="get" parameterType="SensorDataTaggingEntity" resultType="SensorDataTaggingEntity">
+        SELECT /* SensorDataTagginMapper.get */
+            <include refid="field" />
+            <include refid="fragment" />
+    </select>
+
+    <select id="getList" parameterType="SensorDataTaggingEntity" resultType="SensorDataTaggingEntity">
+        <include refid="Common.PagingStart" />
+            SELECT /* SensorDataTagginMapper.getList */
+                <include refid="field" />
+                <include refid="fragment" />
+            ORDER BY A.SD_FILE_SQ DESC
+        <include refid="Common.PagingEnd" />
+    </select>
+
+    <select id="getAllList" parameterType="SensorDataTaggingEntity" resultType="SensorDataTaggingEntity">
+        SELECT /* SensorDataTagginMapper.getAllList */
+            <include refid="field" />
+            <include refid="fragment" />
+        ORDER BY A.SD_FILE_SQ DESC
+    </select>
+
+    <select id="count" parameterType="SensorDataTaggingEntity" resultType="Integer">
+        SELECT /* SensorDataTagginMapper.count */
+              COUNT(1) AS CNT
+            <include refid="fragment" />
+    </select>
+
+    <insert id="insert" parameterType="SensorDataTaggingEntity">
+        <selectKey keyProperty="sensorDataJsonFileSq" resultType="string" order="BEFORE">
+            SELECT IFNULL(MAX(SD_JSON_FILE_SQ), 0) + 1 AS sensorDataJsonFileSq
+            FROM TA_SD_JSON_FILE_INFO
+        </selectKey>
+        INSERT /* SensorDataTagginMapper.insert */
+        INTO TA_SD_JSON_FILE_INFO (
+            SD_JSON_FILE_SQ
+            , SD_FILE_SQ
+            , SD_JSON_FILE_DESC
+            , SD_JSON_FILE_NM
+            , SD_JSON_FILE_PATH
+            , SD_JSON_FILE_SIZE
+            , SD_JSON_XML_CONV_FILE_DESC
+            , INSERT_DT
+            , INSERT_ID
+        ) VALUES (
+            #{sensorDataJsonFileSq}
+            , #{sensorDataFileSq}
+            , #{sensorDataJsonFileDesc}
+            , #{sensorDataJsonFileNm}
+            , #{sensorDataJsonFilePath}
+            , #{sensorDataJsonFileSize}
+            , #{sensorDataJsonXmlConvFileDesc}
+            , NOW()
+            , #{loginIDInSession}
+        );
+    </insert>
+
+    <update id="update" parameterType="SensorDataTaggingEntity" >
+        UPDATE /* SensorDataTagginMapper.update */
+              TA_SD_JSON_FILE_INFO
+          SET UPDATE_DT             = NOW()
+			, UPDATE_ID             = #{loginIDInSession}
+			, SD_JSON_XML_CONV_FILE_DESC = #{sensorDataJsonXmlConvFileDesc}
+			, SD_JSON_FILE_DESC	= #{sensorDataJsonFileDesc}
+			, SD_JSON_FILE_NM	= #{sensorDataJsonFileNm}
+			, SD_JSON_FILE_PATH	= #{sensorDataJsonFilePath}
+			, SD_JSON_FILE_SIZE	= #{sensorDataJsonFileSize}
+		WHERE SD_JSON_FILE_SQ    = #{sensorDataJsonFileSq}
+    </update>
+
+    <update id="updateMagnification" parameterType="SensorDataTaggingEntity" >
+        UPDATE /* SensorDataTagginMapper.updateMagnification */
+              TA_SD_FILE_INFO
+          SET UPDATE_DT                       = NOW()
+            , UPDATE_ID                       = #{loginIDInSession}
+            , LAST_UPDATE_IMAGE_MAGNIFICATION = #{lastUpdateImageMagnification}
+        WHERE SD_FILE_SQ                   = #{sensorDataFileSq}
+    </update>
+
+    <delete id="delete" parameterType="SensorDataTaggingEntity">
+        DELETE /* SensorDataTagginMapper.delete */
+        FROM TA_SD_JSON_FILE_INFO
+        <!-- WHERE SD_JSON_FILE_SQ    = #{sensorDataJsonFileSq} -->
+        WHERE SD_FILE_SQ    = #{sensorDataFileSq}
+    </delete>
+
+</mapper>

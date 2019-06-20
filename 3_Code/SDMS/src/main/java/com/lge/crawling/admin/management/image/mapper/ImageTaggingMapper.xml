@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lge.crawling.admin.management.image.mapper.ImageTaggingMapper">
+
+    <sql id="field">
+        A.IMAGE_FILE_SQ                                         AS imageFileSq
+        , A.IMAGE_FILE_NM                                       AS imageFileNm
+        , A.IMAGE_FILE_PATH                                     AS imageFilePath
+        , A.IMAGE_FILE_SIZE                                     AS imageFileSize
+        , A.IMAGE_FILE_SCALE_X                                  AS imageFileScaleX
+        , A.IMAGE_FILE_SCALE_Y                                  AS imageFileScaleY
+        , A.IMAGE_FILE_TYPE_CD                                  AS imageFileTypeCd
+        , GET_CODE_NAME('TA004', A.IMAGE_FILE_TYPE_CD)          AS imageFileTypeCdNm
+        , A.IMAGE_FILE_DOWNLOAD_PATH_CD                         AS imageFileDownloadPathCd
+        , GET_CODE_NAME('TA005', A.IMAGE_FILE_DOWNLOAD_PATH_CD) AS imageFileDownloadPathCdNm
+        , A.LAST_UPDATE_IMAGE_MAGNIFICATION                     AS lastUpdateImageMagnification
+        , B.IMAGE_JSON_FILE_SQ                                  AS imageJsonFileSq
+        , CONVERT(B.IMAGE_JSON_FILE_DESC USING utf8)            AS imageJsonFileDesc
+        , B.IMAGE_JSON_FILE_NM                                  AS imageJsonFileNm
+        , B.IMAGE_JSON_FILE_PATH                                AS imageJsonFilePath
+        , B.IMAGE_JSON_FILE_SIZE                                AS imageJsonFileSize
+        , B.IMAGE_JSON_XML_CONV_FILE_DESC                       AS imageJsonXmlConvFileDesc
+    </sql>
+
+    <sql id="fragment">
+        FROM TA_IMAGE_FILE_INFO A LEFT OUTER JOIN TA_IMAGE_JSON_FILE_INFO B
+        ON A.IMAGE_FILE_SQ = B.IMAGE_FILE_SQ
+        <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(loginCdInSession) and !@org.apache.commons.lang.StringUtils@equals(loginCdInSession, 100)">
+       	INNER JOIN TA_IMAGE_FILE_WORKER_INFO C
+       	ON A.IMAGE_FILE_SQ = C.IMAGE_FILE_SQ
+       	</if>
+        <where>
+            <trim prefixOverrides="AND|OR">
+	            <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(loginCdInSession) and !@org.apache.commons.lang.StringUtils@equals(loginCdInSession, 100)">
+		 			AND C.IMAGE_FILE_WORKER_ID = #{loginIDInSession}
+	        	</if>
+                <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(imageFileSq)">
+                    AND A.IMAGE_FILE_SQ = #{imageFileSq}
+                </if>
+                <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(imageFileNm)">
+                    AND A.IMAGE_FILE_NM = #{imageFileNm}
+                </if>
+                <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(imageFileTypeCd)">
+                    AND A.IMAGE_FILE_TYPE_CD = #{imageFileTypeCd}
+                </if>
+                <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(imageFileDownloadPathCd)">
+                    AND A.IMAGE_FILE_DOWNLOAD_PATH_CD = #{imageFileDownloadPathCd}
+                </if>
+                <if test="@org.apache.commons.lang.StringUtils@equals(taggingYn, 'Y')">
+                    AND B.IMAGE_JSON_FILE_DESC IS NOT NULL
+                </if>
+                <if test="@org.apache.commons.lang.StringUtils@equals(taggingYn, 'N')">
+                    AND B.IMAGE_JSON_FILE_DESC IS NULL
+                </if>
+            </trim>
+        </where>
+    </sql>
+
+    <select id="get" parameterType="ImageTaggingEntity" resultType="ImageTaggingEntity">
+        SELECT /* ImageTagginMapper.get */
+            <include refid="field" />
+            <include refid="fragment" />
+    </select>
+
+    <select id="getList" parameterType="ImageTaggingEntity" resultType="ImageTaggingEntity">
+        <include refid="Common.PagingStart" />
+            SELECT /* ImageTagginMapper.getList */
+                <include refid="field" />
+                <include refid="fragment" />
+            ORDER BY A.IMAGE_FILE_SQ DESC
+        <include refid="Common.PagingEnd" />
+    </select>
+
+    <select id="getAllList" parameterType="ImageTaggingEntity" resultType="ImageTaggingEntity">
+        SELECT /* ImageTagginMapper.getAllList */
+            <include refid="field" />
+            <include refid="fragment" />
+        ORDER BY A.IMAGE_FILE_SQ DESC
+    </select>
+
+    <select id="count" parameterType="ImageTaggingEntity" resultType="Integer">
+        SELECT /* ImageTagginMapper.count */
+              COUNT(1) AS CNT
+            <include refid="fragment" />
+    </select>
+
+    <insert id="insert" parameterType="ImageTaggingEntity">
+        <selectKey keyProperty="imageJsonFileSq" resultType="string" order="BEFORE">
+            SELECT IFNULL(MAX(IMAGE_JSON_FILE_SQ), 0) + 1 AS imageJsonFileSq
+            FROM TA_IMAGE_JSON_FILE_INFO
+        </selectKey>
+        INSERT /* ImageTagginMapper.insert */
+        INTO TA_IMAGE_JSON_FILE_INFO (
+            IMAGE_JSON_FILE_SQ
+            , IMAGE_FILE_SQ
+            , IMAGE_JSON_FILE_DESC
+            , IMAGE_JSON_FILE_NM
+            , IMAGE_JSON_FILE_PATH
+            , IMAGE_JSON_FILE_SIZE
+            , IMAGE_JSON_XML_CONV_FILE_DESC
+            , INSERT_DT
+            , INSERT_ID
+        ) VALUES (
+            #{imageJsonFileSq}
+            , #{imageFileSq}
+            , #{imageJsonFileDesc}
+            , #{imageJsonFileNm}
+            , #{imageJsonFilePath}
+            , #{imageJsonFileSize}
+            , #{imageJsonXmlConvFileDesc}
+            , NOW()
+            , #{loginIDInSession}
+        );
+    </insert>
+
+    <update id="update" parameterType="ImageTaggingEntity" >
+        UPDATE /* ImageTagginMapper.update */
+              TA_IMAGE_JSON_FILE_INFO
+          SET UPDATE_DT             = NOW()
+			, UPDATE_ID             = #{loginIDInSession}
+			, IMAGE_JSON_XML_CONV_FILE_DESC = #{imageJsonXmlConvFileDesc}
+			, IMAGE_JSON_FILE_DESC	= #{imageJsonFileDesc}
+			, IMAGE_JSON_FILE_NM	= #{imageJsonFileNm}
+			, IMAGE_JSON_FILE_PATH	= #{imageJsonFilePath}
+			, IMAGE_JSON_FILE_SIZE	= #{imageJsonFileSize}
+		WHERE IMAGE_JSON_FILE_SQ    = #{imageJsonFileSq}
+    </update>
+
+    <update id="updateMagnification" parameterType="ImageTaggingEntity" >
+        UPDATE /* ImageTagginMapper.updateMagnification */
+              TA_IMAGE_FILE_INFO
+          SET UPDATE_DT                       = NOW()
+            , UPDATE_ID                       = #{loginIDInSession}
+            , LAST_UPDATE_IMAGE_MAGNIFICATION = #{lastUpdateImageMagnification}
+        WHERE IMAGE_FILE_SQ                   = #{imageFileSq}
+    </update>
+
+    <delete id="delete" parameterType="ImageTaggingEntity">
+        DELETE /* ImageTagginMapper.delete */
+        FROM TA_IMAGE_JSON_FILE_INFO
+        WHERE IMAGE_JSON_FILE_SQ    = #{imageJsonFileSq}
+    </delete>
+
+</mapper>

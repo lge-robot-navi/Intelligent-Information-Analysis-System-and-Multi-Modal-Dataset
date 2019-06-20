@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lge.crawling.admin.openapi.mapper.SensorDataMapper">
+
+	<sql id="field">
+		A.SD_FILE_SQ								     AS sdSeq,
+		A.SD_FILE_AGENT                                  AS sdAgent,
+		A.SD_FILE_TYPE_CD                                AS sdTypeCd,
+		A.SD_FILE_NM                                     AS sdNm,
+		A.SD_FILE_PATH                                   AS sdUrl,
+		A.SD_FILE_SCALE_X                                AS sdScaleX,
+		A.SD_FILE_SCALE_Y                                AS sdScaleY,
+		A.SD_FILE_SIZE                                   AS sdSize,
+		A.SD_FILE_CREATE_DT                              AS sdCreateDt,
+		A.SD_FILE_REGIST_DT                              AS sdRegistDt
+	</sql>
+	
+    <sql id="fragment">
+        FROM
+        	TA_SD_FILE_INFO A
+		<where>
+            <trim prefixOverrides="AND|OR">
+            	<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(from)">
+            		<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(to)">
+						AND A.SD_FILE_REGIST_DT BETWEEN RPAD(REPLACE(#{from},'-',''),14,'000000')
+						                   AND RPAD(REPLACE(#{to}, '-', ''), 14, '235959')
+					</if>
+				</if>
+                <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(agent)">
+                    AND A.SD_FILE_AGENT = #{agent}
+                </if>
+                <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(type)">
+                    AND A.SD_FILE_TYPE_CD = #{type}
+                </if>
+            </trim>
+        </where>
+    </sql>
+
+	<!-- 리스트 -->
+    <select id="getList" parameterType="SensorDataEntity" resultType="SensorDataEntity">
+    	<include refid="Common.PagingStart" />
+	        SELECT /* SensorDataMapper.xml, getList */
+	            <include refid="field"/>
+	            <include refid="fragment"/>
+			ORDER BY A.SD_FILE_SQ DESC
+		<include refid="Common.PagingEnd" />
+    </select>
+
+	<!-- 카운트 -->
+    <select id="count" parameterType="SensorDataEntity" resultType="Integer">
+        SELECT /* SensorDataMapper.xml, count */
+        		COUNT(1) AS CNT
+            <include refid="fragment"/>
+    </select>
+
+</mapper>

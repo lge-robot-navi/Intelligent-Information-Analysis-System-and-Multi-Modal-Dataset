@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lge.crawling.admin.management.imageTaggingDic.mapper.TaggingDicMapper">
+
+    <sql id="field">
+		A.IMAGE_TAGGING_DATA_DIC_ID_SQ							AS imageTaggingDataDicIdSq,		  /* 이미지Tagging데이터사전ID일련번호 */
+		A.UPPER_IMAGE_TAGGING_DATA_DIC_ID           			AS upperImageTaggingDataDicId,    /* 이미지Tagging데이터사전ID         */
+		A.IMAGE_TAGGING_DATA_DIC_LEVEL              			AS imageTaggingDataDicLevel,      /* 이미지Tagging데이터사전단계       */
+		A.IMAGE_TAGGING_DATA_DIC_NM                 			AS imageTaggingDataDicNm,         /* 이미지Tagging데이터사전명         */
+		A.IMAGE_TAGGING_DATA_DIC_DESC               			AS imageTaggingDataDicDesc,       /* 이미지Tagging데이터사전설명       */
+		A.USE_YN												AS useYn,						  /* 사용여부 */
+		A.INSERT_DT											    AS insertDt,			          /* 등록일시 */
+		A.INSERT_ID											    AS insertId,			          /* 등록자ID */
+		A.UPDATE_DT											    AS updateDt,			          /* 수정일시 */
+		A.UPDATE_ID											    AS updateId				          /* 수정자ID */
+    </sql>
+
+    <sql id="fragment">
+    	FROM TA_IMAGE_TAGGING_DATA_DIC_INFO A
+    	<where>
+    		<trim prefixOverrides="AND|OR">
+	            <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(upperImageTaggingDataDicId)">
+	                AND UPPER_IMAGE_TAGGING_DATA_DIC_ID = #{upperImageTaggingDataDicId}
+	            </if>
+	            <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(imageTaggingDataDicIdSq)">
+	                AND IMAGE_TAGGING_DATA_DIC_ID_SQ = #{imageTaggingDataDicIdSq}
+	            </if>
+	            <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(imageTaggingDataDicLevel)">
+	                AND IMAGE_TAGGING_DATA_DIC_LEVEL = #{imageTaggingDataDicLevel}
+	            </if>
+				<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(imageTaggingDataDicNm)">
+					AND A.IMAGE_TAGGING_DATA_DIC_NM LIKE CONCAT('%', #{imageTaggingDataDicNm}, '%')
+				</if>
+				<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(useYn)">
+					AND A.USE_YN = #{useYn}
+				</if>
+    		</trim>
+    	</where>
+    </sql>
+
+	<select id="get" parameterType="TaggingDicEntity" resultType="TaggingDicEntity">
+		SELECT /* TaggingDicMapper.xml, get */
+			<include refid="field"/>
+			<include refid="fragment"/>
+    </select>
+
+	<select id="getList" parameterType="TaggingDicEntity" resultType="TaggingDicEntity">
+	    <include refid="Common.PagingStart" />
+			SELECT /* TaggingDicMapper.xml, getList */
+				<include refid="field"/>
+				<include refid="fragment"/>
+			ORDER BY IMAGE_TAGGING_DATA_DIC_ID_SQ, IMAGE_TAGGING_DATA_DIC_LEVEL
+        <include refid="Common.PagingEnd" />
+    </select>
+
+	<select id="getAllList" parameterType="TaggingDicEntity" resultType="TaggingDicEntity">
+		SELECT /* TaggingDicMapper.xml, getAllList */
+			<include refid="field"/>
+			<include refid="fragment"/>
+		ORDER BY IMAGE_TAGGING_DATA_DIC_ID_SQ, IMAGE_TAGGING_DATA_DIC_LEVEL
+    </select>
+
+	<select id="getImageDicList" parameterType="TaggingDicEntity" resultType="TaggingDicEntity">
+		<include refid="Common.PagingStart" />
+		SELECT /* TaggingDicMapper.xml, getImageDicList */
+			A.IMAGE_TAGGING_DATA_DIC_ID_SQ							AS imageTaggingDataDicIdSq,		  /* 이미지Tagging데이터사전ID일련번호 */
+			(
+				SELECT ITD.IMAGE_TAGGING_DATA_DIC_NM
+				FROM TA_IMAGE_TAGGING_DATA_DIC_INFO ITD
+				WHERE ITD.IMAGE_TAGGING_DATA_DIC_ID_SQ = A.UPPER_IMAGE_TAGGING_DATA_DIC_ID
+			)														AS upperImageTaggingDataDicNm,    /* 상위이미지Tagging데이터사전명     */
+			A.UPPER_IMAGE_TAGGING_DATA_DIC_ID           			AS upperImageTaggingDataDicId,    /* 이미지Tagging데이터사전ID         */
+			A.IMAGE_TAGGING_DATA_DIC_LEVEL              			AS imageTaggingDataDicLevel,      /* 이미지Tagging데이터사전단계       */
+			A.IMAGE_TAGGING_DATA_DIC_NM                 			AS imageTaggingDataDicNm,         /* 이미지Tagging데이터사전명         */
+			A.IMAGE_TAGGING_DATA_DIC_DESC               			AS imageTaggingDataDicDesc,       /* 이미지Tagging데이터사전설명       */
+			A.USE_YN												AS useYn,						  /* 사용여부 */
+			A.INSERT_DT											    AS insertDt,			          /* 등록일시 */
+			A.INSERT_ID											    AS insertId,			          /* 등록자ID */
+			A.UPDATE_DT											    AS updateDt,			          /* 수정일시 */
+			A.UPDATE_ID											    AS updateId				          /* 수정자ID */
+    	FROM TA_IMAGE_TAGGING_DATA_DIC_INFO A
+    	<where>
+    		<trim prefixOverrides="AND|OR">
+    			AND UPPER_IMAGE_TAGGING_DATA_DIC_ID != 'ROOT'
+	            <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(upperImageTaggingDataDicId)">
+	                AND UPPER_IMAGE_TAGGING_DATA_DIC_ID = #{upperImageTaggingDataDicId}
+	            </if>
+	            <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(imageTaggingDataDicIdSq)">
+	                AND IMAGE_TAGGING_DATA_DIC_ID_SQ = #{imageTaggingDataDicIdSq}
+	            </if>
+	            <!-- <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(imageTaggingDataDicLevel)"> -->
+	                AND IMAGE_TAGGING_DATA_DIC_LEVEL = 3
+	            <!-- </if> -->
+				<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(imageTaggingDataDicNm)">
+					AND A.IMAGE_TAGGING_DATA_DIC_NM LIKE CONCAT('%', #{imageTaggingDataDicNm}, '%')
+				</if>
+				<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(useYn)">
+					AND A.USE_YN = #{useYn}
+				</if>
+    		</trim>
+    	</where>
+		ORDER BY UPPER_IMAGE_TAGGING_DATA_DIC_ID, IMAGE_TAGGING_DATA_DIC_ID_SQ, IMAGE_TAGGING_DATA_DIC_LEVEL
+		<include refid="Common.PagingEnd" />
+    </select>
+
+	<select id="getImageDicListCount" parameterType="TaggingDicEntity" resultType="int">
+        SELECT /* TaggingDicMapper.xml, getImageDicListCount */
+               COUNT(1) AS CNT
+    	FROM TA_IMAGE_TAGGING_DATA_DIC_INFO A
+    	<where>
+    		<trim prefixOverrides="AND|OR">
+    			AND UPPER_IMAGE_TAGGING_DATA_DIC_ID != 'ROOT'
+	            <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(upperImageTaggingDataDicId)">
+	                AND UPPER_IMAGE_TAGGING_DATA_DIC_ID = #{upperImageTaggingDataDicId}
+	            </if>
+	            <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(imageTaggingDataDicIdSq)">
+	                AND IMAGE_TAGGING_DATA_DIC_ID_SQ = #{imageTaggingDataDicIdSq}
+	            </if>
+	            <!-- <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(imageTaggingDataDicLevel)"> -->
+	                AND IMAGE_TAGGING_DATA_DIC_LEVEL = 3
+	            <!-- </if> -->
+				<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(imageTaggingDataDicNm)">
+					AND A.IMAGE_TAGGING_DATA_DIC_NM LIKE CONCAT('%', #{imageTaggingDataDicNm}, '%')
+				</if>
+				<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(useYn)">
+					AND A.USE_YN = #{useYn}
+				</if>
+    		</trim>
+    	</where>
+		ORDER BY UPPER_IMAGE_TAGGING_DATA_DIC_ID, IMAGE_TAGGING_DATA_DIC_ID_SQ, IMAGE_TAGGING_DATA_DIC_LEVEL
+    </select>
+
+
+	<select id="getImageDicDownloodList" parameterType="TaggingDicEntity" resultType="TaggingDicEntity">
+		SELECT /* TaggingDicMapper.xml, getImageDicDownloodList */
+			DISTINCT
+			A.IMAGE_TAGGING_DATA_DIC_ID_SQ							AS imageTaggingDataDicIdSq,		  /* 이미지Tagging데이터사전ID일련번호 */
+			A.UPPER_IMAGE_TAGGING_DATA_DIC_ID           			AS upperImageTaggingDataDicId,    /* 이미지Tagging데이터사전ID         */
+			A.IMAGE_TAGGING_DATA_DIC_LEVEL              			AS imageTaggingDataDicLevel,      /* 이미지Tagging데이터사전단계       */
+			A.IMAGE_TAGGING_DATA_DIC_NM                 			AS imageTaggingDataDicNm,         /* 이미지Tagging데이터사전명         */
+			A.IMAGE_TAGGING_DATA_DIC_DESC               			AS imageTaggingDataDicDesc,       /* 이미지Tagging데이터사전설명       */
+			A.USE_YN												AS useYn,						  /* 사용여부 */
+			A.INSERT_DT											    AS insertDt,			          /* 등록일시 */
+			A.INSERT_ID											    AS insertId,			          /* 등록자ID */
+			A.UPDATE_DT											    AS updateDt,			          /* 수정일시 */
+			A.UPDATE_ID											    AS updateId				          /* 수정자ID */
+		FROM TA_IMAGE_TAGGING_DATA_DIC_INFO AS A
+		LEFT JOIN TA_IMAGE_TAGGING_DATA_DIC_INFO AS B ON B.UPPER_IMAGE_TAGGING_DATA_DIC_ID = A.IMAGE_TAGGING_DATA_DIC_ID_SQ
+		LEFT JOIN TA_IMAGE_TAGGING_DATA_DIC_INFO AS C ON C.UPPER_IMAGE_TAGGING_DATA_DIC_ID = B.IMAGE_TAGGING_DATA_DIC_ID_SQ
+		LEFT JOIN TA_IMAGE_TAGGING_DATA_DIC_INFO AS D ON D.UPPER_IMAGE_TAGGING_DATA_DIC_ID = C.IMAGE_TAGGING_DATA_DIC_ID_SQ
+    	<where>
+    		<trim prefixOverrides="AND|OR">
+				<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(imageTaggingDicIdSqList)">
+					OR A.IMAGE_TAGGING_DATA_DIC_ID_SQ IN
+					<foreach collection="imageTaggingDicIdSqList" item="item"  open="(" close=")" separator=",">
+			            #{item}
+			        </foreach>
+					OR B.IMAGE_TAGGING_DATA_DIC_ID_SQ IN
+					<foreach collection="imageTaggingDicIdSqList" item="item"  open="(" close=")" separator=",">
+			            #{item}
+			        </foreach>
+					OR C.IMAGE_TAGGING_DATA_DIC_ID_SQ IN
+					<foreach collection="imageTaggingDicIdSqList" item="item"  open="(" close=")" separator=",">
+			            #{item}
+			        </foreach>
+					OR D.IMAGE_TAGGING_DATA_DIC_ID_SQ IN
+					<foreach collection="imageTaggingDicIdSqList" item="item"  open="(" close=")" separator=",">
+			            #{item}
+			        </foreach>
+		        </if>
+    		</trim>
+    	</where>
+		ORDER BY A.UPPER_IMAGE_TAGGING_DATA_DIC_ID, A.IMAGE_TAGGING_DATA_DIC_ID_SQ, A.IMAGE_TAGGING_DATA_DIC_LEVEL
+    </select>
+
+	<select id="count" parameterType="TaggingDicEntity" resultType="int">
+        SELECT /* TaggingDicMapper.xml, count */
+               COUNT(1) AS CNT
+               <include refid="fragment"/>
+    </select>
+
+    <insert id="insert" parameterType="TaggingDicEntity">
+        <selectKey keyProperty="imageTaggingDataDicIdSq" resultType="String" order="BEFORE">
+            SELECT CONCAT('C', REPLACE(IFNULL(MAX(IMAGE_TAGGING_DATA_DIC_ID_SQ), 100000000), 'C', '') + 1) AS SEQ FROM TA_IMAGE_TAGGING_DATA_DIC_INFO
+        </selectKey>
+        INSERT /* TaggingDicMapper.xml, insert */
+          INTO TA_IMAGE_TAGGING_DATA_DIC_INFO (
+			IMAGE_TAGGING_DATA_DIC_ID_SQ,
+			UPPER_IMAGE_TAGGING_DATA_DIC_ID,
+			IMAGE_TAGGING_DATA_DIC_LEVEL,
+			IMAGE_TAGGING_DATA_DIC_NM,
+			IMAGE_TAGGING_DATA_DIC_DESC,
+			USE_YN,
+			INSERT_ID,
+            INSERT_DT
+        ) VALUES (
+            #{imageTaggingDataDicIdSq},
+            #{upperImageTaggingDataDicId},
+            #{imageTaggingDataDicLevel},
+            #{imageTaggingDataDicNm},
+            #{imageTaggingDataDicDesc},
+            #{useYn},
+            #{loginIDInSession},
+            NOW()
+        )
+    </insert>
+
+    <update id="update" parameterType="TaggingDicEntity">
+        UPDATE /* TaggingDicMapper.xml, update */
+               TA_IMAGE_TAGGING_DATA_DIC_INFO
+           SET UPDATE_ID    					= #{loginIDInSession},
+               UPDATE_DT    					= NOW(),
+			   UPPER_IMAGE_TAGGING_DATA_DIC_ID  = #{upperImageTaggingDataDicId},
+			   IMAGE_TAGGING_DATA_DIC_LEVEL     = #{imageTaggingDataDicLevel},
+			   IMAGE_TAGGING_DATA_DIC_NM        = #{imageTaggingDataDicNm},
+			   IMAGE_TAGGING_DATA_DIC_DESC      = #{imageTaggingDataDicDesc},
+               USE_YN       					= #{useYn}
+         WHERE IMAGE_TAGGING_DATA_DIC_ID_SQ     = #{imageTaggingDataDicIdSq}
+    </update>
+</mapper>

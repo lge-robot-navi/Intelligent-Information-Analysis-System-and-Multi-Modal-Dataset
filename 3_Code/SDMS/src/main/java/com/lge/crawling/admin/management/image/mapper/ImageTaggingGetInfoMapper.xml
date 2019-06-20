@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lge.crawling.admin.management.image.mapper.ImageTaggingGetInfoMapper">
+
+    <sql id="field">
+        A.IMAGE_TAGGING_GET_SQ                    AS imageTaggingGetSq
+        , A.IMAGE_FILE_SQ                         AS imageFileSq
+        , A.FIRST_IMAGE_TAGGING_DATA_DIC_ID_SQ    AS firstImageTaggingDataDicIdSq
+        , A.SECOND_IMAGE_TAGGING_DATA_DIC_ID_SQ   AS secondImageTaggingDataDicIdSq
+        , A.THIRD_IMAGE_TAGGING_DATA_DIC_ID_SQ    AS thirdImageTaggingDataDicIdSq
+        , A.IMAGE_TAGGING_TYPE_CD                 AS imageTaggingTypeCd
+        , A.IMAGE_TAGGING_GET_DT                  AS imageTaggingGetDt
+        , A.INSERT_DT                             AS insertDt
+        , A.INSERT_ID                             AS insertId
+        , A.UPDATE_DT                             AS updateDt
+        , A.UPDATE_ID                             AS updateId
+    </sql>
+
+    <sql id="fragment">
+        FROM TA_IMAGE_TAGGING_GET_INFO A
+        <where>
+            <trim prefixOverrides="AND|OR">
+                <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(imageFileSq)">
+                    AND A.IMAGE_FILE_SQ = #{imageFileSq}
+                </if>
+                <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(imageTaggingGetSq)">
+                    AND A.IMAGE_TAGGING_GET_SQ = #{imageTaggingGetSq}
+                </if>
+            </trim>
+        </where>
+    </sql>
+
+    <select id="get" parameterType="ImageTaggingGetInfoEntity" resultType="ImageTaggingGetInfoEntity">
+        SELECT /* ImageTagginMapper.get */
+            <include refid="field" />
+            <include refid="fragment" />
+    </select>
+
+    <select id="getList" parameterType="ImageTaggingGetInfoEntity" resultType="ImageTaggingGetInfoEntity">
+        <include refid="Common.PagingStart" />
+            SELECT /* ImageTagginMapper.getList */
+                <include refid="field" />
+                <include refid="fragment" />
+            ORDER BY A.INSERT_DT DESC
+        <include refid="Common.PagingEnd" />
+    </select>
+
+    <select id="getAllList" parameterType="ImageTaggingGetInfoEntity" resultType="ImageTaggingGetInfoEntity">
+        SELECT /* ImageTagginMapper.getAllList */
+            <include refid="field" />
+            <include refid="fragment" />
+        ORDER BY A.INSERT_DT DESC
+    </select>
+
+    <select id="count" parameterType="ImageTaggingGetInfoEntity" resultType="Integer">
+        SELECT /* ImageTagginMapper.count */
+              COUNT(1) AS CNT
+            <include refid="fragment" />
+    </select>
+
+    <insert id="insert" parameterType="ImageTaggingGetInfoEntity">
+        INSERT /* ImageTagginMapper.insert */
+        INTO TA_IMAGE_TAGGING_GET_INFO (
+            IMAGE_TAGGING_GET_SQ
+            , IMAGE_FILE_SQ
+            , FIRST_IMAGE_TAGGING_DATA_DIC_ID_SQ
+            , SECOND_IMAGE_TAGGING_DATA_DIC_ID_SQ
+            , THIRD_IMAGE_TAGGING_DATA_DIC_ID_SQ
+            , IMAGE_TAGGING_TYPE_CD
+            , IMAGE_TAGGING_GET_DT
+            , INSERT_DT
+            , INSERT_ID
+            , UPDATE_DT
+            , UPDATE_ID
+        ) VALUES (
+            #{imageTaggingGetSq}
+            , #{imageFileSq}
+            , #{firstImageTaggingDataDicIdSq}
+            , #{secondImageTaggingDataDicIdSq}
+            , #{thirdImageTaggingDataDicIdSq}
+            , #{imageTaggingTypeCd}
+            , DATE_FORMAT(NOW(), '%Y%m%d%H%i%s')
+            , NOW()
+            , #{loginIDInSession}
+            , NOW()
+            , #{loginIDInSession}
+        )
+    </insert>
+
+    <delete id="delete" parameterType="ImageTaggingGetInfoEntity">
+        DELETE /* ImageTagginMapper.delete */
+        FROM TA_IMAGE_TAGGING_GET_INFO
+        WHERE IMAGE_FILE_SQ = #{imageFileSq}
+    </delete>
+
+</mapper>

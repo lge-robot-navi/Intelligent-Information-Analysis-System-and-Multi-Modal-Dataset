@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lge.crawling.admin.management.imageInfo.mapper.ImageFileInfoMapper">
+
+	<sql id="field">
+		A.IMAGE_FILE_SQ										AS imageFileSq,                   /* 이미지파일일련번호            */
+		A.IMAGE_FILE_PACKAGE_ID_SQ                          AS imageFilePackageIdSq,          /* 이미지파일패키지ID일련번호    */
+		A.IMAGE_FILE_NM                                     AS imageFileNm,                   /* 이미지파일명                  */
+		A.IMAGE_FILE_PATH                                   AS imageFilePath,                 /* 이미지파일경로                */
+		A.IMAGE_FILE_SIZE                                   AS imageFileSize,                 /* 이미지파일크기                */
+		A.IMAGE_FILE_SCALE_X                                AS imageFileScaleX,               /* 이미지파일크기_X              */
+		A.IMAGE_FILE_SCALE_Y                                AS imageFileScaleY,               /* 이미지파일크기_Y              */
+		A.IMAGE_FILE_DOWNLOAD_PATH_URL						AS imageFileDownloadPathUrl,	  /* 이미지파일다운로드경로URL	   */
+		A.IMAGE_FILE_TYPE_CD                                AS imageFileTypeCd,               /* 이미지파일타입구분_TA004      */
+		A.IMAGE_FILE_DOWNLOAD_PATH_CD                       AS imageFileDownloadPathCd,       /* 이미지파일다운경로구분_TA005  */
+		A.IMAGE_FILE_REGIST_DT                              AS imageFileRegistDt,             /* 이미지파일등록상세일시        */
+		B.IMAGE_FILE_PACKAGE_VER_CODE                       AS imageFilePackageVerCode,       /* 이미지파일패키지버전코드  */
+		B.IMAGE_FILE_PACKAGE_VER_NM                         AS imageFilePackageVerNm,         /* 이미지파일패키지버전명    */
+		B.IMAGE_FILE_PACKAGE_NM                             AS imageFilePackageNm,            /* 이미지파일패키지명        */
+		B.IMAGE_FILE_PACKAGE_PATH                           AS imageFilePackagePath,          /* 이미지파일패키지경로      */
+		B.IMAGE_FILE_PACKAGE_SIZE                           AS imageFilePackageSize,          /* 이미지파일패키지크기      */
+		B.IMAGE_FILE_PACKAGE_DESC                           AS imageFilePackageDesc,          /* 이미지파일패키지설명      */
+		B.IMAGE_FILE_PACKAGE_REGIST_DT                      AS imageFilePackageRegistDt,      /* 이미지파일등록상세일시    */
+		A.INSERT_DT											AS insertDt,			          /* 등록일시 */
+		A.INSERT_ID											AS insertId,			          /* 등록자ID */
+		A.UPDATE_DT											AS updateDt,			          /* 수정일시 */
+		A.UPDATE_ID											AS updateId				          /* 수정자ID */
+	</sql>
+
+    <sql id="fragment">
+        FROM
+        	TA_IMAGE_FILE_INFO A
+        INNER JOIN
+        	TA_IMAGE_FILE_PACKAGE_INFO B
+        ON A.IMAGE_FILE_PACKAGE_ID_SQ = B.IMAGE_FILE_PACKAGE_ID_SQ
+       	<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(loginCdInSession) and !@org.apache.commons.lang.StringUtils@equals(loginCdInSession, 100)">
+       	INNER JOIN
+       		TA_IMAGE_FILE_WORKER_INFO C
+       	ON A.IMAGE_FILE_SQ = C.IMAGE_FILE_SQ
+       	</if>
+       	<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(taggingYn)">
+       	LEFT OUTER JOIN
+       		TA_IMAGE_JSON_FILE_INFO D
+       	ON A.IMAGE_FILE_SQ = D.IMAGE_FILE_SQ
+       	</if>
+        <where>
+            <trim prefixOverrides="AND|OR">
+            	<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(loginCdInSession) and !@org.apache.commons.lang.StringUtils@equals(loginCdInSession, 100)">
+	 				AND C.IMAGE_FILE_WORKER_ID = #{loginIDInSession}
+            	</if>
+            	<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(taggingYn) and @org.apache.commons.lang.StringUtils@equals(taggingYn, 'Y')">
+	        		AND
+	        		(
+	        		D.IMAGE_JSON_FILE_DESC IS NOT NULL
+	        		<!-- AND CONVERT(D.IMAGE_JSON_FILE_DESC USING utf8) like '%shape_attributes%' -->
+	        		)
+	        	</if>
+            	<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(taggingYn) and @org.apache.commons.lang.StringUtils@equals(taggingYn, 'N')">
+	        		AND
+	        		(
+	        		D.IMAGE_JSON_FILE_DESC IS NULL
+	        		<!-- OR CONVERT(D.IMAGE_JSON_FILE_DESC USING utf8) like '%"regions":{}%' -->
+	        		)
+	        	</if>
+	        	<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(startDt)">
+            		<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(endDt)">
+						AND A.IMAGE_FILE_REGIST_DT BETWEEN RPAD(REPLACE(#{startDt},'-',''),14,'000000')
+						                   AND RPAD(REPLACE(#{endDt}, '-', ''), 14, '235959')
+					</if>
+				</if>
+                <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(imageFileSq)">
+                    AND A.IMAGE_FILE_SQ = #{imageFileSq}
+                </if>
+                <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(imageFileTypeCd)">
+                    AND A.IMAGE_FILE_TYPE_CD = #{imageFileTypeCd}
+                </if>
+                <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(imageFileDownloadPathCd)">
+                    AND A.IMAGE_FILE_DOWNLOAD_PATH_CD = #{imageFileDownloadPathCd}
+                </if>
+                <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(imageFileDownloadPathUrl)">
+                    AND A.IMAGE_FILE_DOWNLOAD_PATH_URL = #{imageFileDownloadPathUrl}
+                </if>
+                <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(imageFilePackageIdSq)">
+                    AND A.IMAGE_FILE_PACKAGE_ID_SQ = #{imageFilePackageIdSq}
+                </if>
+                <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(imageFileNm)">
+                    AND REPLACE(A.IMAGE_FILE_NM,' ','') LIKE CONCAT('%',REPLACE(#{imageFileNm},' ',''),'%')
+                </if>
+            </trim>
+        </where>
+    </sql>
+
+	<!-- 조회 -->
+    <select id="get" parameterType="ImageFileInfoEntity" resultType="ImageFileInfoEntity">
+        SELECT /* ImageFileInfoMapper.xml, get */
+            <include refid="field"/>
+            <include refid="fragment"/>
+    </select>
+
+	<!-- 리스트 -->
+    <select id="getList" parameterType="ImageFileInfoEntity" resultType="ImageFileInfoEntity">
+    	<include refid="Common.PagingStart" />
+	        SELECT /* ImageFileInfoMapper.xml, getList */
+	            <include refid="field"/>
+	            <include refid="fragment"/>
+			ORDER BY A.IMAGE_FILE_SQ DESC
+		<include refid="Common.PagingEnd" />
+    </select>
+
+	<!-- 전체 리스트 -->
+    <select id="getAllList" parameterType="ImageFileInfoEntity" resultType="ImageFileInfoEntity">
+        SELECT /* ImageFileInfoMapper.xml, getAllList */
+            <include refid="field"/>
+            <include refid="fragment"/>
+		ORDER BY A.IMAGE_FILE_SQ DESC
+    </select>
+
+	<!-- 카운트 -->
+    <select id="count" parameterType="ImageFileInfoEntity" resultType="Integer">
+        SELECT /* ImageFileInfoMapper.xml, count */
+        		COUNT(1) AS CNT
+            <include refid="fragment"/>
+    </select>
+
+	<!-- 등록 -->
+    <insert id="insert" parameterType="ImageFileInfoEntity" useGeneratedKeys="true" keyProperty="imageFileSq">
+        INSERT	/* ImageFileInfoMapper.xml, insert */
+          INTO	TA_IMAGE_FILE_INFO (
+		    IMAGE_FILE_SQ,			      /* 이미지파일일련번호            */
+		    IMAGE_FILE_PACKAGE_ID_SQ,     /* 이미지파일패키지ID일련번호    */
+		    IMAGE_FILE_NM,                /* 이미지파일명                  */
+		    IMAGE_FILE_PATH,              /* 이미지파일경로                */
+		    IMAGE_FILE_SIZE,              /* 이미지파일크기                */
+		    IMAGE_FILE_SCALE_X,           /* 이미지파일크기_X              */
+		    IMAGE_FILE_SCALE_Y,           /* 이미지파일크기_Y              */
+		    IMAGE_FILE_DOWNLOAD_PATH_URL, /* 이미지파일다운로드경로URL	   */
+		    IMAGE_FILE_TYPE_CD,           /* 이미지파일타입구분_TA004      */
+		    IMAGE_FILE_DOWNLOAD_PATH_CD,  /* 이미지파일다운경로구분_TA005  */
+		    IMAGE_FILE_REGIST_DT,         /* 이미지파일등록상세일시        */
+			INSERT_DT,                    /* 등록일시 */
+			INSERT_ID,                    /* 등록자ID */
+			UPDATE_DT,                    /* 수정일시 */
+			UPDATE_ID                     /* 수정자ID */
+        ) VALUES (
+			#{imageFileSq},               /* 이미지파일일련번호            */
+			#{imageFilePackageIdSq},      /* 이미지파일패키지ID일련번호    */
+			#{imageFileNm},               /* 이미지파일명                  */
+			#{imageFilePath},             /* 이미지파일경로                */
+			#{imageFileSize},             /* 이미지파일크기                */
+			#{imageFileScaleX},           /* 이미지파일크기_X              */
+			#{imageFileScaleY},           /* 이미지파일크기_Y              */
+			#{imageFileDownloadPathUrl},  /* 이미지파일다운로드경로URL	   */
+			#{imageFileTypeCd},           /* 이미지파일타입구분_TA004      */
+			#{imageFileDownloadPathCd},   /* 이미지파일다운경로구분_TA005  */
+			DATE_FORMAT(NOW(), '%Y%m%d%H%i%s'),         /* 이미지파일등록상세일시        */
+			NOW(),                        /* 등록일시 */
+			#{loginIDInSession},          /* 등록자ID */
+			NOW(),                        /* 수정일시 */
+			#{loginIDInSession}           /* 수정자ID */
+        )
+    </insert>
+
+	<!-- 수정 -->
+    <update id="update" parameterType="ImageFileInfoEntity">
+        UPDATE	/* ImageFileInfoMapper.xml, update */
+				TA_IMAGE_FILE_INFO
+		SET		UPDATE_DT					= NOW(),
+				UPDATE_ID					= #{loginIDInSession},
+				IMAGE_FILE_NM               = #{imageFileNm},
+				IMAGE_FILE_PATH             = #{imageFilePath},
+				IMAGE_FILE_SIZE             = #{imageFileSize},
+				IMAGE_FILE_SCALE_X          = #{imageFileScaleX},
+				IMAGE_FILE_SCALE_Y          = #{imageFileScaleY},
+				IMAGE_FILE_DOWNLOAD_PATH_UR = #{imageFileDownloadPathUrl},
+				IMAGE_FILE_TYPE_CD          = #{imageFileTypeCd},
+				IMAGE_FILE_DOWNLOAD_PATH_CD = #{imageFileDownloadPathCd}
+         WHERE IMAGE_FILE_SQ = #{imageFileSq}
+    </update>
+
+	<!-- 삭제 -->
+    <delete id="delete" parameterType="ImageFileInfoEntity">
+        DELETE	/* ImageFileInfoMapper.xml, delete */
+		FROM TA_IMAGE_FILE_INFO
+        WHERE IMAGE_FILE_SQ = #{imageFileSq}
+    </delete>
+</mapper>

@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lge.crawling.admin.management.sensorDataInfo.mapper.SensorDataFilePackageInfoMapper">
+
+	<sql id="field">
+		A.SD_FILE_PACKAGE_ID_SQ                          AS sensorDataFilePackageIdSq,          /* 이미지파일패키지ID일련번호*/
+		A.SD_FILE_PACKAGE_VER_CODE                       AS sensorDataFilePackageVerCode,       /* 이미지파일패키지버전코드  */
+		A.SD_FILE_PACKAGE_VER_NM                         AS sensorDataFilePackageVerNm,         /* 이미지파일패키지버전명    */
+		A.SD_FILE_PACKAGE_NM                             AS sensorDataFilePackageNm,            /* 이미지파일패키지명        */
+		A.SD_FILE_PACKAGE_PATH                           AS sensorDataFilePackagePath,          /* 이미지파일패키지경로      */
+		A.SD_FILE_PACKAGE_SIZE                           AS sensorDataFilePackageSize,          /* 이미지파일패키지크기      */
+		A.SD_FILE_PACKAGE_DESC                           AS sensorDataFilePackageDesc,          /* 이미지파일패키지설명      */
+		A.SD_FILE_PACKAGE_REGIST_DT                      AS sensorDataFilePackageRegistDt,      /* 이미지파일등록상세일시    */
+		A.INSERT_DT											AS insertDt,			          /* 등록일시 */
+		A.INSERT_ID											AS insertId,			          /* 등록자ID */
+		A.UPDATE_DT											AS updateDt,			          /* 수정일시 */
+		A.UPDATE_ID											AS updateId				          /* 수정자ID */
+	</sql>
+
+    <sql id="fragment">
+        FROM TA_SD_FILE_PACKAGE_INFO A
+        <where>
+            <trim prefixOverrides="AND|OR">
+                <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(sensorDataFilePackageIdSq)">
+                    AND A.SD_FILE_PACKAGE_ID_SQ = #{sensorDataFilePackageIdSq}
+                </if>
+                <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(sensorDataFilePackageNm)">
+                    AND A.SD_FILE_PACKAGE_NM LIKE CONCAT('%',#{sensorDataFilePackageNm},'%')
+                </if>
+            </trim>
+        </where>
+    </sql>
+
+	<!-- 조회 -->
+    <select id="get" parameterType="SensorDataFilePackageInfoEntity" resultType="SensorDataFilePackageInfoEntity">
+        SELECT /* SensorDataFilePackageInfoMapper.xml, get */
+            <include refid="field"/>
+            <include refid="fragment"/>
+    </select>
+
+	<!-- 리스트 -->
+    <select id="getList" parameterType="SensorDataFilePackageInfoEntity" resultType="SensorDataFilePackageInfoEntity">
+    	<include refid="Common.PagingStart" />
+	        SELECT /* SensorDataFilePackageInfoMapper.xml, getList */
+	            <include refid="field"/>
+	            <include refid="fragment"/>
+			ORDER BY A.SD_FILE_PACKAGE_ID_SQ DESC
+		<include refid="Common.PagingEnd" />
+    </select>
+
+	<!-- 전체 리스트 -->
+    <select id="getAllList" parameterType="SensorDataFilePackageInfoEntity" resultType="SensorDataFilePackageInfoEntity">
+        SELECT /* SensorDataFilePackageInfoMapper.xml, getAllList */
+            <include refid="field"/>
+            <include refid="fragment"/>
+		ORDER BY A.SD_FILE_PACKAGE_ID_SQ DESC
+    </select>
+
+	<!-- 카운트 -->
+    <select id="count" parameterType="SensorDataFilePackageInfoEntity" resultType="Integer">
+        SELECT /* SensorDataFilePackageInfoMapper.xml, count */
+        		COUNT(1) AS CNT
+            <include refid="fragment"/>
+    </select>
+
+    <!-- Get Image File Package Sequence -->
+	<select id="getImageFilePackageSeq" parameterType="SensorDataFilePackageInfoEntity" resultType="String">
+		SELECT /* SensorDataFilePackageInfoMapper.xml, getImageFilePackageSeq */
+		       CONCAT('F', REPLACE(IFNULL(MAX(SD_FILE_PACKAGE_ID_SQ), 100000000), 'F', '') + 1) AS sensorDataFilePackageIdSq
+		  FROM TA_SD_FILE_PACKAGE_ID_SQ
+	</select>
+
+	<!-- 등록 -->
+    <insert id="insert" parameterType="SensorDataFilePackageInfoEntity">
+		<selectKey resultType="String" keyProperty="sensorDataFilePackageVerCode" order="BEFORE">
+			SELECT IFNULL(MAX(CAST(SD_FILE_PACKAGE_VER_CODE AS UNSIGNED)) + 1, 1) AS sensorDataFilePackageVerCode
+			  FROM TA_SD_FILE_PACKAGE_INFO
+			 WHERE SD_FILE_PACKAGE_ID_SQ = #{sensorDataFilePackageIdSq}
+		</selectKey>
+        INSERT	/* SensorDataFilePackageInfoMapper.xml, insert */
+          INTO	TA_SD_FILE_PACKAGE_INFO (
+		    SD_FILE_PACKAGE_ID_SQ,     /* 이미지파일패키지ID일련번호*/
+		    SD_FILE_PACKAGE_VER_CODE,  /* 이미지파일패키지버전코드  */
+		    SD_FILE_PACKAGE_VER_NM,    /* 이미지파일패키지버전명    */
+		    SD_FILE_PACKAGE_NM,        /* 이미지파일패키지명        */
+		    SD_FILE_PACKAGE_PATH,      /* 이미지파일패키지경로      */
+		    SD_FILE_PACKAGE_SIZE,      /* 이미지파일패키지크기      */
+		    SD_FILE_PACKAGE_DESC,      /* 이미지파일패키지설명      */
+		    SD_FILE_PACKAGE_REGIST_DT, /* 이미지파일등록상세일시    */
+          	INSERT_DT,                    /* 등록일시 */
+			INSERT_ID,                    /* 등록자ID */
+			UPDATE_DT,                    /* 수정일시 */
+			UPDATE_ID                     /* 수정자ID */
+        ) VALUES (
+			#{sensorDataFilePackageIdSq},      /* 이미지파일패키지ID일련번호 */
+			#{sensorDataFilePackageVerCode},   /* 이미지파일패키지버전코드 */
+			CONCAT('V',#{sensorDataFilePackageVerCode}),     /* 이미지파일패키지버전명 */
+			#{sensorDataFilePackageNm},        /* 이미지파일패키지명 */
+			#{sensorDataFilePackagePath},      /* 이미지파일패키지경로 */
+			#{sensorDataFilePackageSize},      /* 이미지파일패키지크기 */
+			#{sensorDataFilePackageDesc},      /* 이미지파일패키지설명 */
+			DATE_FORMAT(NOW(), '%Y%m%d%H%i%s'),  /* 이미지파일등록상세일시 */
+			NOW(),                        /* 등록일시 */
+			#{loginIDInSession},          /* 등록자ID */
+			NOW(),                        /* 수정일시 */
+			#{loginIDInSession}           /* 수정자ID */
+        )
+    </insert>
+
+	<!-- 등록 -->
+    <insert id="insertImageFilePackageIdSq" parameterType="SensorDataFilePackageInfoEntity">
+        INSERT	/* SensorDataFilePackageInfoMapper.xml, insertImageFilePackageIdSq */
+          INTO	TA_SD_FILE_PACKAGE_ID_SQ (
+		    SD_FILE_PACKAGE_ID_SQ,     /* 이미지파일패키지ID일련번호*/
+		    SD_FILE_PACKAGE_ID_SQ_CREATE_DT /* 이미지파일등록상세일시 */
+        ) VALUES (
+			#{sensorDataFilePackageIdSq},      /* 이미지파일패키지ID일련번호 */
+			DATE_FORMAT(NOW(), '%Y%m%d%H%i%s')   /* 이미지파일등록상세일시 */
+        )
+    </insert>
+
+	<!-- 수정 -->
+    <update id="update" parameterType="SensorDataFilePackageInfoEntity">
+        UPDATE	/* SensorDataFilePackageInfoMapper.xml, update */
+				TA_SD_FILE_PACKAGE_INFO
+		SET		UPDATE_DT					= NOW(),
+				UPDATE_ID					= #{loginIDInSession},
+   				<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(sensorDataFilePackageVerCode)">
+					SD_FILE_PACKAGE_VER_CODE = #{sensorDataFilePackageVerCode},
+				</if>
+   				<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(sensorDataFilePackageVerNm)">
+					SD_FILE_PACKAGE_VER_NM = #{sensorDataFilePackageVerNm},
+				</if>
+			    SD_FILE_PACKAGE_NM       = #{sensorDataFilePackageNm},
+			    SD_FILE_PACKAGE_PATH     = #{sensorDataFilePackagePath},
+			    SD_FILE_PACKAGE_SIZE     = #{sensorDataFilePackageSize},
+   				<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(sensorDataFilePackageDesc)">
+					SD_FILE_PACKAGE_DESC = #{sensorDataFilePackageDesc}
+				</if>
+         WHERE SD_FILE_PACKAGE_ID_SQ = #{sensorDataFilePackageIdSq}
+    </update>
+</mapper>

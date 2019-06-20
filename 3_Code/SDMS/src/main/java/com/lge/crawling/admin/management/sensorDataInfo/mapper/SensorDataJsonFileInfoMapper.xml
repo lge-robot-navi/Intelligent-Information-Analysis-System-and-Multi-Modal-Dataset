@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lge.crawling.admin.management.sensorDataInfo.mapper.SensorDataJsonFileInfoMapper">
+
+	<sql id="field">
+		A.SD_JSON_FILE_SQ								AS sensorDataJsonFileSq,				  /* 이미지JSON파일일련번호 */
+		A.SD_FILE_SQ                                     AS sensorDataFileSq,                   /* 이미지파일일련번호       */
+		CONVERT(A.SD_JSON_FILE_DESC USING utf8)          AS sensorDataJsonFileDesc,             /* 이미지JSON파일내용       */
+		CONVERT(A.SD_JSON_XML_CONV_FILE_DESC USING utf8) AS sensorDataJsonXmlConvFileDesc,      /* 이미지JSON-XML변환파일내용       */
+		A.SD_JSON_FILE_NM                                AS sensorDataJsonFileNm,               /* 이미지JSON파일명         */
+		A.SD_JSON_FILE_PATH                              AS sensorDataJsonFilePath,             /* 이미지JSON파일경로       */
+		A.SD_JSON_FILE_SIZE                              AS sensorDataJsonFileSize,             /* 이미지JSON파일크기       */
+		A.INSERT_DT											AS insertDt,			          /* 등록일시 */
+		A.INSERT_ID											AS insertId,			          /* 등록자ID */
+		A.UPDATE_DT											AS updateDt,			          /* 수정일시 */
+		A.UPDATE_ID											AS updateId				          /* 수정자ID */
+	</sql>
+
+    <sql id="fragment">
+        FROM TA_SD_JSON_FILE_INFO A
+        <where>
+            <trim prefixOverrides="AND|OR">
+                <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(sensorDataFileSq)">
+                    AND A.SD_FILE_SQ = #{sensorDataFileSq}
+                </if>
+                <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(sensorDataJsonFileSq)">
+                    AND A.SD_JSON_FILE_SQ = #{sensorDataJsonFileSq}
+                </if>
+                <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(sensorDataJsonFileNm)">
+                    AND A.SD_JSON_FILE_NM LIKE '%' ||  CONCAT('%',#{sensorDataJsonFileNm},'%')
+                </if>
+            </trim>
+        </where>
+    </sql>
+
+	<!-- 조회 -->
+    <select id="get" parameterType="SensorDataJsonFileInfoEntity" resultType="SensorDataJsonFileInfoEntity">
+        SELECT /* SensorDataJsonFileInfoMapper.xml, get */
+            <include refid="field"/>
+            <include refid="fragment"/>
+    </select>
+
+	<!-- 리스트 -->
+    <select id="getList" parameterType="SensorDataJsonFileInfoEntity" resultType="SensorDataJsonFileInfoEntity">
+    	<include refid="Common.PagingStart" />
+	        SELECT /* SensorDataJsonFileInfoMapper.xml, getList */
+	            <include refid="field"/>
+	            <include refid="fragment"/>
+			ORDER BY A.SD_JSON_FILE_SQ DESC
+		<include refid="Common.PagingEnd" />
+    </select>
+
+	<!-- 전체 리스트 -->
+    <select id="getAllList" parameterType="SensorDataJsonFileInfoEntity" resultType="SensorDataJsonFileInfoEntity">
+        SELECT /* SensorDataJsonFileInfoMapper.xml, getAllList */
+            <include refid="field"/>
+            <include refid="fragment"/>
+		ORDER BY A.SD_JSON_FILE_SQ DESC
+    </select>
+
+	<!-- 카운트 -->
+    <select id="count" parameterType="SensorDataJsonFileInfoEntity" resultType="Integer">
+        SELECT /* SensorDataJsonFileInfoMapper.xml, count */
+        		COUNT(1) AS CNT
+            <include refid="fragment"/>
+    </select>
+
+	<!-- 등록 -->
+    <insert id="insert" parameterType="SensorDataJsonFileInfoEntity" useGeneratedKeys="true" keyProperty="sensorDataJsonFileSq">
+        INSERT	/* SensorDataJsonFileInfoMapper.xml, insert */
+          INTO	TA_SD_JSON_FILE_INFO (
+			SD_JSON_FILE_SQ,           /* 이미지파일작업자일련번호 */
+			SD_FILE_SQ,                /* 이미지파일일련번호       */
+			SD_JSON_FILE_DESC,         /* 이미지JSON파일내용       */
+			SD_JSON_XML_CONV_FILE_DESC,/* 이미지JSON-XML변환파일내용*/
+			SD_JSON_FILE_NM,           /* 이미지JSON파일명         */
+			SD_JSON_FILE_PATH,         /* 이미지JSON파일경로       */
+			SD_JSON_FILE_SIZE,         /* 이미지JSON파일크기       */
+			INSERT_DT,                    /* 등록일시 */
+			INSERT_ID,                    /* 등록자ID */
+			UPDATE_DT,                    /* 수정일시 */
+			UPDATE_ID                     /* 수정자ID */
+        ) VALUES (
+			#{sensorDataJsonFileSq},           /* 이미지파일작업자일련번호 */
+			#{sensorDataFileSq},               /* 이미지파일일련번호       */
+			#{sensorDataJsonFileDesc},         /* 이미지JSON파일내용       */
+			#{sensorDataJsonXmlConvFileDesc},  /* 이미지JSON-XML변환파일내용*/
+			#{sensorDataJsonFileNm},           /* 이미지JSON파일명         */
+			#{sensorDataJsonFilePath},         /* 이미지JSON파일경로       */
+			#{sensorDataJsonFileSize},         /* 이미지JSON파일크기       */
+			NOW(),                        /* 등록일시 */
+			#{loginIDInSession},          /* 등록자ID */
+			NOW(),                        /* 수정일시 */
+			#{loginIDInSession}           /* 수정자ID */
+        )
+    </insert>
+
+	<!-- 수정 -->
+    <update id="update" parameterType="SensorDataJsonFileInfoEntity">
+        UPDATE	/* SensorDataJsonFileInfoMapper.xml, update */
+				TA_SD_JSON_FILE_INFO
+		SET		UPDATE_DT					= NOW(),
+				UPDATE_ID					= #{loginIDInSession},
+				<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(sensorDataFileSq)">
+				SD_FILE_SQ               = #{sensorDataFileSq},
+				</if>
+				<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(sensorDataJsonFileNm)">
+				SD_JSON_FILE_NM          = #{sensorDataJsonFileNm},
+				</if>
+				<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(sensorDataJsonFilePath)">
+				SD_JSON_FILE_PATH        = #{sensorDataJsonFilePath},
+				</if>
+				<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(sensorDataJsonFileSize)">
+				SD_JSON_FILE_SIZE        = #{sensorDataJsonFileSize}
+				</if>
+				SD_JSON_FILE_DESC        = #{sensorDataJsonFileDesc, jdbcType=BLOB},
+				SD_JSON_XML_CONV_FILE_DESC = #{sensorDataJsonXmlConvFileDesc, jdbcType=BLOB}
+         WHERE SD_JSON_FILE_SQ = #{sensorDataJsonFileSq}
+    </update>
+
+	<!-- 삭제 -->
+    <delete id="delete" parameterType="SensorDataJsonFileInfoEntity">
+        DELETE	/* SensorDataJsonFileInfoMapper.xml, delete */
+		FROM TA_SD_JSON_FILE_INFO
+        WHERE SD_FILE_SQ = #{sensorDataFileSq}
+    </delete>
+</mapper>

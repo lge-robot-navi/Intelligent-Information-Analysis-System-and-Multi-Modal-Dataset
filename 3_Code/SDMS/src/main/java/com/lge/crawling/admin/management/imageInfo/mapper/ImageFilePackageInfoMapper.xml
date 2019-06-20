@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lge.crawling.admin.management.imageInfo.mapper.ImageFilePackageInfoMapper">
+
+	<sql id="field">
+		A.IMAGE_FILE_PACKAGE_ID_SQ                          AS imageFilePackageIdSq,          /* 이미지파일패키지ID일련번호*/
+		A.IMAGE_FILE_PACKAGE_VER_CODE                       AS imageFilePackageVerCode,       /* 이미지파일패키지버전코드  */
+		A.IMAGE_FILE_PACKAGE_VER_NM                         AS imageFilePackageVerNm,         /* 이미지파일패키지버전명    */
+		A.IMAGE_FILE_PACKAGE_NM                             AS imageFilePackageNm,            /* 이미지파일패키지명        */
+		A.IMAGE_FILE_PACKAGE_PATH                           AS imageFilePackagePath,          /* 이미지파일패키지경로      */
+		A.IMAGE_FILE_PACKAGE_SIZE                           AS imageFilePackageSize,          /* 이미지파일패키지크기      */
+		A.IMAGE_FILE_PACKAGE_DESC                           AS imageFilePackageDesc,          /* 이미지파일패키지설명      */
+		A.IMAGE_FILE_PACKAGE_REGIST_DT                      AS imageFilePackageRegistDt,      /* 이미지파일등록상세일시    */
+		A.INSERT_DT											AS insertDt,			          /* 등록일시 */
+		A.INSERT_ID											AS insertId,			          /* 등록자ID */
+		A.UPDATE_DT											AS updateDt,			          /* 수정일시 */
+		A.UPDATE_ID											AS updateId				          /* 수정자ID */
+	</sql>
+
+    <sql id="fragment">
+        FROM TA_IMAGE_FILE_PACKAGE_INFO A
+        <where>
+            <trim prefixOverrides="AND|OR">
+                <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(imageFilePackageIdSq)">
+                    AND A.IMAGE_FILE_PACKAGE_ID_SQ = #{imageFilePackageIdSq}
+                </if>
+                <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(imageFilePackageNm)">
+                    AND A.IMAGE_FILE_PACKAGE_NM LIKE CONCAT('%',#{imageFilePackageNm},'%')
+                </if>
+            </trim>
+        </where>
+    </sql>
+
+	<!-- 조회 -->
+    <select id="get" parameterType="ImageFilePackageInfoEntity" resultType="ImageFilePackageInfoEntity">
+        SELECT /* ImageFilePackageInfoMapper.xml, get */
+            <include refid="field"/>
+            <include refid="fragment"/>
+    </select>
+
+	<!-- 리스트 -->
+    <select id="getList" parameterType="ImageFilePackageInfoEntity" resultType="ImageFilePackageInfoEntity">
+    	<include refid="Common.PagingStart" />
+	        SELECT /* ImageFilePackageInfoMapper.xml, getList */
+	            <include refid="field"/>
+	            <include refid="fragment"/>
+			ORDER BY A.IMAGE_FILE_PACKAGE_ID_SQ DESC
+		<include refid="Common.PagingEnd" />
+    </select>
+
+	<!-- 전체 리스트 -->
+    <select id="getAllList" parameterType="ImageFilePackageInfoEntity" resultType="ImageFilePackageInfoEntity">
+        SELECT /* ImageFilePackageInfoMapper.xml, getAllList */
+            <include refid="field"/>
+            <include refid="fragment"/>
+		ORDER BY A.IMAGE_FILE_PACKAGE_ID_SQ DESC
+    </select>
+
+	<!-- 카운트 -->
+    <select id="count" parameterType="ImageFilePackageInfoEntity" resultType="Integer">
+        SELECT /* ImageFilePackageInfoMapper.xml, count */
+        		COUNT(1) AS CNT
+            <include refid="fragment"/>
+    </select>
+
+    <!-- Get Image File Package Sequence -->
+	<select id="getImageFilePackageSeq" parameterType="ImageFilePackageInfoEntity" resultType="String">
+		SELECT /* ImageFilePackageInfoMapper.xml, getImageFilePackageSeq */
+		       CONCAT('F', REPLACE(IFNULL(MAX(IMAGE_FILE_PACKAGE_ID_SQ), 100000000), 'F', '') + 1) AS imageFilePackageIdSq
+		  FROM TA_IMAGE_FILE_PACKAGE_ID_SQ
+	</select>
+
+	<!-- 등록 -->
+    <insert id="insert" parameterType="ImageFilePackageInfoEntity">
+		<selectKey resultType="String" keyProperty="imageFilePackageVerCode" order="BEFORE">
+			SELECT IFNULL(MAX(CAST(IMAGE_FILE_PACKAGE_VER_CODE AS UNSIGNED)) + 1, 1) AS imageFilePackageVerCode
+			  FROM TA_IMAGE_FILE_PACKAGE_INFO
+			 WHERE IMAGE_FILE_PACKAGE_ID_SQ = #{imageFilePackageIdSq}
+		</selectKey>
+        INSERT	/* ImageFilePackageInfoMapper.xml, insert */
+          INTO	TA_IMAGE_FILE_PACKAGE_INFO (
+		    IMAGE_FILE_PACKAGE_ID_SQ,     /* 이미지파일패키지ID일련번호*/
+		    IMAGE_FILE_PACKAGE_VER_CODE,  /* 이미지파일패키지버전코드  */
+		    IMAGE_FILE_PACKAGE_VER_NM,    /* 이미지파일패키지버전명    */
+		    IMAGE_FILE_PACKAGE_NM,        /* 이미지파일패키지명        */
+		    IMAGE_FILE_PACKAGE_PATH,      /* 이미지파일패키지경로      */
+		    IMAGE_FILE_PACKAGE_SIZE,      /* 이미지파일패키지크기      */
+		    IMAGE_FILE_PACKAGE_DESC,      /* 이미지파일패키지설명      */
+		    IMAGE_FILE_PACKAGE_REGIST_DT, /* 이미지파일등록상세일시    */
+          	INSERT_DT,                    /* 등록일시 */
+			INSERT_ID,                    /* 등록자ID */
+			UPDATE_DT,                    /* 수정일시 */
+			UPDATE_ID                     /* 수정자ID */
+        ) VALUES (
+			#{imageFilePackageIdSq},      /* 이미지파일패키지ID일련번호 */
+			#{imageFilePackageVerCode},   /* 이미지파일패키지버전코드 */
+			CONCAT('V',#{imageFilePackageVerCode}),     /* 이미지파일패키지버전명 */
+			#{imageFilePackageNm},        /* 이미지파일패키지명 */
+			#{imageFilePackagePath},      /* 이미지파일패키지경로 */
+			#{imageFilePackageSize},      /* 이미지파일패키지크기 */
+			#{imageFilePackageDesc},      /* 이미지파일패키지설명 */
+			DATE_FORMAT(NOW(), '%Y%m%d%H%i%s'),  /* 이미지파일등록상세일시 */
+			NOW(),                        /* 등록일시 */
+			#{loginIDInSession},          /* 등록자ID */
+			NOW(),                        /* 수정일시 */
+			#{loginIDInSession}           /* 수정자ID */
+        )
+    </insert>
+
+	<!-- 등록 -->
+    <insert id="insertImageFilePackageIdSq" parameterType="ImageFilePackageInfoEntity">
+        INSERT	/* ImageFilePackageInfoMapper.xml, insertImageFilePackageIdSq */
+          INTO	TA_IMAGE_FILE_PACKAGE_ID_SQ (
+		    IMAGE_FILE_PACKAGE_ID_SQ,     /* 이미지파일패키지ID일련번호*/
+		    IMAGE_FILE_PACKAGE_ID_SQ_CREATE_DT /* 이미지파일등록상세일시 */
+        ) VALUES (
+			#{imageFilePackageIdSq},      /* 이미지파일패키지ID일련번호 */
+			DATE_FORMAT(NOW(), '%Y%m%d%H%i%s')   /* 이미지파일등록상세일시 */
+        )
+    </insert>
+
+	<!-- 수정 -->
+    <update id="update" parameterType="ImageFilePackageInfoEntity">
+        UPDATE	/* ImageFilePackageInfoMapper.xml, update */
+				TA_IMAGE_FILE_PACKAGE_INFO
+		SET		UPDATE_DT					= NOW(),
+				UPDATE_ID					= #{loginIDInSession},
+   				<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(imageFilePackageVerCode)">
+					IMAGE_FILE_PACKAGE_VER_CODE = #{imageFilePackageVerCode},
+				</if>
+   				<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(imageFilePackageVerNm)">
+					IMAGE_FILE_PACKAGE_VER_NM = #{imageFilePackageVerNm},
+				</if>
+			    IMAGE_FILE_PACKAGE_NM       = #{imageFilePackageNm},
+			    IMAGE_FILE_PACKAGE_PATH     = #{imageFilePackagePath},
+			    IMAGE_FILE_PACKAGE_SIZE     = #{imageFilePackageSize},
+   				<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(imageFilePackageDesc)">
+					IMAGE_FILE_PACKAGE_DESC = #{imageFilePackageDesc}
+				</if>
+         WHERE IMAGE_FILE_PACKAGE_ID_SQ = #{imageFilePackageIdSq}
+    </update>
+</mapper>

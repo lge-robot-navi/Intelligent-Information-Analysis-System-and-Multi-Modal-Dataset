@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lge.crawling.admin.management.sensorDataInfo.mapper.SensorDataFileInfoMapper">
+
+	<sql id="field">
+		A.SD_FILE_SQ								     AS sensorDataFileSq,                   /* 센서데이터파일일련번호            */
+		A.SD_FILE_PACKAGE_ID_SQ                          AS sensorDataFilePackageIdSq,          /* 센서데이터파일패키지ID일련번호    */
+		A.SD_FILE_GROUP                                  AS sensorDataFileGroup,                /* 센서데이터파일그룹                */
+		A.SD_FILE_AGENT                                  AS sensorDataFileAgent,                /* 센서데이터에이전트명              */
+		A.SD_FILE_NM                                     AS sensorDataFileNm,                   /* 센서데이터파일명                  */
+		A.SD_FILE_PATH                                   AS sensorDataFilePath,                 /* 센서데이터파일경로                */
+		A.SD_FILE_SIZE                                   AS sensorDataFileSize,                 /* 센서데이터파일크기                */
+		A.SD_FILE_SCALE_X                                AS sensorDataFileScaleX,               /* 센서데이터파일크기_X              */
+		A.SD_FILE_SCALE_Y                                AS sensorDataFileScaleY,               /* 센서데이터파일크기_Y              */
+		A.SD_FILE_TYPE_CD                                AS sensorDataFileTypeCd,               /* 센서데이터파일타입구분_TA007      */
+		A.SD_FILE_CREATE_DT                              AS sensorDataFileCreateDt,             /* 센서데이터파일생성일시        	 */
+		A.SD_FILE_REGIST_DT                              AS sensorDataFileRegistDt,             /* 센서데이터파일등록일시        	 */
+		<!-- 
+		B.SD_FILE_PACKAGE_VER_CODE                       AS sensorDataFilePackageVerCode,       /* 센서데이터파일패키지버전코드  */
+		B.SD_FILE_PACKAGE_VER_NM                         AS sensorDataFilePackageVerNm,         /* 센서데이터파일패키지버전명    */
+		B.SD_FILE_PACKAGE_NM                             AS sensorDataFilePackageNm,            /* 센서데이터파일패키지명        */
+		B.SD_FILE_PACKAGE_PATH                           AS sensorDataFilePackagePath,          /* 센서데이터파일패키지경로      */
+		B.SD_FILE_PACKAGE_SIZE                           AS sensorDataFilePackageSize,          /* 센서데이터파일패키지크기      */
+		B.SD_FILE_PACKAGE_DESC                           AS sensorDataFilePackageDesc,          /* 센서데이터파일패키지설명      */
+		B.SD_FILE_PACKAGE_REGIST_DT                      AS sensorDataFilePackageRegistDt,      /* 센서데이터파일등록상세일시    */
+		 -->
+		A.INSERT_DT											AS insertDt,			          /* 등록일시 */
+		A.INSERT_ID											AS insertId,			          /* 등록자ID */
+		A.UPDATE_DT											AS updateDt,			          /* 수정일시 */
+		A.UPDATE_ID											AS updateId				          /* 수정자ID */
+	</sql>
+
+    <sql id="fragment">
+        FROM
+        	TA_SD_FILE_INFO A
+		<where>
+            <trim prefixOverrides="AND|OR">
+            	<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(startDt)">
+            		<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(endDt)">
+						AND A.SD_FILE_REGIST_DT BETWEEN RPAD(REPLACE(#{startDt},'-',''),14,'000000')
+						                   AND RPAD(REPLACE(#{endDt}, '-', ''), 14, '235959')
+					</if>
+				</if>
+				<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(cStartDt)">
+            		<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(cEndDt)">
+						AND A.SD_FILE_CREATE_DT BETWEEN RPAD(REPLACE(#{cStartDt},'-',''),14,'000000')
+						                   AND RPAD(REPLACE(#{cEndDt}, '-', ''), 14, '235959')
+					</if>
+				</if>
+                <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(sensorDataFileSq)">
+                    AND A.SD_FILE_SQ = #{sensorDataFileSq}
+                </if>
+                <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(sensorDataFileTypeCd)">
+                    AND A.SD_FILE_TYPE_CD = #{sensorDataFileTypeCd}
+                </if>
+                <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(sensorDataFileNm)">
+                    AND REPLACE(A.SD_FILE_NM,' ','') LIKE CONCAT('%',REPLACE(#{sensorDataFileNm},' ',''),'%')
+                </if>
+            </trim>
+        </where>
+    </sql>
+
+	<!-- 조회 -->
+    <select id="get" parameterType="SensorDataFileInfoEntity" resultType="SensorDataFileInfoEntity">
+        SELECT /* SensorDataFileInfoMapper.xml, get */
+            <include refid="field"/>
+            <include refid="fragment"/>
+    </select>
+
+	<!-- 리스트 -->
+    <select id="getList" parameterType="SensorDataFileInfoEntity" resultType="SensorDataFileInfoEntity">
+    	<include refid="Common.PagingStart" />
+	        SELECT /* SensorDataFileInfoMapper.xml, getList */
+	            <include refid="field"/>
+	            <include refid="fragment"/>
+			ORDER BY A.SD_FILE_SQ DESC
+		<include refid="Common.PagingEnd" />
+    </select>
+
+	<!-- 전체 리스트 -->
+    <select id="getAllList" parameterType="SensorDataFileInfoEntity" resultType="SensorDataFileInfoEntity">
+        SELECT /* SensorDataFileInfoMapper.xml, getAllList */
+            <include refid="field"/>
+            <include refid="fragment"/>
+		ORDER BY A.SD_FILE_SQ DESC
+    </select>
+
+	<!-- 카운트 -->
+    <select id="count" parameterType="SensorDataFileInfoEntity" resultType="Integer">
+        SELECT /* SensorDataFileInfoMapper.xml, count */
+        		COUNT(1) AS CNT
+            <include refid="fragment"/>
+    </select>
+
+	<!-- 등록 -->
+    <insert id="insert" parameterType="SensorDataFileInfoEntity" useGeneratedKeys="true" keyProperty="sensorDataFileSq">
+        INSERT	/* SensorDataFileInfoMapper.xml, insert */
+          INTO	TA_SD_FILE_INFO (
+		    SD_FILE_SQ,			      /* 센서데이터파일일련번호            */
+		    SD_FILE_PACKAGE_ID_SQ,     /* 센서데이터파일패키지ID일련번호    */
+		    SD_FILE_GROUP,             /* 센서데이터파일그룹                */
+		    SD_FILE_AGENT,             /* 센서데이터에이전트명              */
+		    SD_FILE_NM,                /* 센서데이터파일명                  */
+		    SD_FILE_PATH,              /* 센서데이터파일경로                */
+		    SD_FILE_SIZE,              /* 센서데이터파일크기                */
+		    SD_FILE_SCALE_X,           /* 센서데이터파일크기_X              */
+		    SD_FILE_SCALE_Y,           /* 센서데이터파일크기_Y              */
+		    SD_FILE_TYPE_CD,           /* 센서데이터파일타입구분_TA007      */
+		    SD_FILE_CREATE_DT,         /* 센서데이터파일생성일시        	*/
+		    SD_FILE_REGIST_DT,         /* 센서데이터파일등록일시        	*/
+			INSERT_DT,                    /* 등록일시 */
+			INSERT_ID,                    /* 등록자ID */
+			UPDATE_DT,                    /* 수정일시 */
+			UPDATE_ID                     /* 수정자ID */
+        ) VALUES (
+			#{sensorDataFileSq},               /* 센서데이터파일일련번호            */
+			#{sensorDataFilePackageIdSq},      /* 센서데이터파일패키지ID일련번호    */
+			#{sensorDataFileGroup},            /* 센서데이터파일그룹                */
+			#{sensorDataFileAgent},            /* 센서데이터에이전트명              */
+			#{sensorDataFileNm},               /* 센서데이터파일명                  */
+			#{sensorDataFilePath},             /* 센서데이터파일경로                */
+			#{sensorDataFileSize},             /* 센서데이터파일크기                */
+			#{sensorDataFileScaleX},           /* 센서데이터파일크기_X              */
+			#{sensorDataFileScaleY},           /* 센서데이터파일크기_Y              */
+			#{sensorDataFileTypeCd},           /* 센서데이터파일타입구분_TA007      */
+			#{sensorDataFileCreateDt},         /* 센서데이터파일생성일시        	*/
+			#{sensorDataFileRegistDt},         /* 센서데이터파일등록일시        	*/
+			NOW(),                        /* 등록일시 */
+			#{loginIDInSession},          /* 등록자ID */
+			NOW(),                        /* 수정일시 */
+			#{loginIDInSession}           /* 수정자ID */
+        )
+    </insert>
+
+	<!-- 수정 -->
+    <update id="update" parameterType="SensorDataFileInfoEntity">
+        UPDATE	/* SensorDataFileInfoMapper.xml, update */
+				TA_SD_FILE_INFO
+		SET		UPDATE_DT				 = NOW(),
+				UPDATE_ID				 = #{loginIDInSession},
+				SD_FILE_NM               = #{sensorDataFileNm},
+				SD_FILE_PATH             = #{sensorDataFilePath},
+				SD_FILE_SIZE             = #{sensorDataFileSize},
+				SD_FILE_SCALE_X          = #{sensorDataFileScaleX},
+				SD_FILE_SCALE_Y          = #{sensorDataFileScaleY},
+				SD_FILE_TYPE_CD          = #{sensorDataFileTypeCd}
+         WHERE SD_FILE_SQ = #{sensorDataFileSq}
+    </update>
+
+	<!-- 삭제 -->
+    <delete id="delete" parameterType="SensorDataFileInfoEntity">
+        DELETE	/* SensorDataFileInfoMapper.xml, delete */
+		FROM TA_SD_FILE_INFO
+        WHERE SD_FILE_SQ = #{sensorDataFileSq}
+    </delete>
+    
+    
+    <select id="getFileTypeList" parameterType="SensorDataTaggingEntity" resultType="SensorDataFileInfoEntity">
+        SELECT 
+        <include refid="field"/>
+        FROM TA_SD_FILE_INFO A
+        WHERE A.sd_file_package_id_sq = #{sensorDataFilePackageIdSq}
+        	AND A.sd_file_group = #{sensorDataFileGroup}
+        	AND A.sd_file_type_cd IN ('100','200','300','400','500')
+		ORDER BY SD_FILE_TYPE_CD
+    </select>
+</mapper>
