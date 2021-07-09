@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lge.crawling.admin.management.system.mapper.AdminGroupMapper">
+
+	<sql id="field">
+		G.ADMIN_GRP_ID		AS adminGrpId,	/*  관리자그룹ID */
+		G.ADMIN_GRP_NM		AS adminGrpNm,	/*  관리자그룹명 */
+		G.ADMIN_GRP_DS		AS adminGrpDs,	/*  관리자그룹설명 */
+		G.USE_YN			AS useYn,		/*  사용여부 */
+		G.INSERT_DT			AS insertDt,	/*  등록일시 */
+		G.INSERT_ID			AS insertId,	/*  등록자ID */
+		G.UPDATE_DT			AS updateDt,	/*  수정일시 */
+		G.UPDATE_ID			AS updateId		/*  수정자ID */
+	</sql>
+
+	<sql id="fragment">
+		FROM TA_ADMIN_GRP G
+		<where>
+			<trim prefixOverrides="AND|OR">
+				<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(adminGrpId)">
+					AND G.ADMIN_GRP_ID = #{adminGrpId}
+				</if>
+				<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(adminGrpNm)">
+					AND G.ADMIN_GRP_NM LIKE CONCAT('%',#{adminGrpNm},'%')
+				</if>
+				<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(useYn)">
+					AND G.USE_YN = #{useYn}
+				</if>
+			</trim>
+		</where>
+	</sql>
+
+	<select id="get" parameterType="AdminGroupEntity" resultType="AdminGroupEntity">
+	   SELECT /* AdminGroupMapper.xml, get */
+          <include refid="field"/>
+		  <include refid="fragment"/>
+	</select>
+
+	<select id="getList" parameterType="AdminGroupEntity" resultType="AdminGroupEntity">
+	   <include refid="Common.PagingStart" />
+		   SELECT /* AdminGroupMapper.xml, getList */
+	          <include refid="field"/>
+			  <include refid="fragment"/>
+			ORDER BY G.ADMIN_GRP_ID
+		<include refid="Common.PagingEnd" />
+	</select>
+
+	<select id="getAllList" parameterType="AdminGroupEntity" resultType="AdminGroupEntity">
+	   SELECT /* AdminGroupMapper.xml, getAllList */
+          <include refid="field"/>
+		  <include refid="fragment"/>
+		ORDER BY G.ADMIN_GRP_ID
+	</select>
+
+	<select id="count" parameterType="AdminGroupEntity" resultType="Integer">
+		SELECT  /* AdminGroupMapper.xml, count */
+                COUNT(1) AS CNT
+            <include refid="fragment"/>
+	</select>
+
+	<insert id="insert" parameterType="AdminGroupEntity">
+		<selectKey keyProperty="adminGrpId" resultType="String" order="BEFORE">
+			SELECT IFNULL(MAX(ADMIN_GRP_ID), 0) + 1 AS adminGrpId FROM TA_ADMIN_GRP
+		</selectKey>
+		INSERT /* AdminGroupMapper.xml, insert */
+		INTO TA_ADMIN_GRP (
+			ADMIN_GRP_ID,
+			INSERT_DT, INSERT_ID, UPDATE_DT, UPDATE_ID,
+			ADMIN_GRP_NM, ADMIN_GRP_DS, USE_YN
+		) VALUES (
+			#{adminGrpId},
+			NOW(), #{loginIDInSession}, NOW(), #{loginIDInSession},
+			#{adminGrpNm}, #{adminGrpDs}, #{useYn}
+		)
+	</insert>
+
+	<update id="update" parameterType="AdminGroupEntity">
+		UPDATE 	/* AdminGroupMapper.xml, update */
+		        TA_ADMIN_GRP
+		   SET 	ADMIN_GRP_NM		= #{adminGrpNm},
+				ADMIN_GRP_DS		= #{adminGrpDs},
+				USE_YN				= #{useYn},
+				UPDATE_DT			= NOW(),
+				UPDATE_ID			= #{loginIDInSession}
+		 WHERE	ADMIN_GRP_ID		= #{adminGrpId}
+	</update>
+</mapper>

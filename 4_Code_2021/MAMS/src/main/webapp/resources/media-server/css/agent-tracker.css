@@ -1,0 +1,18 @@
+#out {
+  width: 757px;
+  height: 100%;
+  background: #AFE1FF;
+  border: 1px solid #204a87;
+  position: relative;
+}
+
+.agent {
+  width: 20px;
+  height: 20px;
+  background-color: red;
+  border-radius: 20%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  transition: transform 8s;
+}

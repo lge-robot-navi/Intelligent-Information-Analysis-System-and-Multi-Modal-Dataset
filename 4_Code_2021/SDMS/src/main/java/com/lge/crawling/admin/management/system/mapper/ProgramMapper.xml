@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lge.crawling.admin.management.system.mapper.ProgramMapper">
+
+    <sql id="field">
+    	P.PGM_ID										AS pgmId,
+        P.PGM_NM										AS pgmNm,
+        P.URL_DS										AS urlDs,
+        P.ICON_DS										AS iconDs,
+        P.RANK_NO										AS rankNo,
+        P.PGM_TP										AS pgmTp,
+        P.AUTH_SEL										AS ynSel,
+        P.AUTH_INS										AS ynIns,
+        P.AUTH_UPD										AS ynUpd,
+        P.AUTH_DEL										AS ynDel,
+        P.USE_YN										AS useYn,
+        P.UPPER_PGM_ID									AS upperPgmId
+    </sql>
+
+    <sql id="fragment">
+    	FROM TA_PROGRAM P
+    	<where>
+    		<trim prefixOverrides="AND|OR">
+	            <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(upperPgmId)">
+	                AND UPPER_PGM_ID = #{upperPgmId}
+	            </if>
+	            <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(pgmId)">
+	                AND PGM_ID = #{pgmId}
+	            </if>
+    		</trim>
+    	</where>
+    </sql>
+
+	<select id="get" parameterType="ProgramEntity" resultType="ProgramEntity">
+		SELECT /* ProgramMapper.xml, get */
+			<include refid="field"/>
+			<include refid="fragment"/>
+    </select>
+
+	<select id="getList" parameterType="ProgramEntity" resultType="ProgramEntity">
+	    <include refid="Common.PagingStart" />
+			SELECT /* ProgramMapper.xml, getList */
+				<include refid="field"/>
+				<include refid="fragment"/>
+			ORDER BY RANK_NO
+        <include refid="Common.PagingEnd" />
+    </select>
+
+	<select id="getAllList" parameterType="ProgramEntity" resultType="ProgramEntity">
+		SELECT /* ProgramMapper.xml, getAllList */
+			<include refid="field"/>
+			<include refid="fragment"/>
+		ORDER BY RANK_NO
+    </select>
+
+	<select id="count" parameterType="ProgramEntity" resultType="int">
+        SELECT /* ProgramMapper.xml, count */
+               COUNT(1) AS CNT
+               <include refid="fragment"/>
+    </select>
+
+    <insert id="insert" parameterType="ProgramEntity">
+        <selectKey keyProperty="pgmId" resultType="String" order="BEFORE">
+            SELECT IFNULL(MAX(PGM_ID), 0) + 1 AS SEQ FROM TA_PROGRAM
+        </selectKey>
+        INSERT /* ProgramMapper.xml, insert */
+          INTO TA_PROGRAM (
+            PGM_ID, PGM_NM, URL_DS, ICON_DS,
+            INSERT_ID, UPDATE_ID, INSERT_DT, UPDATE_DT,
+            AUTH_SEL,
+            AUTH_INS,
+            AUTH_UPD,
+            AUTH_DEL,
+            RANK_NO, PGM_TP, USE_YN, UPPER_PGM_ID
+        ) VALUES (
+            #{pgmId}, #{pgmNm}, #{urlDs}, #{iconDs},
+            #{loginIDInSession}, #{loginIDInSession}, NOW(), NOW(),
+            IFNULL(#{ynSel}, 'N'),
+            IFNULL(#{ynIns}, 'N'),
+            IFNULL(#{ynUpd}, 'N'),
+            IFNULL(#{ynDel}, 'N'),
+            #{rankNo}, #{pgmTp}, #{useYn}, #{upperPgmId}
+        )
+    </insert>
+
+    <update id="update" parameterType="ProgramEntity">
+        UPDATE /* ProgramMapper.xml, update */
+               TA_PROGRAM
+           SET UPDATE_ID    = #{loginIDInSession},
+               UPDATE_DT    = NOW(),
+               PGM_NM       = #{pgmNm},
+               URL_DS		= #{urlDs},
+               ICON_DS		= #{iconDs},
+               AUTH_SEL     = IFNULL(#{ynSel}, 'N'),
+               AUTH_INS     = IFNULL(#{ynIns}, 'N'),
+               AUTH_UPD     = IFNULL(#{ynUpd}, 'N'),
+               AUTH_DEL     = IFNULL(#{ynDel}, 'N'),
+               RANK_NO      = #{rankNo},
+               PGM_TP       = #{pgmTp},
+               USE_YN       = #{useYn},
+               UPPER_PGM_ID = #{upperPgmId}
+         WHERE PGM_ID       = #{pgmId}
+    </update>
+
+    <!-- 프로그램 정렬순서 변경 -->
+    <update id="updateRank" parameterType="ProgramEntity">
+    	UPDATE /* ProgramMapper.xml, updateRank */
+    	       TA_PROGRAM
+    	   SET UPDATE_ID    = #{loginIDInSession},
+               UPDATE_DT    = NOW(),
+               <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(upperPgmId)">
+               		UPPER_PGM_ID = #{upperPgmId},
+               </if>
+               <if test="upperPgmId == null">
+               		UPPER_PGM_ID = '1000',
+               </if>
+               RANK_NO      = #{rankNo}
+         WHERE PGM_ID       = #{pgmId}
+    </update>
+
+    <!-- Programs - 프로그램 목록 조회 (ResultMap 을 이용한 계층형 쿼리) -->
+    <resultMap type="ProgramEntity" id="programsResult">
+        <result property="pgmId"			column="pgmId" />
+        <result property="pgmNm"			column="pgmNm" />
+        <result property="rankNo"			column="rankNo" />
+        <result property="useYn"			column="useYn" />
+        <collection property="subPrograms"	column="{upperPgmId=pgmId}" select="com.lge.crawling.admin.management.system.mapper.ProgramMapper.getAllList" />
+    </resultMap>
+
+    <select id="getPrograms" resultMap="programsResult">
+        SELECT /* ProgramMapper.xml, getPrograms */
+               PGM_ID			AS pgmId,
+               PGM_NM			AS pgmNm,
+               RANK_NO			AS rankNo,
+               PGM_TP		    AS pgmTp,
+               USE_YN			AS useYn
+          FROM TA_PROGRAM
+         WHERE UPPER_PGM_ID = '1000'
+         ORDER BY RANK_NO
+    </select>
+    <!-- // Programs -->
+
+	<!-- Main Menu - 메인 프로그램 리스트 조회 -->
+    <select id="getMainList" parameterType="ProgramEntity" resultType="ProgramEntity">
+        SELECT /* programMapper.xml, getMainList */
+    	       <include refid="field"/>
+		  FROM TA_PROGRAM
+		 WHERE UPPER_PGM_ID = '1000'
+		 ORDER BY RANK_NO
+    </select>
+    <!-- // Main Menu -->
+
+    <!-- Programs List -->
+    <sql id="program-list-field">
+    	A.PGM_ID		AS upperPgmId,
+        A.PGM_NM		AS upperPgmNm,
+        B.PGM_ID		AS pgmId,
+        B.PGM_NM		AS pgmNm,
+        B.AUTH_SEL		AS authSel,
+        B.AUTH_INS		AS authIns,
+        B.AUTH_UPD		AS authUpd,
+        B.AUTH_DEL		AS authDel,
+        B.AUTH_SEL		AS ynSel,
+        B.AUTH_INS		AS ynIns,
+        B.AUTH_UPD		AS ynUpd,
+        B.AUTH_DEL		AS ynDel
+    </sql>
+
+    <sql id="program-list-fragment">
+    	  FROM TA_PROGRAM A, TA_PROGRAM B
+    	 WHERE A.PGM_ID 		= B.UPPER_PGM_ID
+    	   AND A.UPPER_PGM_ID   = '1000'
+    	   AND A.USE_YN 		= 'Y'
+    	   AND B.USE_YN 		= 'Y'
+    </sql>
+
+    <!-- 프로그램 목록 조회 (한번에 리스트 전체 호출) -->
+    <select id="getProgramList" parameterType="ProgramEntity" resultType="ProgramEntity">
+        SELECT /* ProgramMapper.xml, getProgramList */
+            <include refid="program-list-field"/>
+    	    <include refid="program-list-fragment"/>
+    	ORDER BY A.RANK_NO, B.RANK_NO
+    </select>
+
+    <!-- 전체 프로그램 리스트 -->
+    <!-- <select id="getListTotal" parameterType="ProgramEntity" resultType="ProgramEntity">
+        SELECT /* ProgramMapper.xml, getListTotal */
+               P.PGM_ID                                         AS pgmId,
+               P.PGM_NM                                         AS pgmNm,
+               P.URL_DS                                         AS urlDs,
+               P.ICON_DS										AS iconDs,
+               P.RANK_NO                                        AS rankNo,
+               P.PGM_TP                                         AS pgmTp,
+               P.AUTH_SEL                                       AS ynSel,
+               P.AUTH_INS                                       AS ynIns,
+               P.AUTH_UPD                                       AS ynUpd,
+               P.AUTH_DEL                                       AS ynDel,
+               P.USE_YN                                         AS useYn,
+               P.UPPER_PGM_ID                                   AS upperPgmId,
+               LEVEL                                            AS levelNo,
+               (SELECT COUNT(1) AS CNT FROM TA_PROGRAM X
+                   WHERE X.UPPER_PGM_ID = P.PGM_ID)               AS childCnt,
+               CONNECT_BY_ISLEAF                                AS isLeaf,
+               SUBSTR(SYS_CONNECT_BY_PATH(P.PGM_ID, ' > '), 4)  AS fullPathId,
+               SUBSTR(SYS_CONNECT_BY_PATH(P.PGM_NM, ' > '), 4)  AS fullPathNm
+          FROM TA_PROGRAM P
+		<where>
+			<trim prefixOverrides="AND|OR">
+	            <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(upperPgmId)">
+	                AND UPPER_PGM_ID = #{upperPgmId}
+	            </if>
+	            <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(pgmId)">
+	                AND PGM_ID = #{pgmId}
+	            </if>
+	            <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(useYn)">
+	            	AND USE_YN = #{useYn}
+	            </if>
+			</trim>
+		</where>
+		
+         START WITH P.UPPER_PGM_ID IS NULL
+           /* AND LEVEL &lt;= 3 */
+       CONNECT BY NOCYCLE PRIOR P.PGM_ID = P.UPPER_PGM_ID
+         ORDER SIBLINGS BY P.RANK_NO
+         
+    </select> -->
+    <!-- // Programs List -->
+</mapper>

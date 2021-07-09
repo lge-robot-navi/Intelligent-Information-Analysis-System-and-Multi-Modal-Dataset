@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lge.mams.management.system.mapper.RecordingMapper">
+
+	<sql id="field">
+		C.REC_FILE_SQ		AS recFileSq,		/* seq */
+		C.REC_AGENT_ID	    AS recAgentId,		/* agent */
+		C.REC_FILE_NAME		AS recFileName,		/* 파일명 */
+		C.REC_FILE_PATH     AS recFilePath,		/* 경로 */
+		C.REC_REGIST_DT     AS recRegistDt,		/* 등록일자 */
+		DATE_FORMAT(C.REC_REGIST_DT,'%Y-%m-%d %H:%i:%s')     AS printRecRegistDt		/* 등록일자 */
+	</sql>
+
+	<sql id="fragment">
+		FROM TA_RECORDING_HIST C
+		<where>
+			<trim prefixOverrides="AND|OR">
+				<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(recAgentId)">
+					AND C.REC_AGENT_ID = #{recAgentId}
+				</if>
+				<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(startDt)">
+            		<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(endDt)">
+						AND C.REC_REGIST_DT BETWEEN RPAD(REPLACE(#{startDt},'-',''),14,'000000')
+						                   AND RPAD(REPLACE(#{endDt}, '-', ''), 14, '235959')
+					</if>
+				</if>
+			</trim>
+		</where>
+	</sql>
+
+    <select id="get" parameterType="RecordingEntity" resultType="RecordingEntity">
+        SELECT  /* RecordingMapper.xml, get */
+			<include refid="field"/>
+			<include refid="fragment"/>
+	</select>
+
+    <select id="getList" parameterType="RecordingEntity" resultType="RecordingEntity">
+        <include refid="Common.PagingStart" />
+	        SELECT  /* RecordingMapper.xml, getList */
+				<include refid="field"/>
+				<include refid="fragment"/>
+			ORDER BY C.REC_FILE_SQ DESC
+        <include refid="Common.PagingEnd" />
+	</select>
+
+    <select id="getAllList" parameterType="RecordingEntity" resultType="RecordingEntity">
+        SELECT  /* RecordingMapper.xml, getAllList */
+			<include refid="field"/>
+			<include refid="fragment"/>
+		ORDER BY C.REC_FILE_SQ
+	</select>
+
+	<select id="count" parameterType="RecordingEntity" resultType="Integer">
+        SELECT  /* RecordingMapper.xml, count*/
+                COUNT(1) AS CNT
+		  <include refid="fragment"/>
+	</select>
+
+	<insert id="insert" parameterType="RecordingEntity">
+		INSERT  /* RecordingMapper.xml, insert */
+		INTO    TA_RECORDING_HIST (
+		    REC_AGENT_ID, REC_FILE_NAME, REC_FILE_PATH, REC_REGIST_DT
+		) VALUES (
+			#{recAgentId}, #{recFileName}, #{recFilePath}, NOW()
+		)
+	</insert>
+
+	<update id="update" parameterType="RecordingEntity">
+		UPDATE	/* RecordingMapper.xml, update */
+		        TA_RECORDING_HIST
+		   SET	REC_AGENT_ID		= #{recAgentId},
+				REC_FILE_NAME		= #{recFileName},
+				REC_FILE_PATH		= #{recFilePath}
+		WHERE REC_FILE_SQ			= #{recFileSq}
+	</update>
+</mapper>

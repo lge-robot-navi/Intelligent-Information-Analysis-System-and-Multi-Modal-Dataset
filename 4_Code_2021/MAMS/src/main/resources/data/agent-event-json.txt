@@ -1,0 +1,16 @@
+
+{
+	header:{
+		robotId:3,
+		timestamp:"20190101-101010.333",
+		msgId:"agent.event"
+	}, 
+	data:{
+		deviceId:100,
+		abnormalId:20,
+		eventTimestamp:"20190101-101010.333",
+		eventPosX:100,
+		eventPosY:200
+	}
+}
+	

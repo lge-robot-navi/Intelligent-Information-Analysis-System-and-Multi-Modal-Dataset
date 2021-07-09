@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lge.crawling.admin.management.statistics.mapper.ImageFileMapper">
+
+	<sql id="field">
+		A.IMAGE_FILE_SQ                                       AS imageFileSq,                /* 이미지파일일련번호          */
+		A.IMAGE_FILE_PACKAGE_ID_SQ                            AS imageFilePackageIdSq,       /* 이미지파일패키지ID일련번호  */
+		A.IMAGE_FILE_NM                                       AS imageFileNm,                /* 이미지파일명                */
+		A.IMAGE_FILE_PATH                                     AS imageFilePath,              /* 이미지파일경로              */
+		A.IMAGE_FILE_SIZE                                     AS imageFileSize,              /* 이미지파일크기              */
+		A.IMAGE_FILE_SCALE_X                                  AS imageFileScaleX,            /* 이미지파일크기_X            */
+		A.IMAGE_FILE_SCALE_Y                                  AS imageFileScaleY,            /* 이미지파일크기_Y            */
+		A.IMAGE_FILE_TYPE_CD                                  AS imageFileTypeCd,            /* 이미지파일타입구분_TA004    */
+		A.IMAGE_FILE_DOWNLOAD_PATH_CD                         AS imageFileDownloadPathCd,    /* 이미지파일다운경로구분_TA005*/
+		A.IMAGE_FILE_REGIST_DT                                AS imageFileRegistDt,          /* 이미지파일등록상세일시      */
+		A.INSERT_DT											  AS insertDt,					 /* 등록일시 */
+		A.INSERT_ID											  AS insertId,					 /* 등록자ID */
+		A.UPDATE_DT											  AS updateDt,					 /* 수정일시 */
+		A.UPDATE_ID											  AS updateId					 /* 수정자ID */
+	</sql>
+
+    <sql id="fragment">
+        FROM TA_IMAGE_FILE_INFO A
+        <where>
+            <trim prefixOverrides="AND|OR">
+	        	<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(startDt)">
+            		<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(endDt)">
+						AND A.IMAGE_FILE_REGIST_DT BETWEEN RPAD(REPLACE(#{startDt},'-',''),14,'000000')
+						                   AND RPAD(REPLACE(#{endDt}, '-', ''), 14, '235959')
+					</if>
+				</if>
+                <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(imageFileSq)">
+                    AND A.IMAGE_FILE_SQ = #{imageFileSq}
+                </if>
+                <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(imageFileDownloadPathCd)">
+                    AND A.IMAGE_FILE_DOWNLOAD_PATH_CD = #{imageFileDownloadPathCd}
+                </if>
+            </trim>
+        </where>
+    </sql>
+
+	<!-- 조회 -->
+    <select id="get" parameterType="ImageFileEntity" resultType="ImageFileEntity">
+        SELECT /* ImageFileMapper.xml, get */
+            <include refid="field"/>
+            <include refid="fragment"/>
+    </select>
+
+	<!-- 리스트 -->
+    <select id="getList" parameterType="ImageFileEntity" resultType="ImageFileEntity">
+    	<include refid="Common.PagingStart" />
+	        SELECT /* ImageFileMapper.xml, getList */
+	            <include refid="field"/>
+	            <include refid="fragment"/>
+			ORDER BY A.IMAGE_FILE_SQ DESC
+		<include refid="Common.PagingEnd" />
+    </select>
+
+	<!-- 전체 리스트 -->
+    <select id="getAllList" parameterType="ImageFileEntity" resultType="ImageFileEntity">
+        SELECT /* ImageFileMapper.xml, getAllList */
+            <include refid="field"/>
+            <include refid="fragment"/>
+		ORDER BY A.IMAGE_FILE_SQ DESC
+    </select>
+
+	<!-- 카운트 -->
+    <select id="count" parameterType="ImageFileEntity" resultType="Integer">
+        SELECT /* ImageFileMapper.xml, count */
+        		COUNT(1) AS CNT
+            <include refid="fragment"/>
+    </select>
+</mapper>

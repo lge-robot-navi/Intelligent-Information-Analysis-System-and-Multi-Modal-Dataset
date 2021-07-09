@@ -1,0 +1,4 @@
+@charset "utf-8";
+
+/* Common Style */
+.png24 {tmp:expression(setPng24(this));}

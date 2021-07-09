@@ -1,0 +1,290 @@
+/*
+* (C) Copyright 2014 Kurento (http://kurento.org/)
+*
+* All rights reserved. This program and the accompanying materials
+* are made available under the terms of the GNU Lesser General Public License
+* (LGPL) version 2.1 which accompanies this distribution, and is available at
+* http://www.gnu.org/licenses/lgpl-2.1.html
+*
+* This library is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+* Lesser General Public License for more details.
+*
+*/
+var AGENT_NUM = 1;
+var isStarted = true;
+function getopts(args, opts)
+{
+  var result = opts.default || {};
+  args.replace(
+      new RegExp("([^?=&]+)(=([^&]*))?", "g"),
+      function($0, $1, $2, $3) { result[$1] = $3; });
+
+  return result;
+};
+
+var args = getopts(location.search,
+{
+
+  default:
+  {
+    ws_uri: 'ws://' + location.hostname + ':8888/kurento',
+    ice_servers: undefined
+  }
+});
+
+if (args.ice_servers) {
+  console.log("Use ICE servers: " + args.ice_servers);
+  kurentoUtils.WebRtcPeer.prototype.server.iceServers = JSON.parse(args.ice_servers);
+} else {
+  console.log("Use freeice")
+}
+
+
+window.addEventListener('load', function(){
+  console = new Console('console', console);
+
+	// var address = document.getElementById('address');
+  var videoOutput = new Array();
+  var address = new Array();
+  var pipeline = new Array();
+  var webRtcPeer = new Array();
+  var options = new Array();
+
+  for(var i=1; i<AGENT_NUM+1; i++) {
+    videoOutput[i] = document.getElementById('videoOutput'+i);
+
+	  address[i] = 'rtsp://ocube.iptime.org:1000' + i + '/unicast';
+    (function(m) {
+      videoOutput[m].addEventListener('click', function() {
+        console.log("videoOutput[i].addEventListener : " + m);
+        startSoloView(m);
+      });
+    })(i);
+
+    console.log("address " + address[i] + "  " + videoOutput[i].id);
+   }
+
+
+  startButton = document.getElementById('start');
+  startButton.addEventListener('click', start);
+
+  stopButton = document.getElementById('stop');
+  stopButton.addEventListener('click', stop);
+
+
+  stopSolo = document.getElementsByClassName("close")[0];
+  stopSolo.addEventListener('click', stopSoloView);
+
+  function startSoloView(idx) {
+
+    console.log("startSolo : " + idx);
+    if(!isStarted) {
+      return;
+    }
+    videoOutput[0] = document.getElementById('videoOutput0');
+    address[0] = 'rtsp://ocube.iptime.org:1000' + idx + '/unicast';
+
+    showSpinner(videoOutput[0]);
+    options[0] = {
+      remoteVideo : videoOutput[0]
+    };
+    webRtcPeer[0] = kurentoUtils.WebRtcPeer.WebRtcPeerRecvonly(options[0],
+    function(error){
+        if(error){
+          return console.error(error);
+        }
+        webRtcPeer[0].generateOffer(onOffer, 0);
+        webRtcPeer[0].peerConnection.addEventListener('iceconnectionstatechange', function(event){
+        if(webRtcPeer[0] && webRtcPeer[0].peerConnection){
+          console.log("oniceconnectionstatechange(0) -> " + webRtcPeer[0].peerConnection.iceConnectionState);
+          console.log("icegatheringstate(0) -> " + webRtcPeer[0].peerConnection.iceGatheringState);
+        }
+      });
+    });
+  }
+
+  function stopSoloView() {
+    console.log("stopSoloView");
+    // address.disabled = false;
+    for(var i=1; i<AGENT_NUM+1; i++) {
+      if (webRtcPeer[0]) {
+        webRtcPeer[0].dispose();
+        webRtcPeer[0] = null;
+      }
+      if(pipeline[0]){
+        pipeline[0].release();
+        pipeline[0] = null;
+      }
+      hideSpinner(videoOutput[0]);
+    }
+  }
+
+  function start() {
+  	// if(!address[0]){
+  	//   window.alert("You must set the video source URL first");
+  	//   return;
+  	// }
+  	//address.disabled = true;
+    isStarted = true;
+
+    for(var i=1; i<AGENT_NUM+1; i++) {
+  	   showSpinner(videoOutput[i]);
+
+       options[i] = {
+         remoteVideo : videoOutput[i]
+       };
+
+       webRtcPeer[i] = kurentoUtils.WebRtcPeer.WebRtcPeerRecvonly(options[i],
+         function(error){
+           if(error){
+             return console.error(error);
+           }
+       });
+       //todo: check position about below code.
+       webRtcPeer[i].generateOffer(onOffer, i);
+       webRtcPeer[i].peerConnection.addEventListener('iceconnectionstatechange', function(event){
+         if(webRtcPeer[i] && webRtcPeer[i].peerConnection){
+           console.log("oniceconnectionstatechange(i" + ") -> " + webRtcPeer[i].peerConnection.iceConnectionState);
+           console.log("icegatheringstate(i" + ") -> " + webRtcPeer[i].peerConnection.iceGatheringState);
+         }
+       });
+     }
+  }
+
+
+  function onOffer(error, sdpOffer, func, i){
+    if(error) return onError(error);
+
+  	kurentoClient(args.ws_uri, function(error, client) {
+  		if(error) return onError(error);
+
+  		client.create("MediaPipeline", function(error, p) {
+  			if(error) return onError(error);
+
+  			pipeline[i] = p;
+
+  			pipeline[i].create("PlayerEndpoint", {uri: address[i]}, function(error, player){
+    			if(error) return onError(error);
+
+          var elements =
+          [
+            {type: 'RecorderEndpoint', params: {uri : 'file:///home/lgic/recording' + i + '.webm'}},
+            {type: 'WebRtcEndpoint', params: {uri : 'rtsp://ocube.iptime.org:10001/unicast'}}
+          ]
+
+    			pipeline[i].create(elements, function(error, elements){
+      			if(error) return onError(error);
+
+            var recorder = elements[0]
+            var webRtc   = elements[1]
+
+            setIceCandidateCallbacks(webRtc, webRtcPeer[i], onError);
+
+      			webRtc.processOffer(sdpOffer, function(error, sdpAnswer){
+      				if(error) return onError(error);
+
+              webRtc.gatherCandidates(onError);
+      				webRtcPeer[i].processAnswer(sdpAnswer);
+      			});
+
+      			player.connect(webRtc, function(error){
+      				if(error) return onError(error);
+
+      				console.log("mjchoi 00 PlayerEndpoint-->WebRtcEndpoint connection established");
+
+      				player.play(function(error){
+      				  if(error) return onError(error);
+
+      				  console.log("Player playing ... index : " + i);
+              });
+            });
+
+            webRtc.connect(recorder, function(error) {
+              console.log("mjchoi client.connect");
+              if(error) return onError(error);
+
+              console.log("mjchoi 00 RecorderEndpoint-->WebRtcEndpoint connection established");
+
+              recorder.record(function(error){
+                if(error) return onError(error);
+
+                console.log("recorder ... index : " + i);
+                stopButton.addEventListener("click", function(event){
+                  console.log("stop record ... index : " + i);
+                  recorder.stop();
+                  console.log("22 stop record ... index : " + i);
+                })
+              });
+            });
+
+          });
+        });
+      });
+    });
+  }
+
+  function stop() {
+    console.log("stop");
+    isStarted = false;
+    // address.disabled = false;
+    for(var i=1; i<AGENT_NUM+1; i++) {
+      if (webRtcPeer[i]) {
+        webRtcPeer[i].dispose();
+        webRtcPeer[i] = null;
+      }
+      if(pipeline[i]){
+        pipeline[i].release();
+        pipeline[i] = null;
+      }
+      hideSpinner(videoOutput[i]);
+    }
+  }
+});
+
+function setIceCandidateCallbacks(webRtcEndpoint, webRtcPeer, onError){
+  webRtcPeer.on('icecandidate', function(candidate){
+    console.log("Local icecandidate " + JSON.stringify(candidate));
+
+    candidate = kurentoClient.register.complexTypes.IceCandidate(candidate);
+
+    webRtcEndpoint.addIceCandidate(candidate, onError);
+
+  });
+  webRtcEndpoint.on('OnIceCandidate', function(event){
+    var candidate = event.candidate;
+
+    console.log("Remote icecandidate " + JSON.stringify(candidate));
+
+    webRtcPeer.addIceCandidate(candidate, onError);
+  });
+}
+
+function onError(error) {
+  if(error)
+  {
+    console.error(error);
+    stop();
+  }
+}
+
+function showSpinner() {
+		arguments[0].poster = 'img/transparent-1px.png';
+		arguments[0].style.background = "center transparent url('img/spinner.gif') no-repeat";
+
+}
+
+function hideSpinner() {
+		arguments[0].src = '';
+		arguments[0].poster = 'img/disconnect.png';
+		arguments[0].style.background = '';
+}
+
+/**
+ * Lightbox utility (to display media pipeline image in a modal dialog)
+ */
+$(document).delegate('*[data-toggle="lightbox"]', 'click', function(event) {
+	event.preventDefault();
+	$(this).ekkoLightbox();
+});

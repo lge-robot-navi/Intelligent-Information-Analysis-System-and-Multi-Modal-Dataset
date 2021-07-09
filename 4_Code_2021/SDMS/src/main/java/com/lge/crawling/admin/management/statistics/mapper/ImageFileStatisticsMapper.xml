@@ -1,0 +1,1005 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lge.crawling.admin.management.statistics.mapper.ImageFileStatisticsMapper">
+
+	<sql id="field">
+		A.IMAGE_FILE_SQ                                       AS imageFileSq,                /* 이미지파일일련번호          */
+		A.IMAGE_FILE_PACKAGE_ID_SQ                            AS imageFilePackageIdSq,       /* 이미지파일패키지ID일련번호  */
+		A.IMAGE_FILE_NM                                       AS imageFileNm,                /* 이미지파일명                */
+		A.IMAGE_FILE_PATH                                     AS imageFilePath,              /* 이미지파일경로              */
+		A.IMAGE_FILE_SIZE                                     AS imageFileSize,              /* 이미지파일크기              */
+		A.IMAGE_FILE_SCALE_X                                  AS imageFileScaleX,            /* 이미지파일크기_X            */
+		A.IMAGE_FILE_SCALE_Y                                  AS imageFileScaleY,            /* 이미지파일크기_Y            */
+		A.IMAGE_FILE_TYPE_CD                                  AS imageFileTypeCd,            /* 이미지파일타입구분_TA004    */
+		A.IMAGE_FILE_DOWNLOAD_PATH_CD                         AS imageFileDownloadPathCd,    /* 이미지파일다운경로구분_TA005*/
+		A.IMAGE_FILE_REGIST_DT                                AS imageFileRegistDt,          /* 이미지파일등록상세일시      */
+		A.INSERT_DT											  AS insertDt,					 /* 등록일시 */
+		A.INSERT_ID											  AS insertId,					 /* 등록자ID */
+		A.UPDATE_DT											  AS updateDt,					 /* 수정일시 */
+		A.UPDATE_ID											  AS updateId					 /* 수정자ID */
+	</sql>
+
+    <sql id="fragment">
+        FROM TA_IMAGE_FILE_INFO A
+		<where>
+			<trim prefixOverrides="AND|OR">
+				<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(startDt)">
+            		<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(endDt)">
+						AND A.IMAGE_FILE_REGIST_DT BETWEEN RPAD(REPLACE(#{startDt},'-',''),14,'000000')
+						                   AND RPAD(REPLACE(#{endDt}, '-', ''), 14, '235959')
+					</if>
+				</if>
+				<if test="@org.apache.commons.lang.StringUtils@equals('D', searchTp)">
+					AND A.IMAGE_FILE_REGIST_DT BETWEEN BETWEEN REPLACE(#{startDt},'-','')
+									AND REPLACE(#{endDt}, '-', '')
+				</if>
+				<if test="@org.apache.commons.lang.StringUtils@equals('M', searchTp)">
+					AND A.IMAGE_FILE_REGIST_DT BETWEEN BETWEEN RPAD(REPLACE(#{startDt},'-',''),6,'01')
+									AND RPAD(REPLACE(#{endDt}, '-', ''), 6, '31')
+				</if>
+				<if test="@org.apache.commons.lang.StringUtils@equals('Y', searchTp)">
+					AND A.IMAGE_FILE_REGIST_DT BETWEEN BETWEEN RPAD(REPLACE(#{startDt},'-',''),4,'0101')
+									AND RPAD(REPLACE(#{endDt}, '-', ''), 4, '1231')
+				</if>
+			</trim>
+		</where>
+    </sql>
+
+	<!-- BarChart -->
+    <select id="getBarGraphList" parameterType="ImageFileEntity" resultType="ImageFileEntity">
+        <include refid="Common.PagingStart" />
+		SELECT /* ImageFileMapper.xml, getBarGraphList */
+				TD.DATE_FIELD                                                      AS imageFileRegistDt,
+				IFNULL(C.googleCnt,0)											   AS googleCnt,
+				IFNULL(C.flickrCnt,0)											   AS flickrCnt,
+				IFNULL(C.tumblrCnt,0)											   AS tumblrCnt,
+				IFNULL(C.twitterCnt,0)											   AS twitterCnt,
+				IFNULL(C.totalCnt,0) 						                       AS totalCnt,
+				IFNULL(C.googleAvg,0) 	                                           AS googleAvg,
+				IFNULL(C.flickrAvg,0) 	                                           AS flickrAvg,
+				IFNULL(C.tumblrAvg,0) 	                                           AS tumblrAvg,
+				IFNULL(C.twitterAvg,0) 	                                           AS twitterAvg
+		FROM
+			TA_DATE TD
+		LEFT OUTER JOIN
+		(
+			SELECT
+			      B.imageFileRegistDt												AS imageFileRegistDt,
+			      B.googleCnt														AS googleCnt,
+			      B.flickrCnt														AS flickrCnt,
+			      B.tumblrCnt														AS tumblrCnt,
+			      B.twitterCnt														AS twitterCnt,
+			      (googleCnt+flickrCnt+tumblrCnt+twitterCnt) 						AS totalCnt,
+			      ROUND(googleCnt/(googleCnt+flickrCnt+tumblrCnt+twitterCnt)*100) 	AS googleAvg,
+			      ROUND(flickrCnt/(googleCnt+flickrCnt+tumblrCnt+twitterCnt)*100) 	AS flickrAvg,
+			      ROUND(tumblrCnt/(googleCnt+flickrCnt+tumblrCnt+twitterCnt)*100) 	AS tumblrAvg,
+			      ROUND(twitterCnt/(googleCnt+flickrCnt+tumblrCnt+twitterCnt)*100) 	AS twitterAvg
+			FROM
+			(
+			  SELECT
+			        SUBSTR(A.IMAGE_FILE_REGIST_DT,1,8) 						AS imageFileRegistDt,
+			        COUNT(IF(A.IMAGE_FILE_DOWNLOAD_PATH_CD='100',1,null)) 	AS googleCnt,
+			        COUNT(IF(A.IMAGE_FILE_DOWNLOAD_PATH_CD='200',1,null)) 	AS flickrCnt,
+			        COUNT(IF(A.IMAGE_FILE_DOWNLOAD_PATH_CD='300',1,null)) 	AS tumblrCnt,
+			        COUNT(IF(A.IMAGE_FILE_DOWNLOAD_PATH_CD='400',1,null)) 	AS twitterCnt
+	          FROM TA_IMAGE_FILE_INFO A
+			  GROUP BY imageFileRegistDt
+			  ORDER BY imageFileRegistDt ASC
+			) B
+		) C
+		ON TD.DATE_FIELD = C.imageFileRegistDt
+		<where>
+			<trim prefixOverrides="AND|OR">
+				<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(startDt)">
+		          		<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(endDt)">
+						AND TD.DATE_FIELD BETWEEN REPLACE(#{startDt},'-','')
+						                   AND REPLACE(#{endDt}, '-', '')
+					</if>
+				</if>
+			</trim>
+		</where>
+		<include refid="Common.PagingEnd" />
+    </select>
+
+	<!-- BarChart -->
+    <select id="getBarGraph" parameterType="ImageFileEntity" resultType="ImageFileEntity">
+		SELECT /* ImageFileMapper.xml, getBarGraph */
+				TD.DATE_FIELD                                                      AS imageFileRegistDt,
+				IFNULL(C.googleCnt,0)											   AS googleCnt,
+				IFNULL(C.flickrCnt,0)											   AS flickrCnt,
+				IFNULL(C.tumblrCnt,0)											   AS tumblrCnt,
+				IFNULL(C.twitterCnt,0)											   AS twitterCnt,
+				IFNULL(C.totalCnt,0) 						                       AS totalCnt,
+				IFNULL(C.googleAvg,0) 	                                           AS googleAvg,
+				IFNULL(C.flickrAvg,0) 	                                           AS flickrAvg,
+				IFNULL(C.tumblrAvg,0) 	                                           AS tumblrAvg,
+				IFNULL(C.twitterAvg,0) 	                                           AS twitterAvg
+		FROM
+			TA_DATE TD
+		LEFT OUTER JOIN
+		(
+			SELECT
+			      B.imageFileRegistDt												AS imageFileRegistDt,
+			      B.googleCnt														AS googleCnt,
+			      B.flickrCnt														AS flickrCnt,
+			      B.tumblrCnt														AS tumblrCnt,
+			      B.twitterCnt														AS twitterCnt,
+			      (googleCnt+flickrCnt+tumblrCnt+twitterCnt) 						AS totalCnt,
+			      ROUND(googleCnt/(googleCnt+flickrCnt+tumblrCnt+twitterCnt)*100) 	AS googleAvg,
+			      ROUND(flickrCnt/(googleCnt+flickrCnt+tumblrCnt+twitterCnt)*100) 	AS flickrAvg,
+			      ROUND(tumblrCnt/(googleCnt+flickrCnt+tumblrCnt+twitterCnt)*100) 	AS tumblrAvg,
+			      ROUND(twitterCnt/(googleCnt+flickrCnt+tumblrCnt+twitterCnt)*100) 	AS twitterAvg
+			FROM
+			(
+			  SELECT
+			        SUBSTR(A.IMAGE_FILE_REGIST_DT,1,8) 						AS imageFileRegistDt,
+			        COUNT(IF(A.IMAGE_FILE_DOWNLOAD_PATH_CD='100',1,null)) 	AS googleCnt,
+			        COUNT(IF(A.IMAGE_FILE_DOWNLOAD_PATH_CD='200',1,null)) 	AS flickrCnt,
+			        COUNT(IF(A.IMAGE_FILE_DOWNLOAD_PATH_CD='300',1,null)) 	AS tumblrCnt,
+			        COUNT(IF(A.IMAGE_FILE_DOWNLOAD_PATH_CD='400',1,null)) 	AS twitterCnt
+	          FROM TA_IMAGE_FILE_INFO A
+			  GROUP BY imageFileRegistDt
+			  ORDER BY imageFileRegistDt ASC
+			) B
+		) C
+		ON TD.DATE_FIELD = C.imageFileRegistDt
+		<where>
+			<trim prefixOverrides="AND|OR">
+				<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(startDt)">
+		          		<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(endDt)">
+						AND TD.DATE_FIELD BETWEEN REPLACE(#{startDt},'-','')
+						                   AND REPLACE(#{endDt}, '-', '')
+					</if>
+				</if>
+			</trim>
+		</where>
+    </select>
+
+	<!-- BarChart Count -->
+    <select id="getBarGraphCnt" parameterType="ImageFileEntity" resultType="Integer">
+    	SELECT /* ImageFileMapper.xml, getBarGraphCnt */
+    		COUNT(1) AS CNT
+    	FROM
+    	(
+			SELECT
+					TD.DATE_FIELD                                                      AS imageFileRegistDt,
+					IFNULL(D.googleCnt,0)											   AS googleCnt,
+					IFNULL(D.flickrCnt,0)											   AS flickrCnt,
+					IFNULL(D.tumblrCnt,0)											   AS tumblrCnt,
+					IFNULL(D.twitterCnt,0)											   AS twitterCnt,
+					IFNULL(D.totalCnt,0) 						                       AS totalCnt,
+					IFNULL(D.googleAvg,0) 	                                           AS googleAvg,
+					IFNULL(D.flickrAvg,0) 	                                           AS flickrAvg,
+					IFNULL(D.tumblrAvg,0) 	                                           AS tumblrAvg,
+					IFNULL(D.twitterAvg,0) 	                                           AS twitterAvg
+			FROM
+				TA_DATE TD
+			LEFT OUTER JOIN
+			(
+				SELECT
+				      B.imageFileRegistDt												AS imageFileRegistDt,
+				      B.googleCnt														AS googleCnt,
+				      B.flickrCnt														AS flickrCnt,
+				      B.tumblrCnt														AS tumblrCnt,
+				      B.twitterCnt														AS twitterCnt,
+				      (googleCnt+flickrCnt+tumblrCnt+twitterCnt) 						AS totalCnt,
+				      ROUND(googleCnt/(googleCnt+flickrCnt+tumblrCnt+twitterCnt)*100) 	AS googleAvg,
+				      ROUND(flickrCnt/(googleCnt+flickrCnt+tumblrCnt+twitterCnt)*100) 	AS flickrAvg,
+				      ROUND(tumblrCnt/(googleCnt+flickrCnt+tumblrCnt+twitterCnt)*100) 	AS tumblrAvg,
+				      ROUND(twitterCnt/(googleCnt+flickrCnt+tumblrCnt+twitterCnt)*100) 	AS twitterAvg
+				FROM
+				(
+				  SELECT
+				        SUBSTR(A.IMAGE_FILE_REGIST_DT,1,8) 						AS imageFileRegistDt,
+				        COUNT(IF(A.IMAGE_FILE_DOWNLOAD_PATH_CD='100',1,null)) 	AS googleCnt,
+				        COUNT(IF(A.IMAGE_FILE_DOWNLOAD_PATH_CD='200',1,null)) 	AS flickrCnt,
+				        COUNT(IF(A.IMAGE_FILE_DOWNLOAD_PATH_CD='300',1,null)) 	AS tumblrCnt,
+				        COUNT(IF(A.IMAGE_FILE_DOWNLOAD_PATH_CD='400',1,null)) 	AS twitterCnt
+	        	  FROM TA_IMAGE_FILE_INFO A
+				  GROUP BY imageFileRegistDt
+				  ORDER BY imageFileRegistDt ASC
+				) B
+			) D
+			ON TD.DATE_FIELD = D.imageFileRegistDt
+			<where>
+				<trim prefixOverrides="AND|OR">
+					<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(startDt)">
+			          		<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(endDt)">
+							AND TD.DATE_FIELD BETWEEN REPLACE(#{startDt},'-','')
+							                   AND REPLACE(#{endDt}, '-', '')
+						</if>
+					</if>
+				</trim>
+			</where>
+		) C
+    </select>
+
+	<!-- PieChart -->
+    <select id="getPieGraph" parameterType="ImageFileEntity" resultType="ImageFileEntity">
+        SELECT /* ImageFileMapper.xml, getPieGraph */
+		      SUM(googleCnt)                                            	AS googleCnt,
+		      SUM(flickrCnt)                                            	AS flickrCnt,
+		      SUM(tumblrCnt)                                            	AS tumblrCnt,
+		      SUM(twitterCnt)                                           	AS twitterCnt,
+		      SUM(googleCnt)+SUM(flickrCnt)+SUM(tumblrCnt)+SUM(twitterCnt) 	AS totalCnt,
+		      ROUND(SUM(googleCnt)/SUM(totalCnt)*100)						AS googleAvg,
+		      ROUND(SUM(flickrCnt)/SUM(totalCnt)*100)                   	AS flickrAvg,
+		      ROUND(SUM(tumblrCnt)/SUM(totalCnt)*100)                   	AS tumblrAvg,
+		      ROUND(SUM(twitterCnt)/SUM(totalCnt)*100)                  	AS twitterAvg
+		FROM
+		(
+		  SELECT
+		        COUNT(IF(A.IMAGE_FILE_DOWNLOAD_PATH_CD='100',1,null)) AS googleCnt,
+		        COUNT(IF(A.IMAGE_FILE_DOWNLOAD_PATH_CD='200',1,null)) AS flickrCnt,
+		        COUNT(IF(A.IMAGE_FILE_DOWNLOAD_PATH_CD='300',1,null)) AS tumblrCnt,
+		        COUNT(IF(A.IMAGE_FILE_DOWNLOAD_PATH_CD='400',1,null)) AS twitterCnt,
+		        COUNT(IF(A.IMAGE_FILE_DOWNLOAD_PATH_CD='100'||A.IMAGE_FILE_DOWNLOAD_PATH_CD='200'||A.IMAGE_FILE_DOWNLOAD_PATH_CD='300'||A.IMAGE_FILE_DOWNLOAD_PATH_CD='400',1,null)) AS totalCnt
+		  FROM TA_IMAGE_FILE_INFO A
+          <where>
+          	<trim prefixOverrides="AND|OR">
+	        	<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(startDt)">
+            		<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(endDt)">
+						AND A.IMAGE_FILE_REGIST_DT BETWEEN RPAD(REPLACE(#{startDt},'-',''),14,'000000')
+						                   AND RPAD(REPLACE(#{endDt}, '-', ''), 14, '235959')
+					</if>
+				</if>
+           	</trim>
+	      </where>
+		  GROUP BY IMAGE_FILE_DOWNLOAD_PATH_CD
+		  ORDER BY IMAGE_FILE_DOWNLOAD_PATH_CD ASC
+		) B
+    </select>
+
+    <!-- BarChart by image file type cd List -->
+    <select id="getBarGraphByImageFileTypeCdList" parameterType="ImageFileEntity" resultType="ImageFileEntity">
+        <include refid="Common.PagingStart" />
+        SELECT /* ImageFileMapper.xml, getBarGraphByImageFileTypeCdList */
+				TD.DATE_FIELD                                                      	AS imageFileRegistDt,
+				IFNULL(C.jpgCnt,0)											   		AS jpgCnt,
+				IFNULL(C.pngCnt,0)											   		AS pngCnt,
+				IFNULL(C.bmpCnt,0)											   		AS bmpCnt,
+				IFNULL(C.totalCnt,0) 						                       	AS totalCnt
+		FROM
+			TA_DATE TD
+		LEFT OUTER JOIN
+		(
+			SELECT
+			      B.imageFileRegistDt								AS imageFileRegistDt,
+			      B.jpgCnt											AS jpgCnt,
+			      B.pngCnt											AS pngCnt,
+			      B.bmpCnt											AS bmpCnt,
+			      (jpgCnt+pngCnt+bmpCnt) 						  	AS totalCnt
+			FROM
+			(
+			  SELECT
+			        SUBSTR(A.IMAGE_FILE_REGIST_DT,1,8) 				AS imageFileRegistDt,
+			        COUNT(IF(A.IMAGE_FILE_TYPE_CD='100',1,null)) 	AS jpgCnt,
+			        COUNT(IF(A.IMAGE_FILE_TYPE_CD='200',1,null)) 	AS pngCnt,
+			        COUNT(IF(A.IMAGE_FILE_TYPE_CD='300',1,null)) 	AS bmpCnt
+			  FROM TA_IMAGE_FILE_INFO A
+			  GROUP BY imageFileRegistDt
+			  ORDER BY imageFileRegistDt ASC
+			) B
+		) C
+		ON TD.DATE_FIELD = C.imageFileRegistDt
+		<where>
+			<trim prefixOverrides="AND|OR">
+				<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(startDt)">
+		          		<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(endDt)">
+						AND TD.DATE_FIELD BETWEEN REPLACE(#{startDt},'-','')
+						                   AND REPLACE(#{endDt}, '-', '')
+					</if>
+				</if>
+			</trim>
+		</where>
+		<include refid="Common.PagingEnd" />
+    </select>
+
+    <!-- BarChart by image file type cd -->
+    <select id="getBarGraphByImageFileTypeCd" parameterType="ImageFileEntity" resultType="ImageFileEntity">
+        SELECT /* ImageFileMapper.xml, getBarGraphByImageFileTypeCd */
+				TD.DATE_FIELD                                                      	AS imageFileRegistDt,
+				IFNULL(C.jpgCnt,0)											   		AS jpgCnt,
+				IFNULL(C.pngCnt,0)											   		AS pngCnt,
+				IFNULL(C.bmpCnt,0)											   		AS bmpCnt,
+				IFNULL(C.totalCnt,0) 						                       	AS totalCnt
+		FROM
+			TA_DATE TD
+		LEFT OUTER JOIN
+		(
+			SELECT
+			      B.imageFileRegistDt								AS imageFileRegistDt,
+			      B.jpgCnt											AS jpgCnt,
+			      B.pngCnt											AS pngCnt,
+			      B.bmpCnt											AS bmpCnt,
+			      (jpgCnt+pngCnt+bmpCnt) 						  	AS totalCnt
+			FROM
+			(
+			  SELECT
+			        SUBSTR(A.IMAGE_FILE_REGIST_DT,1,8) 				AS imageFileRegistDt,
+			        COUNT(IF(A.IMAGE_FILE_TYPE_CD='100',1,null)) 	AS jpgCnt,
+			        COUNT(IF(A.IMAGE_FILE_TYPE_CD='200',1,null)) 	AS pngCnt,
+			        COUNT(IF(A.IMAGE_FILE_TYPE_CD='300',1,null)) 	AS bmpCnt
+			  FROM TA_IMAGE_FILE_INFO A
+			  GROUP BY imageFileRegistDt
+			  ORDER BY imageFileRegistDt ASC
+			) B
+		) C
+		ON TD.DATE_FIELD = C.imageFileRegistDt
+		<where>
+			<trim prefixOverrides="AND|OR">
+				<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(startDt)">
+		          		<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(endDt)">
+						AND TD.DATE_FIELD BETWEEN REPLACE(#{startDt},'-','')
+						                   AND REPLACE(#{endDt}, '-', '')
+					</if>
+				</if>
+			</trim>
+		</where>
+    </select>
+
+    <!-- BarChart by image file type cd count -->
+    <select id="getBarGraphByImageFileTypeCdCnt" parameterType="ImageFileEntity" resultType="Integer">
+        SELECT /* ImageFileMapper.xml, getBarGraphByImageFileTypeCdCnt */
+        	COUNT(1) AS CNT
+        FROM
+        (
+	        SELECT
+					TD.DATE_FIELD                                       AS imageFileRegistDt,
+					IFNULL(D.jpgCnt,0)									AS jpgCnt,
+					IFNULL(D.pngCnt,0)									AS pngCnt,
+					IFNULL(D.bmpCnt,0)									AS bmpCnt,
+					IFNULL(D.totalCnt,0) 						        AS totalCnt
+			FROM
+				TA_DATE TD
+			LEFT OUTER JOIN
+			(
+		        SELECT
+				      B.imageFileRegistDt								AS imageFileRegistDt,
+				      B.jpgCnt											AS jpgCnt,
+				      B.pngCnt											AS pngCnt,
+				      B.bmpCnt											AS bmpCnt,
+				      (jpgCnt+pngCnt+bmpCnt) 						  	AS totalCnt
+				FROM
+				(
+				  SELECT
+				        SUBSTR(A.IMAGE_FILE_REGIST_DT,1,8) 				AS imageFileRegistDt,
+				        COUNT(IF(A.IMAGE_FILE_TYPE_CD='100',1,null)) 	AS jpgCnt,
+				        COUNT(IF(A.IMAGE_FILE_TYPE_CD='200',1,null)) 	AS pngCnt,
+				        COUNT(IF(A.IMAGE_FILE_TYPE_CD='300',1,null)) 	AS bmpCnt
+				  FROM TA_IMAGE_FILE_INFO A
+				  GROUP BY imageFileRegistDt
+				  ORDER BY imageFileRegistDt ASC
+				) B
+			) D
+			ON TD.DATE_FIELD = D.imageFileRegistDt
+			<where>
+				<trim prefixOverrides="AND|OR">
+					<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(startDt)">
+			          		<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(endDt)">
+							AND TD.DATE_FIELD BETWEEN REPLACE(#{startDt},'-','')
+							                   AND REPLACE(#{endDt}, '-', '')
+						</if>
+					</if>
+				</trim>
+			</where>
+		) C
+    </select>
+
+	<!-- Pie Chart by Image File Type -->
+    <select id="getPieGraphByImageFileTypeCd" parameterType="ImageFileEntity" resultType="ImageFileEntity">
+		SELECT /* ImageFileMapper.xml, getPieGraphByImageFileTypeCd */
+		      SUM(jpgCnt)                               		AS jpgCnt,
+		      SUM(pngCnt)                               		AS pngCnt,
+		      SUM(bmpCnt)                               		AS bmpCnt,
+		      SUM(jpgCnt)+SUM(pngCnt)+SUM(bmpCnt)       		AS totalCnt,
+		      ROUND(SUM(jpgCnt)/SUM(totalCnt)*100)				AS jpgAvg,
+		      ROUND(SUM(pngCnt)/SUM(totalCnt)*100)      		AS pngAvg,
+		      ROUND(SUM(bmpCnt)/SUM(totalCnt)*100)      		AS bmpAvg
+		FROM
+		(
+		  SELECT
+		        COUNT(IF(A.IMAGE_FILE_TYPE_CD='100',1,null)) 	AS jpgCnt,
+		        COUNT(IF(A.IMAGE_FILE_TYPE_CD='200',1,null)) 	AS pngCnt,
+		        COUNT(IF(A.IMAGE_FILE_TYPE_CD='300',1,null)) 	AS bmpCnt,
+		        COUNT(IF(A.IMAGE_FILE_TYPE_CD='100'||A.IMAGE_FILE_TYPE_CD='200'||A.IMAGE_FILE_TYPE_CD='300',1,null)) AS totalCnt
+		  FROM TA_IMAGE_FILE_INFO A
+	      <where>
+	      	<trim prefixOverrides="AND|OR">
+	      		<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(startDt)">
+	        		<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(endDt)">
+						AND A.IMAGE_FILE_REGIST_DT BETWEEN RPAD(REPLACE(#{startDt},'-',''),14,'000000')
+					    				               AND RPAD(REPLACE(#{endDt}, '-', ''), 14, '235959')
+					</if>
+				</if>
+	       	</trim>
+	      </where>
+		  GROUP BY A.IMAGE_FILE_DOWNLOAD_PATH_CD
+		  ORDER BY A.IMAGE_FILE_DOWNLOAD_PATH_CD ASC
+		) B
+    </select>
+
+    <!-- BarChart by Image Tagging Type Code List -->
+    <select id="getBarGraphByImageTaggingTypeCdList" parameterType="ImageFileEntity" resultType="ImageFileEntity">
+    	<include refid="Common.PagingStart" />
+	    SELECT /* ImageFileMapper.xml, getBarGraphByImageTaggingTypeCdList */
+				TD.DATE_FIELD                                                      AS imageFileRegistDt,
+				IFNULL(C.rectangleCnt,0)										   AS rectangleCnt,
+				IFNULL(C.polygonCnt,0)											   AS polygonCnt,
+				IFNULL(C.totalCnt,0) 						                       AS totalCnt
+		FROM
+			TA_DATE TD
+		LEFT OUTER JOIN
+		(
+			SELECT
+		      	B.imageFileRegistDt											AS imageFileRegistDt,
+		      	B.rectangleCnt												AS rectangleCnt,
+		      	B.polygonCnt												AS polygonCnt,
+		      	(rectangleCnt+polygonCnt) 									AS totalCnt
+			FROM
+			(
+			  SELECT
+			        SUBSTR(A.IMAGE_FILE_REGIST_DT,1,8) 					AS imageFileRegistDt,
+			        COUNT(IF(B.IMAGE_TAGGING_TYPE_CD='100',1,null)) 	AS rectangleCnt,
+			        COUNT(IF(B.IMAGE_TAGGING_TYPE_CD='200',1,null)) 	AS polygonCnt
+			  FROM TA_IMAGE_FILE_INFO A, TA_IMAGE_TAGGING_GET_INFO B
+			  GROUP BY imageFileRegistDt
+			  ORDER BY imageFileRegistDt ASC
+			) B
+		) C
+		ON TD.DATE_FIELD = C.imageFileRegistDt
+		<where>
+			<trim prefixOverrides="AND|OR">
+				<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(startDt)">
+		          		<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(endDt)">
+						AND TD.DATE_FIELD BETWEEN REPLACE(#{startDt},'-','')
+						                   AND REPLACE(#{endDt}, '-', '')
+					</if>
+				</if>
+			</trim>
+		</where>
+		<include refid="Common.PagingEnd" />
+    </select>
+
+    <!-- BarChart by Image Tagging Type Code -->
+    <select id="getBarGraphByImageTaggingTypeCd" parameterType="ImageFileEntity" resultType="ImageFileEntity">
+	    SELECT /* ImageFileMapper.xml, getBarGraphByImageTaggingTypeCd */
+				TD.DATE_FIELD                                                      AS imageFileRegistDt,
+				IFNULL(C.rectangleCnt,0)										   AS rectangleCnt,
+				IFNULL(C.polygonCnt,0)											   AS polygonCnt,
+				IFNULL(C.totalCnt,0) 						                       AS totalCnt
+		FROM
+			TA_DATE TD
+		LEFT OUTER JOIN
+		(
+			SELECT
+		      	B.imageFileRegistDt											AS imageFileRegistDt,
+		      	B.rectangleCnt												AS rectangleCnt,
+		      	B.polygonCnt												AS polygonCnt,
+		      	(rectangleCnt+polygonCnt) 									AS totalCnt
+			FROM
+			(
+			  SELECT
+			        SUBSTR(A.IMAGE_FILE_REGIST_DT,1,8) 					AS imageFileRegistDt,
+			        COUNT(IF(B.IMAGE_TAGGING_TYPE_CD='100',1,null)) 	AS rectangleCnt,
+			        COUNT(IF(B.IMAGE_TAGGING_TYPE_CD='200',1,null)) 	AS polygonCnt
+			  FROM TA_IMAGE_FILE_INFO A, TA_IMAGE_TAGGING_GET_INFO B
+			  GROUP BY imageFileRegistDt
+			  ORDER BY imageFileRegistDt ASC
+			) B
+		) C
+		ON TD.DATE_FIELD = C.imageFileRegistDt
+		<where>
+			<trim prefixOverrides="AND|OR">
+				<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(startDt)">
+		          		<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(endDt)">
+						AND TD.DATE_FIELD BETWEEN REPLACE(#{startDt},'-','')
+						                   AND REPLACE(#{endDt}, '-', '')
+					</if>
+				</if>
+			</trim>
+		</where>
+    </select>
+
+    <!-- BarChart by  Image Tagging Type Code count -->
+    <select id="getBarGraphByImageTaggingTypeCdCnt" parameterType="ImageFileEntity" resultType="Integer">
+        SELECT /* ImageFileMapper.xml, getBarGraphByImageTaggingTypeCdCnt */
+        	COUNT(1) AS CNT
+        FROM
+        (
+		    SELECT
+					TD.DATE_FIELD                                                      AS imageFileRegistDt,
+					IFNULL(D.rectangleCnt,0)										   AS rectangleCnt,
+					IFNULL(D.polygonCnt,0)											   AS polygonCnt,
+					IFNULL(D.totalCnt,0) 						                       AS totalCnt
+			FROM
+				TA_DATE TD
+			LEFT OUTER JOIN
+			(
+				SELECT
+			      	B.imageFileRegistDt											AS imageFileRegistDt,
+			      	B.rectangleCnt												AS rectangleCnt,
+			      	B.polygonCnt												AS polygonCnt,
+			      	(rectangleCnt+polygonCnt) 									AS totalCnt
+				FROM
+				(
+				  SELECT
+				        SUBSTR(A.IMAGE_FILE_REGIST_DT,1,8) 					AS imageFileRegistDt,
+				        COUNT(IF(B.IMAGE_TAGGING_TYPE_CD='100',1,null)) 	AS rectangleCnt,
+				        COUNT(IF(B.IMAGE_TAGGING_TYPE_CD='200',1,null)) 	AS polygonCnt
+				  FROM TA_IMAGE_FILE_INFO A, TA_IMAGE_TAGGING_GET_INFO B
+				  GROUP BY imageFileRegistDt
+				  ORDER BY imageFileRegistDt ASC
+				) B
+			) D
+			ON TD.DATE_FIELD = D.imageFileRegistDt
+			<where>
+				<trim prefixOverrides="AND|OR">
+					<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(startDt)">
+			          		<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(endDt)">
+							AND TD.DATE_FIELD BETWEEN REPLACE(#{startDt},'-','')
+							                   AND REPLACE(#{endDt}, '-', '')
+						</if>
+					</if>
+				</trim>
+			</where>
+		) C
+    </select>
+
+	<!-- Pie Chart By Image Tagging Type -->
+    <select id="getPieGraphByImageTaggingTypeCd" parameterType="ImageFileEntity" resultType="ImageFileEntity">
+		SELECT /* ImageFileMapper.xml, getPieGraphByImageTaggingTypeCd */
+		      SUM(rectangleCnt)                               									AS rectangleCnt,
+		      SUM(polygonCnt)                               									AS polygonCnt,
+		      SUM(rectangleCnt)+SUM(polygonCnt)       		      								AS totalCnt,
+		      ROUND(SUM(rectangleCnt)/SUM(totalCnt)*100)										AS rectangleAvg,
+		      ROUND(SUM(polygonCnt)/SUM(totalCnt)*100)      									AS polygonAvg
+		FROM
+		(
+		  SELECT
+		        COUNT(IF(B.IMAGE_TAGGING_TYPE_CD='100',1,null)) 								AS rectangleCnt,
+		        COUNT(IF(B.IMAGE_TAGGING_TYPE_CD='200',1,null)) 								AS polygonCnt,
+		        COUNT(IF(B.IMAGE_TAGGING_TYPE_CD='100'||B.IMAGE_TAGGING_TYPE_CD='200',1,null)) 	AS totalCnt
+		  FROM TA_IMAGE_FILE_INFO A, TA_IMAGE_TAGGING_GET_INFO B
+		  <where>
+		  	<trim prefixOverrides="AND|OR">
+		  		AND A.IMAGE_FILE_SQ = B.IMAGE_FILE_SQ
+		  		<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(startDt)">
+		    		<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(endDt)">
+					    AND A.IMAGE_FILE_REGIST_DT BETWEEN RPAD(REPLACE(#{startDt},'-',''),14,'000000')
+				    				               	   AND RPAD(REPLACE(#{endDt}, '-', ''), 14, '235959')
+				    </if>
+			    </if>
+		   	</trim>
+		  </where>
+		  GROUP BY B.IMAGE_TAGGING_TYPE_CD
+		  ORDER BY B.IMAGE_TAGGING_TYPE_CD ASC
+		) B
+    </select>
+
+    <!-- BarChart by Label List -->
+    <select id="getBarGraphByLabelList" parameterType="ImageFileEntity" resultType="ImageFileEntity">
+    	<include refid="Common.PagingStart" />
+        SELECT /* ImageFileMapper.xml, getBarGraphByLabelList */
+				TD.DATE_FIELD                                                      AS imageFileRegistDt,
+				IFNULL(E.imageTaggingDataDicNm,"")					   			   AS imageTaggingDataDicNm,
+				IFNULL(E.taggingCnt,0) 						                       AS taggingCnt
+		FROM
+			TA_DATE TD
+		LEFT OUTER JOIN
+		(
+			SELECT
+				imageFileRegistDt													AS imageFileRegistDt,
+				GROUP_CONCAT(imageTaggingDataDicNm SEPARATOR ';')					AS imageTaggingDataDicNm,
+				GROUP_CONCAT(taggingCnt SEPARATOR ';')								AS taggingCnt
+			FROM
+			(
+	        	SELECT
+				      SUBSTR(A.IMAGE_FILE_REGIST_DT,1,8) 							AS imageFileRegistDt,
+				      C.IMAGE_TAGGING_DATA_DIC_NM                   				AS imageTaggingDataDicNm,
+				      COUNT(B.FIRST_IMAGE_TAGGING_DATA_DIC_ID_SQ) 					AS taggingCnt
+				FROM TA_IMAGE_FILE_INFO A, TA_IMAGE_TAGGING_GET_INFO B, TA_IMAGE_TAGGING_DATA_DIC_INFO C
+				<where>
+					<trim prefixOverrides="AND|OR">
+						AND A.IMAGE_FILE_SQ = B.IMAGE_FILE_SQ
+						AND B.FIRST_IMAGE_TAGGING_DATA_DIC_ID_SQ = C.IMAGE_TAGGING_DATA_DIC_ID_SQ
+				     	<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(startDt)">
+				        	<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(endDt)">
+								AND A.IMAGE_FILE_REGIST_DT BETWEEN RPAD(REPLACE(#{startDt},'-',''),14,'000000')
+						  							           AND RPAD(REPLACE(#{endDt}, '-', ''), 14, '235959')
+							</if>
+						</if>
+						<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(imageTaggingDataDicIdSqList)">
+							AND C.IMAGE_TAGGING_DATA_DIC_ID_SQ IN
+							<foreach collection="imageTaggingDataDicIdSqList" item="item"  open="(" close=")" separator=",">
+					            #{item}
+					        </foreach>
+				        </if>
+					</trim>
+				</where>
+				GROUP BY B.FIRST_IMAGE_TAGGING_DATA_DIC_ID_SQ
+				UNION ALL
+				SELECT
+				      SUBSTR(A.IMAGE_FILE_REGIST_DT,1,8) 							AS imageFileRegistDt,
+				      C.IMAGE_TAGGING_DATA_DIC_NM                   				AS imageTaggingDataDicNm,
+				      COUNT(B.SECOND_IMAGE_TAGGING_DATA_DIC_ID_SQ) 					AS taggingCnt
+				FROM TA_IMAGE_FILE_INFO A, TA_IMAGE_TAGGING_GET_INFO B, TA_IMAGE_TAGGING_DATA_DIC_INFO C
+				<where>
+					<trim prefixOverrides="AND|OR">
+						AND A.IMAGE_FILE_SQ = B.IMAGE_FILE_SQ
+						AND B.SECOND_IMAGE_TAGGING_DATA_DIC_ID_SQ = C.IMAGE_TAGGING_DATA_DIC_ID_SQ
+						<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(startDt)">
+				        	<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(endDt)">
+								AND A.IMAGE_FILE_REGIST_DT BETWEEN RPAD(REPLACE(#{startDt},'-',''),14,'000000')
+						  							           AND RPAD(REPLACE(#{endDt}, '-', ''), 14, '235959')
+							</if>
+						</if>
+						<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(imageTaggingDataDicIdSqList)">
+							AND C.IMAGE_TAGGING_DATA_DIC_ID_SQ IN
+							<foreach collection="imageTaggingDataDicIdSqList" item="item"  open="(" close=")" separator=",">
+					            #{item}
+					        </foreach>
+				        </if>
+					</trim>
+				</where>
+				GROUP BY B.FIRST_IMAGE_TAGGING_DATA_DIC_ID_SQ, B.SECOND_IMAGE_TAGGING_DATA_DIC_ID_SQ
+				UNION ALL
+				SELECT
+				      SUBSTR(A.IMAGE_FILE_REGIST_DT,1,8) 							AS imageFileRegistDt,
+				      C.IMAGE_TAGGING_DATA_DIC_NM                   				AS imageTaggingDataDicNm,
+				      COUNT(B.THIRD_IMAGE_TAGGING_DATA_DIC_ID_SQ) 					AS taggingCnt
+				FROM TA_IMAGE_FILE_INFO A, TA_IMAGE_TAGGING_GET_INFO B, TA_IMAGE_TAGGING_DATA_DIC_INFO C
+				<where>
+					<trim prefixOverrides="AND|OR">
+						AND A.IMAGE_FILE_SQ = B.IMAGE_FILE_SQ
+						AND B.THIRD_IMAGE_TAGGING_DATA_DIC_ID_SQ = C.IMAGE_TAGGING_DATA_DIC_ID_SQ
+						<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(startDt)">
+				        	<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(endDt)">
+								AND A.IMAGE_FILE_REGIST_DT BETWEEN RPAD(REPLACE(#{startDt},'-',''),14,'000000')
+						  							           AND RPAD(REPLACE(#{endDt}, '-', ''), 14, '235959')
+							</if>
+						</if>
+						<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(imageTaggingDataDicIdSqList)">
+							AND C.IMAGE_TAGGING_DATA_DIC_ID_SQ IN
+							<foreach collection="imageTaggingDataDicIdSqList" item="item"  open="(" close=")" separator=",">
+					            #{item}
+					        </foreach>
+				        </if>
+					</trim>
+				</where>
+				GROUP BY B.FIRST_IMAGE_TAGGING_DATA_DIC_ID_SQ, B.SECOND_IMAGE_TAGGING_DATA_DIC_ID_SQ, B.THIRD_IMAGE_TAGGING_DATA_DIC_ID_SQ
+			) D
+			GROUP BY imageFileRegistDt
+		) E
+		ON TD.DATE_FIELD = E.imageFileRegistDt
+		<where>
+			<trim prefixOverrides="AND|OR">
+				<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(startDt)">
+		        	<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(endDt)">
+						AND TD.DATE_FIELD BETWEEN REPLACE(#{startDt},'-','')
+				  							  AND REPLACE(#{endDt}, '-', '')
+					</if>
+				</if>
+			</trim>
+		</where>
+		<include refid="Common.PagingEnd" />
+    </select>
+
+    <!-- BarChart by Label -->
+    <select id="getBarGraphByLabel" parameterType="ImageFileEntity" resultType="ImageFileEntity">
+        SELECT /* ImageFileMapper.xml, getBarGraphByLabel */
+				TD.DATE_FIELD                                                      AS imageFileRegistDt,
+				E.imageTaggingDataDicNm 							   			   AS imageTaggingDataDicNm,
+				IFNULL(E.taggingCnt,0) 						                       AS taggingCnt
+		FROM
+			TA_DATE TD
+		LEFT OUTER JOIN
+		(
+			SELECT
+				imageFileRegistDt													AS imageFileRegistDt,
+				GROUP_CONCAT(imageTaggingDataDicNm SEPARATOR ';')					AS imageTaggingDataDicNm,
+				GROUP_CONCAT(taggingCnt SEPARATOR ';')								AS taggingCnt
+			FROM
+			(
+	        	SELECT
+				      SUBSTR(A.IMAGE_FILE_REGIST_DT,1,8) 							AS imageFileRegistDt,
+				      C.IMAGE_TAGGING_DATA_DIC_NM                   				AS imageTaggingDataDicNm,
+				      COUNT(B.FIRST_IMAGE_TAGGING_DATA_DIC_ID_SQ) 					AS taggingCnt
+				FROM TA_IMAGE_FILE_INFO A, TA_IMAGE_TAGGING_GET_INFO B, TA_IMAGE_TAGGING_DATA_DIC_INFO C
+				<where>
+					<trim prefixOverrides="AND|OR">
+						AND A.IMAGE_FILE_SQ = B.IMAGE_FILE_SQ
+						AND B.FIRST_IMAGE_TAGGING_DATA_DIC_ID_SQ = C.IMAGE_TAGGING_DATA_DIC_ID_SQ
+				     	<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(startDt)">
+				        	<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(endDt)">
+								AND A.IMAGE_FILE_REGIST_DT BETWEEN RPAD(REPLACE(#{startDt},'-',''),14,'000000')
+						  							           AND RPAD(REPLACE(#{endDt}, '-', ''), 14, '235959')
+							</if>
+						</if>
+						<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(imageTaggingDataDicIdSqList)">
+							AND C.IMAGE_TAGGING_DATA_DIC_ID_SQ IN
+							<foreach collection="imageTaggingDataDicIdSqList" item="item"  open="(" close=")" separator=",">
+					            #{item}
+					        </foreach>
+				        </if>
+					</trim>
+				</where>
+				GROUP BY B.FIRST_IMAGE_TAGGING_DATA_DIC_ID_SQ
+				UNION ALL
+				SELECT
+				      SUBSTR(A.IMAGE_FILE_REGIST_DT,1,8) 							AS imageFileRegistDt,
+				      C.IMAGE_TAGGING_DATA_DIC_NM                   				AS imageTaggingDataDicNm,
+				      COUNT(B.SECOND_IMAGE_TAGGING_DATA_DIC_ID_SQ) 					AS taggingCnt
+				FROM TA_IMAGE_FILE_INFO A, TA_IMAGE_TAGGING_GET_INFO B, TA_IMAGE_TAGGING_DATA_DIC_INFO C
+				<where>
+					<trim prefixOverrides="AND|OR">
+						AND A.IMAGE_FILE_SQ = B.IMAGE_FILE_SQ
+						AND B.SECOND_IMAGE_TAGGING_DATA_DIC_ID_SQ = C.IMAGE_TAGGING_DATA_DIC_ID_SQ
+						<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(startDt)">
+				        	<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(endDt)">
+								AND A.IMAGE_FILE_REGIST_DT BETWEEN RPAD(REPLACE(#{startDt},'-',''),14,'000000')
+						  							           AND RPAD(REPLACE(#{endDt}, '-', ''), 14, '235959')
+							</if>
+						</if>
+						<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(imageTaggingDataDicIdSqList)">
+							AND C.IMAGE_TAGGING_DATA_DIC_ID_SQ IN
+							<foreach collection="imageTaggingDataDicIdSqList" item="item"  open="(" close=")" separator=",">
+					            #{item}
+					        </foreach>
+				        </if>
+					</trim>
+				</where>
+				GROUP BY B.FIRST_IMAGE_TAGGING_DATA_DIC_ID_SQ, B.SECOND_IMAGE_TAGGING_DATA_DIC_ID_SQ
+				UNION ALL
+				SELECT
+				      SUBSTR(A.IMAGE_FILE_REGIST_DT,1,8) 							AS imageFileRegistDt,
+				      C.IMAGE_TAGGING_DATA_DIC_NM                   				AS imageTaggingDataDicNm,
+				      COUNT(B.THIRD_IMAGE_TAGGING_DATA_DIC_ID_SQ) 					AS taggingCnt
+				FROM TA_IMAGE_FILE_INFO A, TA_IMAGE_TAGGING_GET_INFO B, TA_IMAGE_TAGGING_DATA_DIC_INFO C
+				<where>
+					<trim prefixOverrides="AND|OR">
+						AND A.IMAGE_FILE_SQ = B.IMAGE_FILE_SQ
+						AND B.THIRD_IMAGE_TAGGING_DATA_DIC_ID_SQ = C.IMAGE_TAGGING_DATA_DIC_ID_SQ
+						<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(startDt)">
+				        	<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(endDt)">
+								AND A.IMAGE_FILE_REGIST_DT BETWEEN RPAD(REPLACE(#{startDt},'-',''),14,'000000')
+						  							           AND RPAD(REPLACE(#{endDt}, '-', ''), 14, '235959')
+							</if>
+						</if>
+						<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(imageTaggingDataDicIdSqList)">
+							AND C.IMAGE_TAGGING_DATA_DIC_ID_SQ IN
+							<foreach collection="imageTaggingDataDicIdSqList" item="item"  open="(" close=")" separator=",">
+					            #{item}
+					        </foreach>
+				        </if>
+					</trim>
+				</where>
+				GROUP BY B.FIRST_IMAGE_TAGGING_DATA_DIC_ID_SQ, B.SECOND_IMAGE_TAGGING_DATA_DIC_ID_SQ, B.THIRD_IMAGE_TAGGING_DATA_DIC_ID_SQ
+			) D
+			GROUP BY imageFileRegistDt
+		) E
+		ON TD.DATE_FIELD = E.imageFileRegistDt
+		<where>
+			<trim prefixOverrides="AND|OR">
+				<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(startDt)">
+		        	<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(endDt)">
+						AND TD.DATE_FIELD BETWEEN REPLACE(#{startDt},'-','')
+				  							  AND REPLACE(#{endDt}, '-', '')
+					</if>
+				</if>
+			</trim>
+		</where>
+    </select>
+
+    <!-- BarChart by  Image Tagging Type Code count -->
+    <select id="getBarGraphByLabelCnt" parameterType="ImageFileEntity" resultType="Integer">
+        SELECT /* ImageFileMapper.xml, getBarGraphByLabelCnt */
+        	COUNT(1) AS CNT
+        FROM
+        (
+			SELECT
+				TD.DATE_FIELD                                                      AS imageFileRegistDt,
+				F.imageTaggingDataDicNm											   AS imageTaggingDataDicNm,
+				IFNULL(F.taggingCnt,0) 						                       AS taggingCnt
+			FROM
+				TA_DATE TD
+			LEFT OUTER JOIN
+			(
+				SELECT
+					imageFileRegistDt													AS imageFileRegistDt,
+					GROUP_CONCAT(imageTaggingDataDicNm SEPARATOR ';')					AS imageTaggingDataDicNm,
+					GROUP_CONCAT(taggingCnt SEPARATOR ';')								AS taggingCnt
+				FROM
+				(
+		        	SELECT
+					      SUBSTR(A.IMAGE_FILE_REGIST_DT,1,8) 							AS imageFileRegistDt,
+					      C.IMAGE_TAGGING_DATA_DIC_NM                   				AS imageTaggingDataDicNm,
+					      COUNT(B.FIRST_IMAGE_TAGGING_DATA_DIC_ID_SQ) 					AS taggingCnt
+					FROM TA_IMAGE_FILE_INFO A, TA_IMAGE_TAGGING_GET_INFO B, TA_IMAGE_TAGGING_DATA_DIC_INFO C
+					<where>
+						<trim prefixOverrides="AND|OR">
+							AND A.IMAGE_FILE_SQ = B.IMAGE_FILE_SQ
+							AND B.FIRST_IMAGE_TAGGING_DATA_DIC_ID_SQ = C.IMAGE_TAGGING_DATA_DIC_ID_SQ
+					     	<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(startDt)">
+					        	<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(endDt)">
+									AND A.IMAGE_FILE_REGIST_DT BETWEEN RPAD(REPLACE(#{startDt},'-',''),14,'000000')
+							  							           AND RPAD(REPLACE(#{endDt}, '-', ''), 14, '235959')
+								</if>
+							</if>
+							<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(imageTaggingDataDicIdSqList)">
+							AND C.IMAGE_TAGGING_DATA_DIC_ID_SQ IN
+							<foreach collection="imageTaggingDataDicIdSqList" item="item"  open="(" close=")" separator=",">
+					            #{item}
+					        </foreach>
+				        </if>
+						</trim>
+					</where>
+					GROUP BY B.FIRST_IMAGE_TAGGING_DATA_DIC_ID_SQ
+					UNION ALL
+					SELECT
+					      SUBSTR(A.IMAGE_FILE_REGIST_DT,1,8) 							AS imageFileRegistDt,
+					      C.IMAGE_TAGGING_DATA_DIC_NM                   				AS imageTaggingDataDicNm,
+					      COUNT(B.SECOND_IMAGE_TAGGING_DATA_DIC_ID_SQ) 					AS taggingCnt
+					FROM TA_IMAGE_FILE_INFO A, TA_IMAGE_TAGGING_GET_INFO B, TA_IMAGE_TAGGING_DATA_DIC_INFO C
+					<where>
+						<trim prefixOverrides="AND|OR">
+							AND A.IMAGE_FILE_SQ = B.IMAGE_FILE_SQ
+							AND B.SECOND_IMAGE_TAGGING_DATA_DIC_ID_SQ = C.IMAGE_TAGGING_DATA_DIC_ID_SQ
+							<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(startDt)">
+					        	<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(endDt)">
+									AND A.IMAGE_FILE_REGIST_DT BETWEEN RPAD(REPLACE(#{startDt},'-',''),14,'000000')
+							  							           AND RPAD(REPLACE(#{endDt}, '-', ''), 14, '235959')
+								</if>
+							</if>
+							<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(imageTaggingDataDicIdSqList)">
+							AND C.IMAGE_TAGGING_DATA_DIC_ID_SQ IN
+							<foreach collection="imageTaggingDataDicIdSqList" item="item"  open="(" close=")" separator=",">
+					            #{item}
+					        </foreach>
+				        </if>
+						</trim>
+					</where>
+					GROUP BY B.FIRST_IMAGE_TAGGING_DATA_DIC_ID_SQ, B.SECOND_IMAGE_TAGGING_DATA_DIC_ID_SQ
+					UNION ALL
+					SELECT
+					      SUBSTR(A.IMAGE_FILE_REGIST_DT,1,8) 							AS imageFileRegistDt,
+					      C.IMAGE_TAGGING_DATA_DIC_NM                   				AS imageTaggingDataDicNm,
+					      COUNT(B.THIRD_IMAGE_TAGGING_DATA_DIC_ID_SQ) 					AS taggingCnt
+					FROM TA_IMAGE_FILE_INFO A, TA_IMAGE_TAGGING_GET_INFO B, TA_IMAGE_TAGGING_DATA_DIC_INFO C
+					<where>
+						<trim prefixOverrides="AND|OR">
+							AND A.IMAGE_FILE_SQ = B.IMAGE_FILE_SQ
+							AND B.THIRD_IMAGE_TAGGING_DATA_DIC_ID_SQ = C.IMAGE_TAGGING_DATA_DIC_ID_SQ
+							<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(startDt)">
+					        	<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(endDt)">
+									AND A.IMAGE_FILE_REGIST_DT BETWEEN RPAD(REPLACE(#{startDt},'-',''),14,'000000')
+							  							           AND RPAD(REPLACE(#{endDt}, '-', ''), 14, '235959')
+								</if>
+							</if>
+							<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(imageTaggingDataDicIdSqList)">
+							AND C.IMAGE_TAGGING_DATA_DIC_ID_SQ IN
+							<foreach collection="imageTaggingDataDicIdSqList" item="item"  open="(" close=")" separator=",">
+					            #{item}
+					        </foreach>
+				        	</if>
+						</trim>
+					</where>
+					GROUP BY B.FIRST_IMAGE_TAGGING_DATA_DIC_ID_SQ, B.SECOND_IMAGE_TAGGING_DATA_DIC_ID_SQ, B.THIRD_IMAGE_TAGGING_DATA_DIC_ID_SQ
+				) D
+				GROUP BY imageFileRegistDt
+			) F
+			ON TD.DATE_FIELD = F.imageFileRegistDt
+			<where>
+				<trim prefixOverrides="AND|OR">
+					<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(startDt)">
+			        	<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(endDt)">
+							AND TD.DATE_FIELD BETWEEN REPLACE(#{startDt},'-','')
+					  							  AND REPLACE(#{endDt}, '-', '')
+						</if>
+					</if>
+				</trim>
+			</where>
+		) E
+    </select>
+
+	<!-- Pie Chart By Label -->
+    <select id="getPieGraphByLabel" parameterType="ImageFileEntity" resultType="ImageFileEntity">
+		SELECT /* ImageFileMapper.xml, getPieGraphByLabel */
+			GROUP_CONCAT(imageTaggingDataDicNm SEPARATOR ';')						AS imageTaggingDataDicNm,
+			GROUP_CONCAT(taggingCnt SEPARATOR ';')									AS taggingCnt,
+		  	sum(taggingCnt)                                           				AS totalCnt
+		FROM
+		(
+			SELECT
+			      imageTaggingDataDicNm                                				AS imageTaggingDataDicNm,
+			      taggingCnt                                            			AS taggingCnt
+			FROM
+			(
+				SELECT
+					  C.IMAGE_TAGGING_DATA_DIC_NM                   				AS imageTaggingDataDicNm,
+					  COUNT(B.FIRST_IMAGE_TAGGING_DATA_DIC_ID_SQ) 					AS taggingCnt
+				FROM TA_IMAGE_FILE_INFO A, TA_IMAGE_TAGGING_GET_INFO B, TA_IMAGE_TAGGING_DATA_DIC_INFO C
+				WHERE
+					    A.IMAGE_FILE_SQ = B.IMAGE_FILE_SQ
+						AND B.FIRST_IMAGE_TAGGING_DATA_DIC_ID_SQ = C.IMAGE_TAGGING_DATA_DIC_ID_SQ
+						<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(imageTaggingDataDicIdSqList)">
+							AND C.IMAGE_TAGGING_DATA_DIC_ID_SQ IN
+							<foreach collection="imageTaggingDataDicIdSqList" item="item"  open="(" close=")" separator=",">
+					            #{item}
+					        </foreach>
+			        	</if>
+				GROUP BY B.FIRST_IMAGE_TAGGING_DATA_DIC_ID_SQ
+				UNION ALL
+				SELECT
+					  C.IMAGE_TAGGING_DATA_DIC_NM                   				AS imageTaggingDataDicNm,
+					  COUNT(B.SECOND_IMAGE_TAGGING_DATA_DIC_ID_SQ) 					AS taggingCnt
+				FROM TA_IMAGE_FILE_INFO A, TA_IMAGE_TAGGING_GET_INFO B, TA_IMAGE_TAGGING_DATA_DIC_INFO C
+				WHERE
+					    A.IMAGE_FILE_SQ = B.IMAGE_FILE_SQ
+						AND B.SECOND_IMAGE_TAGGING_DATA_DIC_ID_SQ = C.IMAGE_TAGGING_DATA_DIC_ID_SQ
+						<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(imageTaggingDataDicIdSqList)">
+							AND C.IMAGE_TAGGING_DATA_DIC_ID_SQ IN
+							<foreach collection="imageTaggingDataDicIdSqList" item="item"  open="(" close=")" separator=",">
+					            #{item}
+					        </foreach>
+			        	</if>
+				GROUP BY B.FIRST_IMAGE_TAGGING_DATA_DIC_ID_SQ, B.SECOND_IMAGE_TAGGING_DATA_DIC_ID_SQ
+				UNION ALL
+				SELECT
+					  C.IMAGE_TAGGING_DATA_DIC_NM                   				AS imageTaggingDataDicNm,
+					  COUNT(B.THIRD_IMAGE_TAGGING_DATA_DIC_ID_SQ) 					AS taggingCnt
+				FROM TA_IMAGE_FILE_INFO A, TA_IMAGE_TAGGING_GET_INFO B, TA_IMAGE_TAGGING_DATA_DIC_INFO C
+				WHERE
+					    A.IMAGE_FILE_SQ = B.IMAGE_FILE_SQ
+						AND B.THIRD_IMAGE_TAGGING_DATA_DIC_ID_SQ = C.IMAGE_TAGGING_DATA_DIC_ID_SQ
+						<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(imageTaggingDataDicIdSqList)">
+							AND C.IMAGE_TAGGING_DATA_DIC_ID_SQ IN
+							<foreach collection="imageTaggingDataDicIdSqList" item="item"  open="(" close=")" separator=",">
+					            #{item}
+					        </foreach>
+			        	</if>
+				GROUP BY B.FIRST_IMAGE_TAGGING_DATA_DIC_ID_SQ, B.SECOND_IMAGE_TAGGING_DATA_DIC_ID_SQ, B.THIRD_IMAGE_TAGGING_DATA_DIC_ID_SQ
+			) D
+			GROUP BY imageTaggingDataDicNm
+		) E
+    </select>
+
+	<!-- Tagging Dictionary Data -->
+    <select id="getTaggingDicData" parameterType="ImageTaggingDataDicEntity" resultType="ImageTaggingDataDicEntity">
+		SELECT /* ImageFileMapper.xml, getTaggingDicData */
+			IMAGE_TAGGING_DATA_DIC_ID_SQ                          AS imageTaggingDataDicIdSq,    /* 이미지Tagging데이터사전ID일련번호  */
+		    UPPER_IMAGE_TAGGING_DATA_DIC_ID                       AS upperImageTaggingDataDicId, /* 이미지Tagging데이터사전ID          */
+		    IMAGE_TAGGING_DATA_DIC_LEVEL                          AS imageTaggingDataDicLevel,   /* 이미지Tagging데이터사전단계        */
+		    IMAGE_TAGGING_DATA_DIC_NM                             AS imageTaggingDataDicNm,      /* 이미지Tagging데이터사전명          */
+		    IMAGE_TAGGING_DATA_DIC_DESC                           AS imageTaggingDataDicDesc,    /* 이미지Tagging데이터사전설명        */
+		    USE_YN                                                AS useYn,                      /* 사용여부                           */
+			A.INSERT_DT											  AS insertDt,					 /* 등록일시 */
+			A.INSERT_ID											  AS insertId,					 /* 등록자ID */
+			A.UPDATE_DT											  AS updateDt,					 /* 수정일시 */
+			A.UPDATE_ID											  AS updateId					 /* 수정자ID */
+		FROM TA_IMAGE_TAGGING_DATA_DIC_INFO A
+		<where>
+			<trim prefixOverrides="AND|OR">
+				<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(startDt)">
+		        	<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(endDt)">
+						AND A.IMAGE_FILE_REGIST_DT BETWEEN RPAD(REPLACE(#{startDt},'-',''),14,'000000')
+				  							           AND RPAD(REPLACE(#{endDt}, '-', ''), 14, '235959')
+					</if>
+				</if>
+				<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(upperImageTaggingDataDicId)">
+					AND A.UPPER_IMAGE_TAGGING_DATA_DIC_ID = #{upperImageTaggingDataDicId}
+		       </if>
+				<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(imageTaggingDataDicLevel)">
+					AND A.IMAGE_TAGGING_DATA_DIC_LEVEL = #{imageTaggingDataDicLevel}
+		       </if>
+				<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(imageTaggingDataDicIdSqList)">
+					AND A.IMAGE_TAGGING_DATA_DIC_ID_SQ IN
+					<foreach collection="imageTaggingDataDicIdSqList" item="item"  open="(" close=")" separator=",">
+			            #{item}
+			        </foreach>
+	        	</if>
+			</trim>
+		</where>
+    </select>
+</mapper>

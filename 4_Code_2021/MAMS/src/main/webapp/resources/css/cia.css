@@ -1,0 +1,42 @@
+@charset "UTF-8";
+
+
+.test-black {
+  border: 1px solid black !important;
+}
+
+.test-red {
+  border: 1px solid red !important;
+}
+
+.test-blue {
+  border: 1px solid blue !important;
+}
+
+.test-yellow {
+  border: 1px solid yellow !important;
+}
+
+.test-white {
+  border: 1px solid white !important;
+}
+
+.testblack {
+  border: 1px solid black !important;
+}
+
+.testred {
+  border: 1px solid red !important;
+}
+
+.testblue {
+  border: 1px solid blue !important;
+}
+
+.testyellow {
+  border: 1px solid yellow !important;
+}
+
+.testwhite {
+  border: 1px solid white !important;
+}

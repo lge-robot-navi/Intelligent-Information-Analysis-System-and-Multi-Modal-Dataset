@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
+
+	<!--
+		##### SYSTEM #####
+	-->
+	<bean id="vendorProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+		<property name="properties">
+			<props>
+				<prop key="SQL Server">sqlserver</prop>
+				<prop key="DB2">db2</prop>
+				<prop key="Oracle">oracle</prop>
+				<prop key="MySQL">mysql</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="databaseIdProvider" class="org.apache.ibatis.mapping.VendorDatabaseIdProvider">
+		<property name="properties" ref="vendorProperties" />
+	</bean>
+
+	<!-- DataSource -->
+	<bean id="systemDataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<property name="driverClassName"	value="#{systemDB['system.db.driverClassName']}" />
+		<property name="url"				value="#{systemDB['system.db.url']}" />
+		<property name="username"			value="#{systemDB['system.db.username']}" />
+		<property name="password"			value="#{systemDB['system.db.password']}" />
+		<property name="initialSize"		value="#{systemDB['system.db.initialSize']}" />
+	    <property name="maxActive"			value="#{systemDB['system.db.maxActive']}" />
+		<property name="maxIdle"			value="#{systemDB['system.db.maxIdle']}" />
+	    <property name="maxWait"			value="#{systemDB['system.db.maxWait']}" />
+	    <property name="validationQuery"	value="SELECT 1 FROM DUAL" />
+	</bean>
+
+	<!-- MyBatis -->
+	<!-- <bean id="systemSqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean"> -->
+	<bean id="systemSqlSessionFactory" class="com.lge.mams.common.util.RefreshableSqlSessionFactoryBean">
+		<property name="dataSource" ref="systemDataSource" />
+		<property name="configLocation" value="classpath:mybatis/mybatis-system-config.xml" />
+		<property name="mapperLocations">
+			<list>
+				<value>classpath:/config/mybatis/mapper/**/*.xml</value>
+				<value>classpath:/com/lge/crawling/admin/management/**/mapper/*Mapper.xml</value>
+			</list>
+		</property>
+		<property name="databaseIdProvider" ref="databaseIdProvider"/>
+	</bean>
+
+	<bean id="systemSqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg index="0" ref="systemSqlSessionFactory" />
+		<constructor-arg index="1" value="BATCH" />
+	</bean>
+
+	<!-- Mapper Scanner -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+	   <property name="sqlSessionFactoryBeanName" value="systemSqlSessionFactory" />
+	   <property name="basePackage" value="com.lge.mams.**.mapper" />
+	</bean>
+
+	<!-- AOP -->
+	<aop:config proxy-target-class="true">
+		<!-- Transaction -->
+		<aop:pointcut id="systemServiceOperation" expression="execution(* com.lge.mams..*Service.*(..))" />
+		<aop:advisor advice-ref="systemTxAdvice" pointcut-ref="systemServiceOperation" />
+	</aop:config>
+
+	<!-- Transaction Advice -->
+	<tx:advice id="systemTxAdvice" transaction-manager="systemTransactionManager">
+		<tx:attributes>
+			<!-- <tx:method name="get*|is*|select*|query*|search*|do*" propagation="REQUIRED" read-only="true" /> -->
+			<tx:method name="add*" propagation="REQUIRED" rollback-for="Exception" />
+			<tx:method name="insert*" propagation="REQUIRED" rollback-for="Exception" />
+			<tx:method name="update*" propagation="REQUIRED" rollback-for="Exception" />
+			<tx:method name="delete*" propagation="REQUIRED" rollback-for="Exception" />
+			<tx:method name="del*" propagation="REQUIRED" rollback-for="Exception" />
+			<tx:method name="upsert*" propagation="REQUIRED" rollback-for="Exception" />
+			<tx:method name="*" propagation="REQUIRED" rollback-for="Exception" read-only="true" />
+		</tx:attributes>
+	</tx:advice>
+
+	<!-- Transaction Manager -->
+	<bean id="systemTransactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="systemDataSource" />
+	</bean>
+
+	<!-- Logging -->
+	<bean id="logDataSource_pos" class="net.sf.log4jdbc.Log4jdbcProxyDataSource">
+		<constructor-arg ref="systemDataSource" />
+		<!-- <property name="logFormatter">
+			<bean class="net.sf.log4jdbc.tools.Log4JdbcCustomFormatter">
+				<property name="loggingType" value="MULTI_LINE" />
+				<property name="margin" value="19" />
+				<property name="sqlPrefix" value="SQL ====> " />
+			</bean>
+		</property> -->
+	</bean>
+</beans>

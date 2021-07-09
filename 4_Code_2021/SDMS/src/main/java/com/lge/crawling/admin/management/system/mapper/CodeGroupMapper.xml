@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lge.crawling.admin.management.system.mapper.CodeGroupMapper">
+
+	<!-- Code Group -->
+	<sql id="field">
+		G.CDGRP_CD			AS cdgrpCd,		/* 그룹코드 */
+		G.CDGRP_NM			AS cdgrpNm,		/* 그룹코드명 */
+		G.CDGRP_DS			AS cdgrpDs,		/* 그룹코드 설명 */
+		G.USE_YN			AS useYn,		/* 사용여부 */
+		G.ORDER_NO			AS orderNo,		/* 정렬순서 */
+		G.INSERT_DT			AS insertDt,	/* 등록일시 */
+		G.INSERT_ID         AS insertId,	/* 등록자 ID */
+		G.UPDATE_DT         AS updateDt,	/* 수정일시 */
+		G.UPDATE_ID         AS updateId		/* 수정자 ID */
+	</sql>
+
+	<sql id="fragment">
+		FROM TA_CODE_GRP_INFO G
+		<where>
+			<trim prefixOverrides="AND|OR">
+				<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(cdgrpCd)">
+					AND G.CDGRP_CD = #{cdgrpCd}
+				</if>
+				<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(cdgrpNm)">
+					AND G.CDGRP_NM LIKE CONCAT('%',#{cdgrpNm},'%')
+				</if>
+				<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(useYn)">
+					AND G.USE_YN = #{useYn}
+				</if>
+				<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(searchWd)">
+					AND G.CDGRP_CD LIKE CONCAT('%',#{searchWd},'%')
+				</if>
+			</trim>
+		</where>
+	</sql>
+
+	<select id="get" parameterType="CodeGroupEntity" resultType="CodeGroupEntity">
+	   SELECT /* CodeGroupMapper.xml, get */
+            <include refid="field"/>
+		    <include refid="fragment"/>
+	</select>
+
+	<select id="getList" parameterType="CodeGroupEntity" resultType="CodeGroupEntity">
+		<include refid="Common.PagingStart" />
+		   SELECT /* CodeGroupMapper.xml, getList */
+	            <include refid="field"/>
+			    <include refid="fragment"/>
+		   ORDER BY G.ORDER_NO
+        <include refid="Common.PagingEnd" />
+	</select>
+
+	<select id="getAllList" parameterType="CodeGroupEntity" resultType="CodeGroupEntity">
+	   SELECT /* CodeGroupMapper.xml, getAllList */
+            <include refid="field"/>
+		    <include refid="fragment"/>
+		ORDER BY G.ORDER_NO
+	</select>
+
+	<select id="count" parameterType="CodeGroupEntity" resultType="Integer">
+		SELECT /* CodeGroupMapper.xml, count */
+		       COUNT(1) AS CNT
+            <include refid="fragment"/>
+	</select>
+
+    <!-- 코드그룹의 다음 정렬순서번호를 가져온다. -->
+	<select id="getNextOrderNo" parameterType="CodeGroupEntity" resultType="Integer">
+		SELECT IFNULL(MAX(ORDER_NO), 1000) + 1
+		  FROM TA_CODE_GRP_INFO
+	</select>
+
+	<insert id="insert" parameterType="CodeGroupEntity">
+		INSERT /* CodeGroupMapper.xml, insert */
+		INTO TA_CODE_GRP_INFO (
+			CDGRP_CD, CDGRP_NM, CDGRP_DS, USE_YN,
+			ORDER_NO,
+			INSERT_DT, INSERT_ID, UPDATE_DT, UPDATE_ID
+		) VALUES (
+			#{cdgrpCd}, #{cdgrpNm}, #{cdgrpDs}, #{useYn},
+			#{orderNo},
+			NOW(), #{loginIDInSession}, NOW(), #{loginIDInSession}
+		)
+	</insert>
+
+	<update id="update" parameterType="CodeGroupEntity">
+		UPDATE	/* CodeGroupMapper.xml, update */
+		        TA_CODE_GRP_INFO
+		   SET	CDGRP_NM			= #{cdgrpNm},
+				CDGRP_DS			= #{cdgrpDs},
+				USE_YN				= #{useYn},
+				ORDER_NO			= #{orderNo},
+				UPDATE_DT			= NOW(),
+				UPDATE_ID			= #{loginIDInSession}
+		WHERE	CDGRP_CD			= #{cdgrpCd}
+	</update>
+	<!-- // Code Group -->
+</mapper>

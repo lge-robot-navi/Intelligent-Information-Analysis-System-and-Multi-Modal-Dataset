@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN" "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
+
+<tiles-definitions>
+
+	<!-- Default -->
+	<definition name=".default" template="/template/default/layout.jsp">
+		<put-attribute name="header" value="/template/default/header.jsp"></put-attribute>
+		<put-attribute name="title"  value="LG Multi Agent Monitoring System"></put-attribute>
+		<put-attribute name="body"   value="/template/default/body.jsp"></put-attribute>
+		<put-attribute name="left"   value="/template/default/left.jsp"></put-attribute>
+	</definition>
+
+	<definition name="*.default" extends=".default">
+		<put-attribute name="body" value="/WEB-INF/views/{1}.jsp" />
+	</definition>
+	<definition name="*/*.default" extends=".default">
+		<put-attribute name="body" value="/WEB-INF/views/{1}/{2}.jsp" />
+	</definition>
+	<definition name="*/*/*.default" extends=".default">
+		<put-attribute name="body" value="/WEB-INF/views/{1}/{2}/{3}.jsp" />
+	</definition>
+	<definition name="*/*/*/*.default" extends=".default">
+		<put-attribute name="body" value="/WEB-INF/views/{1}/{2}/{3}/{4}.jsp" />
+	</definition>
+	<definition name="*/*/*/*/*.default" extends=".default">
+		<put-attribute name="body" value="/WEB-INF/views/{1}/{2}/{3}/{4}/{5}.jsp" />
+	</definition>
+	<!-- // Default -->
+
+	<!-- Layout Empty -->
+	<definition name=".empty" template="/template/empty/layout.jsp">
+		<put-attribute name="body" value=""></put-attribute>
+	</definition>
+
+	<definition name="*.empty" extends=".empty">
+		<put-attribute name="body" value="/WEB-INF/views/{1}.jsp" />
+	</definition>
+	<definition name="*/*.empty" extends=".empty">
+		<put-attribute name="body" value="/WEB-INF/views/{1}/{2}.jsp" />
+	</definition>
+	<definition name="*/*/*.empty" extends=".empty">
+		<put-attribute name="body" value="/WEB-INF/views/{1}/{2}/{3}.jsp" />
+	</definition>
+	<definition name="*/*/*/*.empty" extends=".empty">
+		<put-attribute name="body" value="/WEB-INF/views/{1}/{2}/{3}/{4}.jsp" />
+	</definition>
+	<definition name="*/*/*/*/*.empty" extends=".empty">
+		<put-attribute name="body" value="/WEB-INF/views/{1}/{2}/{3}/{4}/{5}.jsp" />
+	</definition>
+	<!-- // Layout Empty -->
+
+	<!-- Popup Layout -->
+	<definition name=".popup" template="/template/popup/layout.jsp">
+		<put-attribute name="title"  value="LG Multi Agent Monitoring System"></put-attribute>
+		<put-attribute name="body" value=""></put-attribute>
+	</definition>
+
+	<definition name="*.popup" extends=".popup">
+		<put-attribute name="body" value="/WEB-INF/views/{1}.jsp" />
+	</definition>
+	<definition name="*/*.popup" extends=".popup">
+		<put-attribute name="body" value="/WEB-INF/views/{1}/{2}.jsp" />
+	</definition>
+	<definition name="*/*/*.popup" extends=".popup">
+		<put-attribute name="body" value="/WEB-INF/views/{1}/{2}/{3}.jsp" />
+	</definition>
+	<definition name="*/*/*/*.popup" extends=".popup">
+		<put-attribute name="body" value="/WEB-INF/views/{1}/{2}/{3}/{4}.jsp" />
+	</definition>
+	<definition name="*/*/*/*/*.popup" extends=".popup">
+		<put-attribute name="body" value="/WEB-INF/views/{1}/{2}/{3}/{4}/{5}.jsp" />
+	</definition>
+	<!-- // Popup Layout -->
+
+	<!-- Template Layout -->
+	<definition name=".tmpl" template="/template/tmpl/layout.jsp">
+		<put-attribute name="title"  value="LG Multi Agent Monitoring System"></put-attribute>
+		<put-attribute name="body" value=""></put-attribute>
+	</definition>
+
+	<definition name="*.tmpl" extends=".tmpl">
+		<put-attribute name="body" value="/WEB-INF/views/{1}.jsp" />
+	</definition>
+	<definition name="*/*.tmpl" extends=".tmpl">
+		<put-attribute name="body" value="/WEB-INF/views/{1}/{2}.jsp" />
+	</definition>
+	<definition name="*/*/*.tmpl" extends=".tmpl">
+		<put-attribute name="body" value="/WEB-INF/views/{1}/{2}/{3}.jsp" />
+	</definition>
+	<definition name="*/*/*/*.tmpl" extends=".tmpl">
+		<put-attribute name="body" value="/WEB-INF/views/{1}/{2}/{3}/{4}.jsp" />
+	</definition>
+	<definition name="*/*/*/*/*.tmpl" extends=".tmpl">
+		<put-attribute name="body" value="/WEB-INF/views/{1}/{2}/{3}/{4}/{5}.jsp" />
+	</definition>
+	<!-- // Template Layout -->
+
+</tiles-definitions>

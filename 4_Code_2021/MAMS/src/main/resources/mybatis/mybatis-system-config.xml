@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+	<settings>
+		<setting name="cacheEnabled" value="true" />
+
+		<!-- mybatis cglib hard coding 문제로 일단 false로 설정 -->
+		<setting name="lazyLoadingEnabled" value="false" />
+
+		<setting name="multipleResultSetsEnabled" value="true" />
+		<setting name="useColumnLabel" value="true" />
+		<setting name="useGeneratedKeys" value="false" />
+		<setting name="autoMappingBehavior" value="PARTIAL" />
+		<setting name="defaultExecutorType" value="SIMPLE" />
+		<setting name="defaultStatementTimeout" value="25" />
+		<setting name="safeRowBoundsEnabled" value="false" />
+		<setting name="mapUnderscoreToCamelCase" value="false" />
+		<setting name="localCacheScope" value="SESSION" />
+		<setting name="jdbcTypeForNull" value="VARCHAR" />
+		<setting name="lazyLoadTriggerMethods" value="equals,clone,hashCode,toString" />
+	</settings>
+
+	<typeAliases>
+		<package name="com.lge.mams.api.web.entity" />
+		<package name="com.lge.mams.management.system.entity" />
+		<package name="com.lge.mams.management.image.entity" />
+		<package name="com.lge.mams.management.imageInfo.entity" />
+		<package name="com.lge.mams.management.imageTaggingDic.entity" />
+		<package name="com.lge.mams.management.statistics.entity" />
+        <package name="com.lge.mams.management.sensorData.entity" />		
+        <package name="com.lge.mams.management.sensorDataInfo.entity" />
+	</typeAliases>
+</configuration>

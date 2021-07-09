@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lge.mams.management.system.mapper.GroupAuthMapper">
+
+	<sql id="field">
+		SELECT B.ADMIN_GRP_ID        AS adminGrpId,
+			   B.ADMIN_GRP_NM        AS adminGrpNm,
+			   B.ADMIN_GRP_DS        AS adminGrpDs,
+			   B.USE_YN			     AS useYn
+	</sql>
+
+	<sql id="fragment">
+		FROM TA_GROUP_AUTH A
+		RIGHT OUTER JOIN TA_ADMIN_GRP B
+		  ON A.ADMIN_GRP_ID = B.ADMIN_GRP_ID
+		<where>
+			<trim prefixOverrides="AND|OR">
+				<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(adminGrpId)">
+					AND B.ADMIN_GRP_ID = #{adminGrpId}
+				</if>
+				<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(adminGrpNm)">
+					AND B.ADMIN_GRP_NM RLIKE #{adminGrpNm}
+				</if>
+				<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(useYn)">
+					AND B.USE_YN = #{useYn}
+				</if>
+			</trim>
+		</where>
+		GROUP BY B.ADMIN_GRP_ID, B.ADMIN_GRP_NM, B.ADMIN_GRP_DS, B.USE_YN
+	</sql>
+
+	<select id="get" parameterType="GroupAuthEntity" resultType="GroupAuthEntity">
+        SELECT /* GroupAuthMapper.xml, get */
+               A.*
+          FROM (
+			<include refid="field"/>
+			<include refid="fragment"/>
+        ) A
+	</select>
+
+	<select id="getList" parameterType="GroupAuthEntity" resultType="GroupAuthEntity">
+        SELECT /* GroupAuthMapper.xml, getList */
+               A.*
+          FROM (
+            <include refid="Common.PagingStart" />
+				<include refid="field"/>
+				<include refid="fragment"/>
+            <include refid="Common.PagingEnd" />
+        ) A
+		ORDER BY A.adminGrpId
+	</select>
+
+	<select id="getAllList" parameterType="GroupAuthEntity" resultType="GroupAuthEntity">
+        SELECT /* GroupAuthMapper.xml, getList */
+               A.*
+        FROM (
+			<include refid="field"/>
+			<include refid="fragment"/>
+        ) A
+		ORDER BY A.adminGrpId
+	</select>
+
+	<select id="count" parameterType="GroupAuthEntity" resultType="Integer">
+		SELECT /* GroupAuthMapper.xml, count */
+		       COUNT(1) AS CNT
+		FROM (
+			<include refid="field"/>
+			<include refid="fragment"/>
+		) X
+	</select>
+
+	<insert id="insert" parameterType="ProgramTreeEntity">
+		INSERT /* GroupAuthMapper.xml, insert */
+		  INTO TA_GROUP_AUTH (
+			ADMIN_GRP_ID, PGM_ID,
+			INSERT_DT, INSERT_ID, UPDATE_DT, UPDATE_ID,
+			AUTH_SEL,
+			AUTH_INS,
+			AUTH_UPD,
+			AUTH_DEL
+		) VALUES (
+			#{adminGrpId}, #{pgmId},
+			NOW(), #{loginIDInSession}, NOW(), #{loginIDInSession},
+			IFNULL(#{authSel}, 'N'),
+			IFNULL(#{authIns}, 'N'),
+			IFNULL(#{authUpd}, 'N'),
+			IFNULL(#{authDel}, 'N')
+		)
+	</insert>
+
+	<delete id="delete" parameterType="GroupAuthFormEntity">
+		DELETE /* GroupAuthMapper.xml, delete */
+		  FROM TA_GROUP_AUTH
+		 WHERE ADMIN_GRP_ID = #{adminGrpId}
+	</delete>
+
+	<!-- Program List -->
+	<resultMap type="ProgramTreeRcsvEntity" id="ProgramTreeRcsvResultMap">
+		<result column="pgmId"	property="pgmId" />
+		<result column="pgmNm"	property="pgmNm" />
+		<result column="urlDs"	property="urlDs" />
+		<result column="iconDs" property="iconDs" />
+		<result column="rankNo" property="rankNo" />
+		<result column="pgmTp" property="pgmTp" />
+		<result column="useYn" property="useYn" />
+		<result column="upperPgmId" property="upperPgmId" />
+		<result column="ynSel" property="ynSel" />
+		<result column="ynIns" property="ynIns" />
+		<result column="ynUpd" property="ynUpd" />
+		<result column="ynDel" property="ynDel" />
+		<result column="authSel" property="authSel" />
+		<result column="authIns" property="authIns" />
+		<result column="authUpd" property="authUpd" />
+		<result column="authDel" property="authDel" />
+		<result column="childCnt" property="childCnt" />
+	</resultMap>
+
+	<select id="getProgramList" parameterType="ProgramTreeRcsvEntity" resultMap="ProgramTreeRcsvResultMap">
+		SELECT /* GroupAuthMapper.xml, getProgramList */
+			   P.PGM_ID                                     AS pgmId,
+               P.PGM_NM                                     AS pgmNm,
+               P.URL_DS                                     AS urlDs,
+               P.ICON_DS									AS iconDs,
+               P.RANK_NO                                    AS rankNo,
+               P.PGM_TP                                     AS pgmTp,
+               P.USE_YN                                     AS useYn,
+               P.UPPER_PGM_ID                               AS upperPgmId,
+               IFNULL(P.AUTH_SEL, 'N')                         AS ynSel,
+               IFNULL(P.AUTH_INS, 'N')                         AS ynIns,
+               IFNULL(P.AUTH_UPD, 'N')                         AS ynUpd,
+               IFNULL(P.AUTH_DEL, 'N')                         AS ynDel,
+               IFNULL(A.AUTH_SEL, 'N')                         AS authSel,
+               IFNULL(A.AUTH_INS, 'N')                         AS authIns,
+               IFNULL(A.AUTH_UPD, 'N')                         AS authUpd,
+               IFNULL(A.AUTH_DEL, 'N')                         AS authDel,
+               (SELECT COUNT(1) AS CNT FROM TA_PROGRAM Y
+                 WHERE Y.UPPER_PGM_ID = P.PGM_ID)           AS childCnt
+		FROM (
+		    SELECT P.UPPER_PGM_ID AS UPPER_PGM_ID,
+		           'ROOT'         AS UPPER_PGM_NM,
+		           P.PGM_ID       AS PGM_ID,
+		           P.PGM_NM       AS PGM_NM,
+		           P.PGM_TP       AS PGM_TP,
+		           P.URL_DS       AS URL_DS,
+		           P.ICON_DS      AS ICON_DS,
+		           P.USE_YN       AS USE_YN,
+		           P.AUTH_SEL     AS AUTH_SEL,
+		           P.AUTH_INS     AS AUTH_INS,
+		           P.AUTH_UPD     AS AUTH_UPD,
+		           P.AUTH_DEL     AS AUTH_DEL,
+		           P.RANK_NO      AS RANK_NO
+		    FROM TA_PROGRAM P
+		    WHERE P.UPPER_PGM_ID = '1000'
+		    AND P.USE_YN = 'Y'
+		    UNION ALL
+		    SELECT P.PGM_ID       AS UPPER_PGM_ID,
+		           P.PGM_NM       AS UPPER_PGM_NM,
+		           C.PGM_ID       AS PGM_ID,
+		           C.PGM_NM       AS PGM_NM,
+		           C.PGM_TP       AS PGM_TP,
+		           C.URL_DS       AS URL_DS,
+		           C.ICON_DS      AS ICON_DS,
+		           C.USE_YN       AS USE_YN,
+		           C.AUTH_SEL     AS AUTH_SEL,
+		           C.AUTH_INS     AS AUTH_INS,
+		           C.AUTH_UPD     AS AUTH_UPD,
+		           C.AUTH_DEL     AS AUTH_DEL,
+		           C.RANK_NO      AS RANK_NO
+		    FROM TA_PROGRAM P, TA_PROGRAM C
+		    WHERE P.PGM_ID = C.UPPER_PGM_ID
+		    AND P.USE_YN = 'Y'
+		    AND C.USE_YN = 'Y'
+		) P
+		LEFT OUTER JOIN (
+				SELECT * FROM TA_GROUP_AUTH
+            	<where>
+            		<trim prefixOverrides="AND|OR">
+		            	<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(adminGrpId)">
+							AND ADMIN_GRP_ID = #{adminGrpId}
+						</if>
+            		</trim>
+            	</where>
+		) A
+        ON P.PGM_ID = A.PGM_ID
+        ORDER BY P.UPPER_PGM_ID, P.RANK_NO DESC
+	</select>
+	<!-- // Program Auth List -->
+
+	<!-- Main Menu (Group Auth Menu)-->
+	<resultMap type="ProgramTreeRcsvEntity" id="getGroupAuthMenuResultMap">
+		<result column="upperPgmId"	property="upperPgmId" />
+		<result column="upperPgmNm"	property="upperPgmNm" />
+		<result column="pgmId"	property="pgmId" />
+		<result column="pgmNm"	property="pgmNm" />
+		<result column="pgmTp" property="pgmTp" />
+		<result column="urlDs"	property="urlDs" />
+		<result column="iconDs" property="iconDs" />
+		<result column="rankNo" property="rankNo" />
+		<result column="useYn" property="useYn" />
+		<result column="upperPgmId" property="upperPgmId" />
+		<result column="ynSel" property="ynSel" />
+		<result column="ynIns" property="ynIns" />
+		<result column="ynUpd" property="ynUpd" />
+		<result column="ynDel" property="ynDel" />
+		<result column="authSel" property="authSel" />
+		<result column="authIns" property="authIns" />
+		<result column="authUpd" property="authUpd" />
+		<result column="authDel" property="authDel" />
+		<result column="levelNo" property="levelNo" />
+		<result column="childCnt" property="childCnt" />
+	</resultMap>
+
+	<select id="getGroupAuthMenu" parameterType="ProgramTreeRcsvEntity" resultMap="getGroupAuthMenuResultMap">
+		SELECT /* GroupAuthMapper.xml, getGroupAuthMenu */
+               X.UPPER_PGM_ID                               AS upperPgmId,
+               X.UPPER_PGM_NM                               AS upperPgmNm,
+		       X.PGM_ID                                     AS pgmId,
+               X.PGM_NM                                     AS pgmNm,
+               X.PGM_TP                                     AS pgmTp,
+               X.URL_DS                                     AS urlDs,
+               X.ICON_DS									AS iconDs,
+               X.RANK_NO                                    AS rankNo,
+               X.USE_YN                                     AS useYn,
+               IFNULL(X.AUTH_SEL, 'N')                         AS ynSel,
+               IFNULL(X.AUTH_INS, 'N')                         AS ynIns,
+               IFNULL(X.AUTH_UPD, 'N')                         AS ynUpd,
+               IFNULL(X.AUTH_DEL, 'N')                         AS ynDel,
+               IFNULL(A.AUTH_SEL, 'N')                         AS authSel,
+               IFNULL(A.AUTH_INS, 'N')                         AS authIns,
+               IFNULL(A.AUTH_UPD, 'N')                         AS authUpd,
+               IFNULL(A.AUTH_DEL, 'N')                         AS authDel,
+               ${levelNo}                                   AS levelNo,
+               (SELECT COUNT(1) AS CNT FROM TA_PROGRAM Y
+                 WHERE Y.UPPER_PGM_ID = X.PGM_ID
+                   AND Y.USE_YN = 'Y')                      AS childCnt
+		FROM (
+		    SELECT P.UPPER_PGM_ID AS UPPER_PGM_ID,
+		           'ROOT'         AS UPPER_PGM_NM,
+		           P.PGM_ID       AS PGM_ID,
+		           P.PGM_NM       AS PGM_NM,
+		           P.PGM_TP       AS PGM_TP,
+		           P.URL_DS       AS URL_DS,
+		           P.ICON_DS      AS ICON_DS,
+		           P.USE_YN       AS USE_YN,
+		           P.AUTH_SEL     AS AUTH_SEL,
+		           P.AUTH_INS     AS AUTH_INS,
+		           P.AUTH_UPD     AS AUTH_UPD,
+		           P.AUTH_DEL     AS AUTH_DEL,
+		           P.RANK_NO      AS RANK_NO
+		    FROM TA_PROGRAM P
+		    WHERE P.UPPER_PGM_ID = '1000'
+		    AND P.USE_YN = 'Y'
+		    UNION ALL
+		    SELECT P.PGM_ID       AS UPPER_PGM_ID,
+		           P.PGM_NM       AS UPPER_PGM_NM,
+		           C.PGM_ID       AS PGM_ID,
+		           C.PGM_NM       AS PGM_NM,
+		           C.PGM_TP       AS PGM_TP,
+		           C.URL_DS       AS URL_DS,
+		           C.ICON_DS      AS ICON_DS,
+		           C.USE_YN       AS USE_YN,
+		           C.AUTH_SEL     AS AUTH_SEL,
+		           C.AUTH_INS     AS AUTH_INS,
+		           C.AUTH_UPD     AS AUTH_UPD,
+		           C.AUTH_DEL     AS AUTH_DEL,
+		           C.RANK_NO      AS RANK_NO
+		    FROM TA_PROGRAM P, TA_PROGRAM C
+		    WHERE P.PGM_ID = C.UPPER_PGM_ID
+		    AND P.USE_YN = 'Y'
+		    AND C.USE_YN = 'Y'
+		) X, TA_GROUP_AUTH A
+		WHERE X.PGM_ID = A.PGM_ID
+		AND A.AUTH_SEL = 'Y'
+			<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(adminGrpId)">
+				AND A.ADMIN_GRP_ID = #{adminGrpId}
+			</if>
+		ORDER BY X.UPPER_PGM_ID, X.RANK_NO DESC
+	</select>
+
+	<resultMap type="ProgramEntity" id="mainMenu">
+		<result property="pgmId"		column="pgmId" />
+		<result property="pgmNm"		column="pgmNm" />
+		<result property="rankNo" 		column="rankNo" />
+		<collection property="subPrograms" column="{upperPgmId=pgmId,adminGrpId=adminGrpId}" select="com.lge.mams.management.system.mapper.GroupAuthMapper.subList" />
+	</resultMap>
+
+	<select id="groupAuthMenu" resultMap="mainMenu">
+		SELECT /* GroupAuthMapper.xml, groupAuthMenu */
+				DISTINCT C.PGM_ID			AS pgmId,
+						 C.PGM_NM			AS pgmNm,
+			   			 C.RANK_NO			AS rankNo,
+			   			 A.ADMIN_GRP_ID		AS adminGrpId
+		  FROM TA_GROUP_AUTH A, TA_PROGRAM B, TA_PROGRAM C
+		 WHERE A.PGM_ID 		= B.PGM_ID
+		   AND B.UPPER_PGM_ID 	= C.PGM_ID
+		   AND B.USE_YN			= 'Y'
+		   AND A.ADMIN_GRP_ID	= #{adminGrpId}
+		 ORDER BY C.RANK_NO
+	</select>
+	<!-- // Main Menu (Auth Menu)-->
+
+	<!-- Sub Menu -->
+	<resultMap type="ProgramEntity" id="subMenu">
+		<result property="pgmId" 	column="pgmId" />
+		<result property="pgmNm" 	column="pgmNm" />
+		<result property="urlDs" 	column="urlDs" />
+		<result property="authSel" 	column="authSel" />
+		<result property="authIns" 	column="authIns" />
+		<result property="authUpd" 	column="authUpd" />
+		<result property="authDel" 	column="authDel" />
+	</resultMap>
+
+	<select id="subList" resultMap="subMenu">
+		SELECT /* GroupAuthMapper.xml, subList */
+			   BB.PGM_ID		AS pgmId,
+			   BB.PGM_NM		AS pgmNm,
+			   BB.URL_DS		AS urlDs,
+			   AA.AUTH_SEL		AS authSel,
+			   AA.AUTH_INS		AS authIns,
+			   AA.AUTH_UPD		AS authUpd,
+			   AA.AUTH_DEL		AS authDel
+		  FROM TA_GROUP_AUTH AA, TA_PROGRAM BB
+		 WHERE AA.PGM_ID		= BB.PGM_ID
+		   AND AA.ADMIN_GRP_ID	= #{adminGrpId}
+		   AND BB.UPPER_PGM_ID	= #{upperPgmId}
+		   AND BB.USE_YN		= 'Y'
+		 ORDER BY BB.RANK_NO
+	</select>
+	<!-- // Sub Menu -->
+</mapper>

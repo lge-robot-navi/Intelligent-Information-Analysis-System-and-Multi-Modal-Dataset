@@ -1,0 +1,49 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/**/**" />
+			<mvc:exclude-mapping path="/resources/**/*"/>
+			<bean class="com.lge.mams.web.interceptor.AclInterceptor" />
+		</mvc:interceptor>
+
+		<mvc:interceptor>
+			<mvc:mapping path="/**/**" />
+			<mvc:exclude-mapping path="/"/>
+			<mvc:exclude-mapping path="/test/**/*"/>
+			<mvc:exclude-mapping path="/js/**/*"/>
+			<mvc:exclude-mapping path="/css/**/*"/>
+			<mvc:exclude-mapping path="/agentif/**/*"/>
+			<mvc:exclude-mapping path="/api/**/*"/>
+			<mvc:exclude-mapping path="/resources/**/*"/>
+			<mvc:exclude-mapping path="/login"/>
+			<mvc:exclude-mapping path="/logout"/>
+			<mvc:exclude-mapping path="/main"/>
+			<mvc:exclude-mapping path="/main_ms"/>		
+			<mvc:exclude-mapping path="/index"/>			
+			<mvc:exclude-mapping path="/agent-info"/>		
+			<mvc:exclude-mapping path="/profile"/>
+			<mvc:exclude-mapping path="/system/admin/updatePop"/>
+			<mvc:exclude-mapping path="/no-session"/>
+			<mvc:exclude-mapping path="/no-authority"/>
+			<mvc:exclude-mapping path="/monitoring/**/rest/**"/>
+			<mvc:exclude-mapping path="/system/recording/**"/>
+			<mvc:exclude-mapping path="/system/event/**/*"/>
+			<mvc:exclude-mapping path="/system/stat/**/*"/>
+			<mvc:exclude-mapping path="/mntr/**/*"/>
+			<mvc:exclude-mapping path="/mqtt/test"/>
+			<bean class="com.lge.mams.web.interceptor.LoginCheckInterceptor" />
+		</mvc:interceptor>
+
+		<mvc:interceptor>
+        	<mvc:mapping path="/**/*"/>
+			<bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+				<property name="paramName" value="lang"/>
+			</bean>
+      	</mvc:interceptor>
+	</mvc:interceptors>
+</beans>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lge.mams.management.system.mapper.ProgramFancytreeMapper">
+
+    <sql id="field">
+    	<if test="_databaseId == 'oracle'">
+	    	/* Tree - ORACLE */
+	    	P.PGM_ID										AS treeId,
+	        P.PGM_NM										AS title,
+	        CASE P.PGM_TP WHEN 'M' THEN 0 ELSE 1 END		AS folder,
+	    	P.PGM_ID										AS pgmId,
+	        P.PGM_NM										AS pgmNm,
+	        P.URL_DS										AS urlDs,
+	        P.ICON_DS										AS iconDs,
+	        P.RANK_NO										AS rankNo,
+	        P.PGM_TP										AS pgmTp,
+	        CASE P.AUTH_SEL WHEN 'Y' THEN 1 ELSE 0 END		AS ynSel,
+	        CASE P.AUTH_INS WHEN 'Y' THEN 1 ELSE 0 END		AS ynIns,
+	        CASE P.AUTH_UPD WHEN 'Y' THEN 1 ELSE 0 END		AS ynUpd,
+	        CASE P.AUTH_DEL WHEN 'Y' THEN 1 ELSE 0 END		AS ynDel,
+	        P.USE_YN										AS useYn,
+	        P.UPPER_PGM_ID									AS upperPgmId,
+	        IFNULL((SELECT 1
+	        	   FROM TA_PROGRAM X
+		          WHERE X.UPPER_PGM_ID = P.PGM_ID
+		            AND ROWNUM = 1), 0)				        AS lazy        /* lazy load 여부 */
+    	</if>
+    	
+    	<if test="_databaseId == 'mysql'">
+    		/* Tree - MySQL */
+	    	P.PGM_ID								AS treeId,
+	        P.PGM_NM								AS title,
+	        CASE P.PGM_TP WHEN 'M' THEN true
+	                      ELSE false
+	        END										AS folder,
+	    	P.PGM_ID								AS pgmId,
+	        P.PGM_NM								AS pgmNm,
+	        P.URL_DS								AS urlDs,
+	        P.ICON_DS								AS iconDs,
+	        P.RANK_NO								AS rankNo,
+	        P.PGM_TP								AS pgmTp,
+	        P.AUTH_SEL								AS ynSel,
+	        P.AUTH_INS								AS ynIns,
+	        P.AUTH_UPD								AS ynUpd,
+	        P.AUTH_DEL								AS ynDel,
+	        P.USE_YN								AS useYn,
+	        P.UPPER_PGM_ID							AS upperPgmId,
+	        IFNULL((SELECT 'true' FROM TA_PROGRAM X
+		             WHERE X.UPPER_PGM_ID = P.PGM_ID
+		             LIMIT 1), 'false')             AS lazy        /* lazy load 여부 */
+    	</if>
+    </sql>
+    
+    <sql id="fragment">
+    	FROM TA_PROGRAM P
+    	<where>
+    		<trim prefixOverrides="AND|OR">
+	            <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(upperPgmId)">
+	                AND UPPER_PGM_ID = #{upperPgmId}
+	            </if>
+	            <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(pgmId)">
+	                AND PGM_ID = #{pgmId}
+	            </if>
+    		</trim>
+    	</where>
+    </sql>
+
+	<select id="getAllList" parameterType="ProgramFancytreeEntity" resultType="ProgramFancytreeEntity">
+		SELECT /* ProgramFancytreeMapper.xml, getAllList */
+			<include refid="field"/>
+			<include refid="fragment"/>
+		ORDER BY RANK_NO
+    </select>
+</mapper>

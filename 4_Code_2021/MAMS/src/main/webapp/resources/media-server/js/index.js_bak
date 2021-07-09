@@ -1,0 +1,295 @@
+/*
+* (C) Copyright 2014 Kurento (http://kurento.org/)
+*
+* All rights reserved. This program and the accompanying materials
+* are made available under the terms of the GNU Lesser General Public License
+* (LGPL) version 2.1 which accompanies this distribution, and is available at
+* http://www.gnu.org/licenses/lgpl-2.1.html
+*
+* This library is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+* Lesser General Public License for more details.
+*
+*/
+var AGENT_NUM = 1;
+var isStarted = true;
+function getopts(args, opts)
+{
+  var result = opts.default || {};
+  args.replace(
+      new RegExp("([^?=&]+)(=([^&]*))?", "g"),
+      function($0, $1, $2, $3) { result[$1] = $3; });
+
+  return result;
+};
+
+var args = getopts(location.search,
+{
+
+  default:
+  {
+    ws_uri: 'ws://' + location.hostname + ':8888/kurento',
+    ice_servers: undefined
+  }
+});
+
+if (args.ice_servers) {
+  console.log("Use ICE servers: " + args.ice_servers);
+  kurentoUtils.WebRtcPeer.prototype.server.iceServers = JSON.parse(args.ice_servers);
+} else {
+  console.log("Use freeice")
+}
+
+
+window.addEventListener('load', function(){
+  console = new Console('console', console);
+  startStreaming();
+});
+
+function startStreaming() {
+  var videoOutput = new Array();
+  var address = new Array();
+  var pipeline = new Array();
+  var webRtcPeer = new Array();
+  var options = new Array();
+  isStarted = true;
+
+  for(var i=1; i<AGENT_NUM+1; i++) {
+
+    options[i] = {
+      remoteVideo : videoOutput[i],
+      useEncodedMedia: true
+    };
+
+    webRtcPeer[i] = kurentoUtils.WebRtcPeer.WebRtcPeerRecvonly(options[i], function(error)
+    {
+      if(error) return console.error(error);
+    });
+    webRtcPeer[i].generateOffer(onOffer, i);
+    videoOutput[i] = document.getElementById('videoOutput'+i);
+
+    address[i] = 'rtsp://106.245.234.244:1000' + i + '/unicast';
+    (function(m) {
+      videoOutput[m].addEventListener('click', function() {
+        console.log("videoOutput[i].addEventListener : " + m);
+        startSoloView(m);
+      });
+    })(i);
+
+    showSpinner(videoOutput[i]);
+    console.log("address " + address[i] + "  " + videoOutput[i].id);
+  }
+
+  // startButton = document.getElementById('start');
+  // startButton.addEventListener('click', start);
+
+  stopButton = document.getElementById('stop');
+  stopButton.addEventListener('click', stop);
+
+
+  stopSolo = document.getElementsByClassName("close")[0];
+  stopSolo.addEventListener('click', stopSoloView);
+
+  function startSoloView(idx) {
+
+    console.log("startSolo : " + idx);
+    if(!isStarted) {
+      return;
+    }
+    videoOutput[0] = document.getElementById('videoOutput0');
+    address[0] = 'rtsp://106.245.234.244:1000' + idx + '/unicast';
+
+    showSpinner(videoOutput[0]);
+    options[0] = {
+      remoteVideo : videoOutput[0]
+    };
+    webRtcPeer[0] = kurentoUtils.WebRtcPeer.WebRtcPeerRecvonly(options[0], function(error)
+    {
+      if(error) return console.error(error);
+      this.generateOffer(onOffer, 0);
+    });
+  }
+
+  function stopSoloView() {
+    console.log("stopSoloView");
+    // address.disabled = false;
+    for(var i=1; i<AGENT_NUM+1; i++) {
+      if (webRtcPeer[0]) {
+        webRtcPeer[0].dispose();
+        webRtcPeer[0] = null;
+      }
+      if(pipeline[0]){
+        pipeline[0].release();
+        pipeline[0] = null;
+      }
+      hideSpinner(videoOutput[0]);
+    }
+  }
+
+
+  function onOffer(error, sdpOffer, func, i){
+    if(error) return onError(error);
+
+    kurentoClient(args.ws_uri, function(error, client) {
+      if(error) return onError(error);
+
+      client.create("MediaPipeline", function(error, p) {
+        if(error) return onError(error);
+
+        var elements =
+        [
+          {type: 'WebRtcEndpoint', params: {}},
+          {type: 'PlayerEndpoint', params: {uri : address[i]}},
+          {type: 'RecorderEndpoint', params: {uri : 'file:///home/lgic/recording' + i + '.mp4', mediaProfile: 'MP4_VIDEO_ONLY'}}
+        ]
+
+        pipeline[i] = p;
+
+        pipeline[i].create(elements, function(error, elements) {
+          if(error) return onError(error);
+
+          var webRtc   = elements[0];
+          var player   = elements[1];
+          var recorder = elements[2];
+
+          setIceCandidateCallbacks(webRtcPeer[i], webRtc, onError);
+
+          webRtc.processOffer(sdpOffer, function(error, sdpAnswer) {
+            if (error) return onError(error);
+
+            console.log("sdpOffer");
+
+            webRtc.gatherCandidates(onError);
+            webRtcPeer[i].processAnswer(sdpAnswer);
+          });
+
+          client.connect(player,  recorder, function(error) {
+            if (error) return onError(error);
+
+            client.connect(player, webRtc, function(error) {
+              if (error) return onError(error);
+              //before unload page
+              window.addEventListener('beforeunload', function(event) {
+                alert("reload page ");
+                recorder.stop();
+                //player.stop();
+                pipeline[i].release();
+                webRtcPeer[i].dispose();
+                //videoInput.src = "";
+                videoOutput[i].src = "";
+                hideSpinner(videoOutput[i]);
+              });
+
+              window.addEventListener('unload', function(event) {
+                alert("reload page ");
+                recorder.stop();
+                //player.stop();
+                pipeline[i].release();
+                webRtcPeer[i].dispose();
+                //videoInput.src = "";
+                videoOutput[i].src = "";
+                hideSpinner(videoOutput[i]);
+              });
+
+              console.log("Connected");
+
+              player.play(function(error) {
+                if (error) return onError(error);
+
+                console.log("play");
+
+                recorder.record(function(error) {
+                  if (error) {
+                    console.log("record error "+ error);
+                    return onError(error);
+                  }
+                  console.log("record");
+                  // stopRecordButton.addEventListener("click", function(event){
+                  //   recorder.stop();
+                  //   player.stop();
+                  //   pipeline[i].release();
+                  //   webRtcPeer[i].dispose();
+                  //   //videoInput.src = "";
+                  //   videoOutput[i].src = "";
+                  //
+                  //   hideSpinner(videoOutput);
+                  //
+                  //   var playButton = document.getElementById('play');
+                  //   playButton.addEventListener('click', startPlaying);
+                  // });
+                });
+
+              });
+            });
+          });
+        });
+      });
+
+    });
+  }
+
+  function stop() {
+    console.log("stop");
+    isStarted = false;
+    // address.disabled = false;
+    for(var i=1; i<AGENT_NUM+1; i++) {
+      if (webRtcPeer[i]) {
+        webRtcPeer[i].dispose();
+        webRtcPeer[i] = null;
+      }
+      if(pipeline[i]){
+        pipeline[i].release();
+        pipeline[i] = null;
+      }
+      hideSpinner(videoOutput[i]);
+    }
+  }
+}
+
+function setIceCandidateCallbacks(webRtcPeer, webRtcEp, onerror)
+{
+  webRtcPeer.on('icecandidate', function(candidate) {
+    console.log("Local candidate:",candidate);
+
+    candidate = kurentoClient.getComplexType('IceCandidate')(candidate);
+
+    webRtcEp.addIceCandidate(candidate, onerror)
+  });
+
+  webRtcEp.on('OnIceCandidate', function(event) {
+    var candidate = event.candidate;
+
+    console.log("Remote candidate:",candidate);
+
+    webRtcPeer.addIceCandidate(candidate, onerror);
+  });
+}
+
+function onError(error) {
+  if(error)
+  {
+    console.error(error);
+    stop();
+  }
+}
+
+function showSpinner() {
+		arguments[0].poster = 'img/transparent-1px.png';
+		arguments[0].style.background = "center transparent url('img/spinner.gif') no-repeat";
+
+}
+
+function hideSpinner() {
+		arguments[0].src = '';
+		arguments[0].poster = 'img/disconnect.png';
+		arguments[0].style.background = '';
+}
+
+/**
+ * Lightbox utility (to display media pipeline image in a modal dialog)
+ */
+$(document).delegate('*[data-toggle="lightbox"]', 'click', function(event) {
+	event.preventDefault();
+	$(this).ekkoLightbox();
+});

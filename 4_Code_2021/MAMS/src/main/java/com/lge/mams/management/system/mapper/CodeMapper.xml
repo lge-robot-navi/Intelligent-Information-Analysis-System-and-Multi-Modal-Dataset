@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lge.mams.management.system.mapper.CodeMapper">
+
+	<sql id="field">
+		C.CDGRP_CD			AS cdgrpCd,		/* 그룹코드*/
+		C.CODE_CD	        AS codeCd,		/* 코드 */
+		C.CODE_NM			AS codeNm,		/* 코드명 */
+		C.CODE_DS           AS codeDs,		/* 코드설명 */
+		C.USE_YN            AS useYn,		/* 사용여부 */
+		C.IF_CD             AS ifCd,		/* 연동코드 */
+		C.ORDER_NO			AS orderNo,		/* 정렬순서 */
+		C.INSERT_DT         AS insertDt,	/* 등록일시	*/
+		C.INSERT_ID         AS insertId,	/* 등록자ID */
+		C.UPDATE_DT         AS updateDt,	/* 수정일시 */
+		C.UPDATE_ID         AS updateId		/* 수정자 ID */
+	</sql>
+
+	<sql id="fragment">
+		FROM TA_CODE_INFO C
+		<where>
+			<trim prefixOverrides="AND|OR">
+				<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(cdgrpCd)">
+					AND C.CDGRP_CD = #{cdgrpCd}
+				</if>
+				<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(codeCd)">
+					AND C.CODE_CD = #{codeCd}
+				</if>
+				<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(codeNm)">
+					AND C.CODE_NM LIKE CONCAT('%',#{codeNm},'%')
+				</if>
+				<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(useYn)">
+					AND C.USE_YN = #{useYn}
+				</if>
+			</trim>
+		</where>
+	</sql>
+
+    <select id="get" parameterType="CodeEntity" resultType="CodeEntity">
+        SELECT  /* CodeMapper.xml, get */
+			<include refid="field"/>
+			<include refid="fragment"/>
+	</select>
+
+    <select id="getList" parameterType="CodeEntity" resultType="CodeEntity">
+        <include refid="Common.PagingStart" />
+	        SELECT  /* CodeMapper.xml, getList */
+				<include refid="field"/>
+				<include refid="fragment"/>
+			ORDER BY C.ORDER_NO
+        <include refid="Common.PagingEnd" />
+	</select>
+
+    <select id="getAllList" parameterType="CodeEntity" resultType="CodeEntity">
+        SELECT  /* CodeMapper.xml, getAllList */
+			<include refid="field"/>
+			<include refid="fragment"/>
+		ORDER BY C.ORDER_NO
+	</select>
+
+	<select id="count" parameterType="CodeEntity" resultType="Integer">
+        SELECT  /* CodeMapper.xml, count*/
+                COUNT(1) AS CNT
+		  <include refid="fragment"/>
+	</select>
+
+	<insert id="insert" parameterType="CodeEntity">
+		INSERT  /* CodeMapper.xml, insert */
+		INTO    TA_CODE_INFO (
+		    CDGRP_CD, CODE_CD, CODE_NM, CODE_DS,
+		    USE_YN, IF_CD, ORDER_NO,
+		    INSERT_DT, INSERT_ID, UPDATE_DT, UPDATE_ID
+		) VALUES (
+			#{cdgrpCd}, #{codeCd}, #{codeNm}, #{codeDs},
+			#{useYn}, #{ifCd}, #{orderNo},
+			NOW(), #{loginIDInSession}, NOW(), #{loginIDInSession}
+		)
+	</insert>
+
+	<update id="update" parameterType="CodeEntity">
+		UPDATE	/* CodeMapper.xml, update */
+		        TA_CODE_INFO
+		   SET	CODE_NM				= #{codeNm},
+				CODE_DS				= #{codeDs},
+				USE_YN				= #{useYn},
+				IF_CD				= #{ifCd},
+				ORDER_NO			= #{orderNo},
+				UPDATE_DT			= NOW(),
+				UPDATE_ID			= #{loginIDInSession}
+		WHERE CDGRP_CD				= #{cdgrpCd}
+		  AND CODE_CD				= #{codeCd}
+	</update>
+
+    <!-- 사용가능코드 전체목록 -->
+	<select id="getListTotal" resultType="CodeEntity">
+        SELECT /* CodeMapper.xml, getListTotal */
+               G.CDGRP_CD          AS cdgrpCd,     /* 그룹코드*/
+               C.CODE_CD           AS codeCd,      /* 코드 */
+               C.CODE_NM           AS codeNm,      /* 코드명 */
+               C.CODE_DS           AS codeDs,      /* 코드설명 */
+               C.USE_YN            AS useYn,       /* 사용여부 */
+               C.IF_CD             AS ifCd,        /* 연동코드 */
+               C.ORDER_NO          AS orderNo,     /* 정렬순서 */
+               C.INSERT_DT         AS insertDt,    /* 등록일시 */
+               C.INSERT_ID         AS insertId,    /* 등록자ID */
+               C.UPDATE_DT         AS updateDt,    /* 수정일시 */
+               C.UPDATE_ID         AS updateId     /* 수정자 ID */
+          FROM TA_CODE_GRP_INFO G
+         RIGHT OUTER JOIN TA_CODE_INFO C
+            ON G.CDGRP_CD = C.CDGRP_CD
+         WHERE G.USE_YN = 'Y'
+           AND C.USE_YN = 'Y'
+         ORDER BY G.CDGRP_CD, C.ORDER_NO
+	</select>
+</mapper>

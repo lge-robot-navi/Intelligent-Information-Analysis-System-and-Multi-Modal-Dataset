@@ -1,0 +1,14 @@
+{
+  "agentInfo": [
+    { "idx": "1", "name": "Agent1", "ip": "192.168.0.21", "color": "#2ECBE2", "type": "camera" },
+    { "idx": "2", "name": "Agent2", "ip": "192.168.0.22", "color": "#CE46AF", "type": "camera" },
+    { "idx": "3", "name": "Agent3", "ip": "192.168.0.23", "color": "#422C77", "type": "camera" },
+    { "idx": "4", "name": "Agent4", "ip": "192.168.0.24", "color": "#A9AB1C", "type": "camera" },
+    { "idx": "5", "name": "Agent5", "ip": "192.168.0.25", "color": "#9C2431", "type": "camera" },
+    { "idx": "6", "name": "Agent6", "ip": "192.168.0.26", "color": "#C2E216", "type": "camera" },
+    { "idx": "7", "name": "Agent7", "ip": "192.168.0.27", "color": "#5A6BDB", "type": "camera" },
+    { "idx": "8", "name": "Agent8", "ip": "192.168.0.28", "color": "#5794F8", "type": "camera" },
+    { "idx": "9", "name": "Agent9", "ip": "192.168.0.29", "color": "#32DC87", "type": "camera" },
+    { "idx": "10", "name": "Agent10", "ip": "192.168.0.30", "color": "#21770C", "type": "camera" }
+  ]
+}

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.0.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<!-- Task -->
+	<task:annotation-driven executor="executor" scheduler="scheduler" mode="proxy" proxy-target-class="true"  />
+
+	<task:scheduler id="scheduler" pool-size="10" />
+	<task:executor id="executor" pool-size="10" queue-capacity="20" rejection-policy="ABORT" keep-alive="300" />
+</beans>

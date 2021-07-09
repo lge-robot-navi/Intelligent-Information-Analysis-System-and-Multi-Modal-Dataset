@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lge.mams.management.system.mapper.AdminMapper">
+
+	<sql id="field">
+		A.ADMIN_ID_SQ										AS adminIdSq,			/* 관리자ID일련번호 */
+		A.ADMIN_ID											AS adminId,				/* 관리자ID */
+		A.ADMIN_GRP_ID										AS adminGrpId,			/* 권한그룹번호 */
+		(SELECT G.ADMIN_GRP_NM
+		   FROM TA_ADMIN_GRP G
+		  WHERE G.ADMIN_GRP_ID = A.ADMIN_GRP_ID)			AS adminGrpNm,			/* 권한그룹명 */
+		A.ADMIN_PW											AS adminPw,				/* 관리자암호 */
+		A.ADMIN_NM											AS adminNm,				/* 관리자명 */
+		A.ADMIN_CD											AS adminCd,				/* 관리자구분 */
+		GET_CODE_NAME('TA002', A.ADMIN_CD)					AS adminCdNm,			/* 관리자구분명 */
+		A.ADMIN_STATUS_CD									AS adminStatusCd,		/* 등록상태구분 */
+		GET_CODE_NAME('TA003', A.ADMIN_STATUS_CD)			AS adminStatusCdNm,		/* 등록상태구분명 */
+		A.TEL_NO											AS telNo,				/* 전화번호 */
+		A.PHONE_NO											AS phoneNo,				/* 휴대폰번호 */
+		A.EMAIL_DS											AS emailDs,				/* 이메일주소 */
+		A.COUNTRY_CD										AS countryCd,			/* 국적 */
+		A.COMPANY_NM										AS companyNm,			/* 소속회사명 */
+		A.DEPT_NM											AS deptNm,				/* 부서명 */
+		A.POSITION_NM										AS positionNm,			/* 직급명 */
+		A.HOMEPAGE_ADDR										AS homepageAddr,		/* 홈페이지주소 */
+		A.COMPANY_ADDR										AS companyAddr,			/* 소속회사주소 */
+		A.ADMIN_DESC										AS adminDesc,			/* 설명 */
+		A.INSERT_DT											AS insertDt,			/* 등록일시 */
+		A.INSERT_ID											AS insertId,			/* 등록자ID */
+		A.UPDATE_DT											AS updateDt,			/* 수정일시 */
+		A.UPDATE_ID											AS updateId				/* 수정자ID */
+	</sql>
+
+    <sql id="fragment">
+        FROM TA_ADMIN_INFO A
+        <where>
+            <trim prefixOverrides="AND|OR">
+                <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(adminIdSq)">
+                    AND A.ADMIN_ID_SQ = #{adminIdSq}
+                </if>
+                <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(adminId)">
+                    AND A.ADMIN_ID = #{adminId}
+                </if>
+                <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(adminGrpId)">
+                    AND A.ADMIN_GRP_ID = #{adminGrpId}
+                </if>
+                <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(adminPw)">
+                    AND A.ADMIN_PW = #{adminPw}
+                </if>
+                <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(adminNm)">
+                    AND A.ADMIN_NM LIKE CONCAT('%',#{adminNm},'%')
+                </if>
+                <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(countryCd)">
+                    AND A.COUNTRY_CD = #{countryCd}
+                </if>
+                <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(companyNm)">
+                    AND A.COMPANY_NM LIKE CONCAT('%',#{companyNm},'%')
+                </if>
+                <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(deptNm)">
+                    AND A.DEPT_NM LIKE CONCAT('%',#{deptNm},'%')
+                </if>
+                <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(adminCd)">
+                    AND A.ADMIN_CD = #{adminCd}
+                </if>
+                <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(adminStatusCd)">
+                    AND A.ADMIN_STATUS_CD = #{adminStatusCd}
+                </if>
+                <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(adminLevelCd)">
+                    AND A.ADMIN_LEVEL_CD = #{adminLevelCd}
+                </if>
+                <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(searchWd)">
+                    AND A.ADMIN_ID LIKE CONCAT('%',#{searchWd},'%')
+                </if>
+            </trim>
+        </where>
+    </sql>
+
+	<!-- 조회 -->
+    <select id="get" parameterType="AdminEntity" resultType="AdminEntity">
+        SELECT /* AdminMapper.xml, get */
+            <include refid="field"/>
+            <include refid="fragment"/>
+    </select>
+
+	<!-- 리스트 -->
+    <select id="getList" parameterType="AdminEntity" resultType="AdminEntity">
+    	<include refid="Common.PagingStart" />
+	        SELECT /* AdminMapper.xml, getList */
+	            <include refid="field"/>
+	            <include refid="fragment"/>
+			ORDER BY A.ADMIN_ID_SQ DESC
+		<include refid="Common.PagingEnd" />
+    </select>
+
+	<!-- 전체 리스트 -->
+    <select id="getAllList" parameterType="AdminEntity" resultType="AdminEntity">
+        SELECT /* AdminMapper.xml, getAllList */
+            <include refid="field"/>
+            <include refid="fragment"/>
+		ORDER BY A.ADMIN_ID_SQ DESC
+    </select>
+
+	<!-- 카운트 -->
+    <select id="count" parameterType="AdminEntity" resultType="Integer">
+        SELECT /* AdminMapper.xml, count */
+        		COUNT(1) AS CNT
+            <include refid="fragment"/>
+    </select>
+
+	<insert id="insertAdminIdSq" parameterType="AdminEntity">
+		<selectKey keyProperty="adminIdSq" resultType="String" order="BEFORE">
+			SELECT IFNULL(MAX(ADMIN_ID_SQ), 0) + 1 FROM TA_ADMIN_ID_SQ
+		</selectKey>
+		INSERT INTO TA_ADMIN_ID_SQ (
+			ADMIN_ID_SQ,
+			ADMIN_ID_SQ_CREATE_DT
+		) VALUES (
+			#{adminIdSq},
+			DATE_FORMAT(NOW(), '%Y%m%d%h%i%s')
+		)
+	</insert>
+
+	<!-- 등록 -->
+    <insert id="insert" parameterType="AdminEntity">
+        INSERT	/* AdminMapper.xml, insert */
+          INTO	TA_ADMIN_INFO (
+			ADMIN_ID_SQ,                  /* 관리자ID일련번호 */
+			ADMIN_ID,                     /* 관리자ID */
+			ADMIN_GRP_ID,                 /* 권한그룹번호 */
+			ADMIN_PW,                     /* 관리자암호 */
+			ADMIN_NM,                     /* 관리자명 */
+			ADMIN_CD,                     /* 관리자구분 */
+			ADMIN_STATUS_CD,              /* 등록상태구분 */
+			TEL_NO,                       /* 전화번호 */
+			PHONE_NO,                     /* 휴대폰번호 */
+			EMAIL_DS,                     /* 이메일주소 */
+			COUNTRY_CD,                   /* 국적 */
+			COMPANY_NM,                   /* 소속회사명 */
+			DEPT_NM,                      /* 부서명 */
+			POSITION_NM,                  /* 직급명 */
+			HOMEPAGE_ADDR,                /* 홈페이지주소 */
+			COMPANY_ADDR,                 /* 소속회사주소 */
+			ADMIN_DESC,                   /* 설명 */
+			INSERT_DT,                    /* 등록일시 */
+			INSERT_ID,                    /* 등록자ID */
+			UPDATE_DT,                    /* 수정일시 */
+			UPDATE_ID                     /* 수정자ID */
+        ) VALUES (
+			#{adminIdSq},                 /* 관리자ID일련번호 */
+			#{adminId},                   /* 관리자ID */
+			#{adminGrpId},                /* 권한그룹번호 */
+			#{adminPw},                   /* 관리자암호 */
+			#{adminNm},                   /* 관리자명 */
+			#{adminCd},                   /* 관리자구분 */
+			#{adminStatusCd},             /* 등록상태구분 */
+			#{telNo},                     /* 전화번호 */
+			#{phoneNo},                   /* 휴대폰번호 */
+			#{emailDs},                   /* 이메일주소 */
+			#{countryCd},                 /* 국적 */
+			#{companyNm},                 /* 소속회사명 */
+			#{deptNm},                    /* 부서명 */
+			#{positionNm},                /* 직급명 */
+			#{homepageAddr},              /* 홈페이지주소 */
+			#{companyAddr},               /* 소속회사주소 */
+			#{adminDesc},                 /* 설명 */
+			NOW(),                        /* 등록일시 */
+			#{loginIDInSession},          /* 등록자ID */
+			NOW(),                        /* 수정일시 */
+			#{loginIDInSession}           /* 수정자ID */
+        )
+    </insert>
+
+	<!-- 수정 -->
+    <update id="update" parameterType="AdminEntity">
+        UPDATE	/* AdminMapper.xml, update */
+				TA_ADMIN_INFO
+		SET		UPDATE_DT					= NOW(),
+				UPDATE_ID					= #{loginIDInSession},
+				TEL_NO						= #{telNo},
+				PHONE_NO					= #{phoneNo},
+				EMAIL_DS					= #{emailDs},
+				COMPANY_NM					= #{companyNm},
+				DEPT_NM						= #{deptNm},
+				POSITION_NM					= #{positionNm},
+				HOMEPAGE_ADDR				= #{homepageAddr},
+				COMPANY_ADDR				= #{companyAddr},
+				ADMIN_DESC					= #{adminDesc}
+				<!-- <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(adminId)">
+					, ADMIN_ID = #{adminId}
+				</if> -->
+				<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(adminGrpId)">
+					, ADMIN_GRP_ID = #{adminGrpId}
+				</if>
+				<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(adminPw)">
+					, ADMIN_PW = #{adminPw}
+				</if>
+				<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(adminNm)">
+					, ADMIN_NM = #{adminNm}
+				</if>
+				<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(adminCd)">
+					, ADMIN_CD = #{adminCd}
+				</if>
+				<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(adminStatusCd)">
+					, ADMIN_STATUS_CD = #{adminStatusCd}
+				</if>
+				<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(adminLevelCd)">
+					, ADMIN_LEVEL_CD = #{adminLevelCd}
+				</if>
+				<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(countryCd)">
+					, COUNTRY_CD = #{countryCd}
+				</if>
+         WHERE ADMIN_ID_SQ = #{adminIdSq}
+    </update>
+</mapper>

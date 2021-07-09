@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://ehcache.org/ehcache.xsd"
+	maxBytesLocalHeap="32M" maxBytesLocalOffHeap="128M" maxBytesLocalDisk="0M"
+	updateCheck="false">
+
+	<cache name="CacheExample" maxElementsInMemory="100" eternal="false"
+		overflowToDisk="false" timeToLiveSeconds="30" />
+
+</ehcache>

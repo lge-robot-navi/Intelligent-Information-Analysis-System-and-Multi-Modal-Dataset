@@ -1,0 +1,478 @@
+/* Top panel : #navbar, #toolbar */
+.top_panel {
+	display: block;
+	font-size: medium;
+	background-color: #f4f4f4;
+	color: white;
+	z-index: 10;
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	height: 46px;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+}
+
+.top_panel ul {
+	list-style-type: none;
+	overflow: hidden;
+	margin:0; padding:0;
+}
+
+.top_panel li {
+	float: left;
+	height:44px;
+}
+.top_panel .gubun {position:relative; margin:0 0 0 8px;}
+.top_panel .gubun:before {position:absolute; left:0; top:12px; width:1px; height:22px; background:#ccc; content:'';}
+.top_panel li a, .drop_menu_item {
+	display: inline-block;
+	color: white;
+	padding: 0.65em 1.2em;
+	text-decoration: none;
+}
+
+.top_panel li a:hover, .dropdown:hover {
+	background-color: #999999;
+	cursor: pointer;
+}
+
+.top_panel li.dropdown {
+	display: inline-block;
+}
+
+.top_panel .dropdown-content {
+	display: none;
+	position: absolute;
+	background-color: #333333;
+	min-width: 120px;
+	border: 1px solid #ffffff;
+	font-size: small;
+	z-index: 10;
+}
+
+.top_panel .dropdown-content a {
+	color: #ffffff;
+	padding: 0.4em 0.6em;
+	text-decoration: none;
+	display: block;
+	text-align: left;
+	background-color: #333333;
+	float: none;
+}
+
+.top_panel .dropdown-content a:hover {
+	background-color: #000000;
+	color: #ffff00;
+}
+
+.top_panel .dropdown:hover .dropdown-content {
+	display: block;
+}
+
+.top_panel li:first-child {
+	margin-left: 8px;
+}
+
+.top_panel .btn_region_shape {
+	float: left;
+	padding: 0 2px;
+	color: white;
+	line-height:42px;
+}
+.top_panel li:nth-child(3) {padding-left:4px;}
+.top_panel .btn_zoom {
+	float: left;
+	padding: 0 2px;
+	font-size:14px;
+	line-height:42px;
+}
+
+.top_panel .btn_zoom_in {
+	margin-left:16px;
+}
+.top_panel .btn_del {
+	margin-left:12px;
+}
+.top_panel .btn_save {
+	float:right;
+	padding: 0 4px;
+	line-height:42px;
+}
+
+#fileinfo {
+	font-size: small;
+	padding: 1.2em 0.8em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+/* Middle panel: containing #image_panel, #leftsidebar */
+.middle_panel {
+	display: table;
+	table-layout: fixed;
+	width: 100%;
+	z-index: 1;
+	padding-top: 10px;
+}
+
+#leftsidebar {
+	display: table-cell;
+	width: 104px;
+	z-index: 10;
+	vertical-align: top;
+}
+
+#display_area {
+	float: left;
+	width: 822px;
+	height: 554px;
+	z-index: 1;
+	margin: 0;
+	padding: 0;
+	vertical-align: top;
+	overflow: auto;
+}
+
+#canvas_panel {
+	position: relative;
+	margin: 0;
+	padding: 0;
+}
+
+#leftsidebar_collapse_panel {
+	display: table-cell;
+	position: relative;
+	width: 10px;
+	z-index: 1;
+	vertical-align: top;
+	font-size: small;
+}
+
+#leftsidebar_collapse_button {
+	background-color: black;
+	width: 10px;
+	height: 25px;
+	color: white;
+	padding: 0.2em;
+	border-radius: 0px 5px 5px 0px;
+	font-size: large;
+}
+
+#leftsidebar_collapse_button:hover {
+	color: red;
+	cursor: pointer;
+}
+
+/* Left sidebar accordion */
+button.leftsidebar_accordion {
+	color: white;
+	font-size: small;
+	background-color: #42403f;
+	cursor: pointer;
+	padding: 10px;
+	width: 100%;
+	text-align: left;
+	border: 0;
+	outline: none;
+}
+
+.leftsidebar_accordion_panel {
+	display: block;
+	padding-top: 0;
+	padding-left: 0;
+	font-size: small;
+	border-right: 1px solid #a3a3a3;
+	border-bottom: 1px solid #a3a3a3;
+}
+.leftsidebar_accordion_panel table tr {
+	border-bottom: 2px solid #f2f2f2; 
+}
+.leftsidebar_accordion_panel table tr td {
+	border-left: 2px solid #f2f2f2; 
+}
+
+/* Region shape selection panel inside leftsidebar */
+ul.region_shape {
+	font-size: xx-large;
+	list-style-type: none;
+	overflow: hidden;
+	padding:0;
+	margin: 0;
+}
+
+ul.region_shape li {
+	float: left;
+	padding: 0 8px;
+	line-height:51px;
+	height: 40px;
+}
+
+ul.region_shape li:hover {
+	cursor: pointer;
+	fill: #ffffff;
+	stroke: #ff0000;
+}
+
+ul.region_shape .selected {
+	fill: #ffffff;
+	stroke: #ff0000;
+}
+
+/* Loaded image list shown in leftsidebar panel */
+#img_list_panel {
+	display: none;
+	height: 0;
+	font-size: small;
+	overflow: scroll;
+}
+
+#img_list_panel ul {
+	position: relative;
+	line-height: 1.3em;
+	padding-left: 0;
+	list-style-type: none;
+}
+
+#img_list_panel li {
+	white-space: nowrap;
+}
+
+#img_list_panel li:hover {
+	background-color: #cccccc;
+	color: #000000;
+	cursor: pointer;
+}
+
+#message_panel {
+	position: fixed;
+	left: 0px;
+	bottom: 0px;
+	line-height: 3em;
+	width: 100%;
+	background-color: #000000;
+	color: #ffff00;
+	font-size: small;
+	text-align: center;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	z-index: 1000;
+}
+
+#invisible_file_input {
+	width: 0.1px;
+	height: 0.1px;
+	opacity: 0;
+	overflow: hidden;
+	position: absolute;
+	z-index: -1;
+}
+
+.text_panel {
+	display: none;
+	margin: auto;
+	font-size: medium;
+	line-height: 1.3em;
+	margin: 0;
+	max-width: 700px;
+}
+
+.text_panel li {
+	margin: 1em 0;
+	text-align: left;
+}
+
+.text_panel p {
+	text-align: left;
+}
+
+.action_text_link {
+	background-color: #aaeeff;
+	color: #000000;
+}
+
+.action_text_link:hover {
+	cursor: pointer;
+}
+
+.svg_button:hover {
+	cursor: pointer;
+}
+
+.tool_button {
+	color: blue;
+	cursor: pointer;
+}
+
+.tool_button:hover {
+	color: red;
+}
+
+/* region and file attributes input panel (spreadsheet like) */
+#attributes_panel {
+	display: none;
+	float: left;
+	z-index: 10;
+	overflow-x: auto;
+	background-color: #ffffff;
+	padding: 5px;
+	font-size: small;
+	border: 1px solid #000000;
+	margin: 0 0 0 20px;
+}
+#attributes_panel #shape_info {
+	max-height: 272px;
+	overflow: auto;
+}
+#attributes_panel hr {
+	margin: 4px 0;
+}
+#attributes_panel table {
+	border-collapse: collapse;
+	table-layout: fixed;
+	width: 280px;
+	margin: 0;
+}
+#attributes_panel th,
+#attributes_panel td {
+	/*border: 1px solid #999999;*/
+	text-align: left;
+	padding: 3px;
+	margin: 0;
+	white-space: nowrap;
+	vertical-align: middle;
+	cursor: auto;
+}
+#attributes_panel tr th {
+	width: 64px;
+	vertical-align: top;
+	position:relative;
+	padding-left:8px;
+}
+#attributes_panel tr th:before {content:''; position:absolute; left:2px; top:11px; width:1px; height:1px; background:#666;}
+
+#attributes_panel input {
+	padding: 0;
+	margin: 0;
+	display: table-cell;
+	width: 100%;
+	height: 19px;
+	font-size: small;
+	background-color: #ffffff;
+	vertical-align: middle;
+}
+
+#attributes_panel input:read-only {
+	border: none;
+	background-color: #ffffff !important;
+}
+
+#attributes_panel input:hover {
+	background-color: #e6e6e6;
+}
+
+#attributes_panel input:focus {
+	background-color: #e6e6e6;
+}
+
+#attributes_panel input:not (:focus ) {
+	text-align: center;
+}
+
+#attributes_panel .select_label {
+	width: 210px;
+}
+
+#attributes_panel textarea {
+	border: none;
+	padding: 0;
+	margin: 0;
+	display: table-cell;
+	font-size: small;
+	background-color: #ffffff;
+}
+
+#attributes_panel textarea:hover {
+	background-color: #e6e6e6;
+}
+
+#attributes_panel textarea:focus {
+	background-color: #e6e6e6;
+}
+
+#attributes_panel_meta_toolbar {
+	margin: 6px 0 0;
+	font-weight:bold;
+	padding-left:2px;
+}
+#attributes_panel_toolbar {
+	display: none;
+	margin: 10px 0 0;
+	font-weight:bold;
+	padding-left:2px;
+}
+#attributes_panel_table {
+	display: none;
+}
+.attributes_panel_button {
+	width: 10px;
+	color: black;
+	font-size: x-large;
+	margin-left: 0.5em;
+	padding: 0;
+}
+
+.attributes_panel_button:hover {
+	color: red;
+	cursor: pointer;
+}
+
+/* layers of canvas */
+#image_panel {
+	position: relative;
+	display: inline-block;
+	margin: auto;
+	margin-top: 1em;
+}
+
+#image_canvas {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	z-index: 1;
+}
+
+#region_canvas {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	z-index: 2;
+}
+/* Loading spinbar */
+.loading_spinbox {
+	display: inline-block;
+	border: 0.4em solid #cccccc;
+	border-radius: 50%;
+	border-top: 0.4em solid #000000;
+	-webkit-animation: spin 2s linear infinite;
+	animation: spin 2s linear infinite;
+}
+
+@-webkit-keyframes spin {
+	0% {
+	-webkit-transform: rotate(0deg);
+	}
+	100% {
+	-webkit-transform:rotate(360deg);
+	}
+}
+@keyframes spin {
+	0% {
+	transform:rotate(0deg);
+	}
+	100% {
+	transform:rotate(360deg);
+ 	}
+}

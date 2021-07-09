@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Common">
+
+    <!-- ^Paging -->
+    <sql id="PagingStart">
+    <![CDATA[
+    ]]>
+    </sql>
+
+    <sql id="PagingEnd">
+    <![CDATA[
+    	LIMIT #{startRowCount}, #{pageSize}
+    ]]>
+    </sql>
+    <!-- $Paging -->
+
+    <!-- ^Count -->
+    <sql id="CountStart">
+    <![CDATA[
+        SELECT COUNT(1) AS CNT
+        FROM (
+    ]]>
+    </sql>
+
+    <sql id="CountEnd">
+    <![CDATA[
+        ) X
+    ]]>
+    </sql>
+    <!-- $Count -->
+</mapper>

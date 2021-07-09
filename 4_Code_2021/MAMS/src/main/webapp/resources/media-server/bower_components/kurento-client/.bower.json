@@ -1,0 +1,33 @@
+{
+  "name": "kurento-client",
+  "description": "Media API for the Kurento Web SDK",
+  "license": "Apache-2.0",
+  "keywords": [
+    "API",
+    "Kurento",
+    "WebRTC"
+  ],
+  "homepage": "http://www.kurento.org",
+  "repository": {
+    "type": "git",
+    "url": "Kurento/kurento-client-js"
+  },
+  "authors": [
+    "Kurento <info@kurento.com> (http://kurento.org)",
+    {
+      "name": "Jesús Leganés Combarro 'piranna'",
+      "email": "piranna@gmail.com",
+      "url": "http://pirannafs.blogspot.com.es"
+    }
+  ],
+  "main": "js/kurento-client.js",
+  "_release": "1889d41f79",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "1889d41f79da0c85df5abe26796a5417cb5a4021"
+  },
+  "_source": "https://github.com/Kurento/kurento-client-bower.git",
+  "_target": "master",
+  "_originalSource": "kurento-client"
+}

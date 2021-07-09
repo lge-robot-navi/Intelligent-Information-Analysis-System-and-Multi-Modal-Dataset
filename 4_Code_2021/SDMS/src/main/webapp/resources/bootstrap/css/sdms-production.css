@@ -1,0 +1,22 @@
+@charset "UTF-8";
+
+.card-login {
+	padding-left: 30px;
+	padding-right: 30px;
+	padding-bottom: 30px;
+	padding-top: 10px;
+	background: #ffffff;
+	border-radius: 20px;
+}
+
+.card-login-body {
+	padding-top: 20px;
+}
+
+.card-login-title {
+	color: #113366;
+}
+
+.card-login-alert {
+	color: red;
+}

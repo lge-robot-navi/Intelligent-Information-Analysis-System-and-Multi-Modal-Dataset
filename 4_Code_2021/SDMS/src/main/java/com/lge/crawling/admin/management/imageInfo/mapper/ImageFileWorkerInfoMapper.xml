@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lge.crawling.admin.management.imageInfo.mapper.ImageFileWorkerInfoMapper">
+
+	<sql id="field">
+		A.IMAGE_FILE_WORKER_SQ								AS imageFileWorkerSq,			  /* 이미지파일작업자일련번호 */
+		A.IMAGE_FILE_SQ										AS imageFileSq,                   /* 이미지파일일련번호 */
+		A.IMAGE_FILE_WORKER_ID								AS imageFileWorkerId,			  /* 이미지파일작업자ID */
+		A.INSERT_DT											AS insertDt,			          /* 등록일시 */
+		A.INSERT_ID											AS insertId,			          /* 등록자ID */
+		A.UPDATE_DT											AS updateDt,			          /* 수정일시 */
+		A.UPDATE_ID											AS updateId				          /* 수정자ID */
+	</sql>
+
+    <sql id="fragment">
+        FROM
+        	TA_IMAGE_FILE_WORKER_INFO A
+        <where>
+            <trim prefixOverrides="AND|OR">
+	        	<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(startDt)">
+            		<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(endDt)">
+						AND A.IMAGE_FILE_REGIST_DT BETWEEN RPAD(REPLACE(#{startDt},'-',''),14,'000000')
+						                   AND RPAD(REPLACE(#{endDt}, '-', ''), 14, '235959')
+					</if>
+				</if>
+                <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(imageFileWorkerSq)">
+                    AND A.IMAGE_FILE_WORKER_SQ = #{imageFileWorkerSq}
+                </if>
+                <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(imageFileSq)">
+                    AND A.IMAGE_FILE_SQ = #{imageFileSq}
+                </if>
+                <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(imageFileWorkerId)">
+                    AND A.IMAGE_FILE_WORKER_ID = #{imageFileWorkerId}
+                </if>
+            </trim>
+        </where>
+    </sql>
+
+	<!-- 조회 -->
+    <select id="get" parameterType="ImageFileWorkerInfoEntity" resultType="ImageFileWorkerInfoEntity">
+        SELECT /* ImageFileInfoMapper.xml, get */
+            <include refid="field"/>
+            <include refid="fragment"/>
+    </select>
+
+	<!-- 리스트 -->
+    <select id="getList" parameterType="ImageFileWorkerInfoEntity" resultType="ImageFileWorkerInfoEntity">
+    	<include refid="Common.PagingStart" />
+	        SELECT /* ImageFileInfoMapper.xml, getList */
+	            <include refid="field"/>
+	            <include refid="fragment"/>
+			ORDER BY A.IMAGE_FILE_WORKER_SQ DESC
+		<include refid="Common.PagingEnd" />
+    </select>
+
+	<!-- 전체 리스트 -->
+    <select id="getAllList" parameterType="ImageFileWorkerInfoEntity" resultType="ImageFileWorkerInfoEntity">
+        SELECT /* ImageFileInfoMapper.xml, getAllList */
+            <include refid="field"/>
+            <include refid="fragment"/>
+		ORDER BY A.IMAGE_FILE_WORKER_SQ DESC
+    </select>
+
+	<!-- 카운트 -->
+    <select id="count" parameterType="ImageFileWorkerInfoEntity" resultType="Integer">
+        SELECT /* ImageFileInfoMapper.xml, count */
+        		COUNT(1) AS CNT
+            <include refid="fragment"/>
+    </select>
+
+	<!-- 등록 -->
+    <insert id="insert" parameterType="ImageFileWorkerInfoEntity">
+        INSERT	/* ImageFileInfoMapper.xml, insert */
+          INTO	TA_IMAGE_FILE_WORKER_INFO (
+			IMAGE_FILE_WORKER_SQ,		  /* 이미지파일작업자일련번호 */
+		    IMAGE_FILE_SQ,			      /* 이미지파일일련번호            */
+			IMAGE_FILE_WORKER_ID,		  /* 이미지파일작업자ID */
+			INSERT_DT,                    /* 등록일시 */
+			INSERT_ID,                    /* 등록자ID */
+			UPDATE_DT,                    /* 수정일시 */
+			UPDATE_ID                     /* 수정자ID */
+        ) VALUES (
+			#{imageFileWorkerSq},      	  /* 이미지파일작업자일련번호ID일련번호 */
+			#{imageFileSq},               /* 이미지파일일련번호            */
+			#{imageFileWorkerId},         /* 이미지파일작업자              */
+			NOW(),                        /* 등록일시 */
+			#{loginIDInSession},          /* 등록자ID */
+			NOW(),                        /* 수정일시 */
+			#{loginIDInSession}           /* 수정자ID */
+        )
+    </insert>
+
+	<!-- 수정 -->
+    <update id="update" parameterType="ImageFileWorkerInfoEntity">
+        UPDATE	/* ImageFileInfoMapper.xml, update */
+				TA_IMAGE_FILE_WORKER_INFO
+		SET		UPDATE_DT					= NOW(),
+				UPDATE_ID					= #{loginIDInSession},
+				IMAGE_FILE_SQ               = #{imageFileSq},
+				IMAGE_FILE_WORKER_ID        = #{imageFileWorkerId},
+         WHERE IMAGE_FILE_WORKER_SQ = #{imageFileWorkerSq}
+    </update>
+
+	<!-- 삭제 -->
+    <delete id="delete" parameterType="ImageFileWorkerInfoEntity">
+        DELETE	/* ImageFileInfoMapper.xml, delete */
+		FROM TA_IMAGE_FILE_WORKER_INFO
+        WHERE IMAGE_FILE_WORKER_SQ = #{imageFileWorkerSq}
+    </delete>
+</mapper>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd">
+
+	<!-- Component Scan -->
+	<context:component-scan base-package="com.lge.mams">
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+	</context:component-scan>
+
+	<!-- aop:aspectj-autoproxy -->
+	<aop:aspectj-autoproxy proxy-target-class="true" />
+
+	<!-- Ant Path Mater -->
+	<bean id="antPathMater" class="org.springframework.util.AntPathMatcher" />
+
+	<!-- Common Code Bean -->
+	<bean id="commonCode" class="com.lge.mams.common.util.CommonCode" />
+
+	<!-- Apache Common Configuration -->
+	<bean id="config" class="com.lge.mams.common.util.Config">
+		<property name="common" ref="commonConfig" />
+	</bean>
+
+	<!-- commonConfig -->
+	<bean id="commonConfig" class="org.apache.commons.configuration.CompositeConfiguration">
+		<constructor-arg>
+			<list>
+				<bean class="org.apache.commons.configuration.XMLConfiguration">
+					<constructor-arg type="java.lang.String" value="config/CommonConfig.xml" />
+					<property name="reloadingStrategy">
+						<bean class="org.apache.commons.configuration.reloading.FileChangedReloadingStrategy" />
+					</property>
+				</bean>
+			</list>
+		</constructor-arg>
+	</bean>
+
+	<!-- temporary directory resource -->
+	<bean id="uploadTempDirResource" class="org.springframework.core.io.FileSystemResource">
+		<constructor-arg value="/home/lgic/crawling/work;/home/lgic/crawling/download" />
+	</bean>
+
+	<!-- Import -->
+	<import resource="classpath:config/spring/context/context-properties.xml"/>
+	<import resource="classpath:config/spring/context/context-system-database.xml"/>
+
+	<import resource="classpath:config/spring/context/context-message.xml"/>
+	<import resource="classpath:config/spring/context/context-task.xml"/>
+	<import resource="classpath:config/spring/context/context-mail.xml"/>
+	<import resource="classpath:config/spring/context/context-velocity.xml"/>
+	
+	<import resource="classpath:config/spring/context/context-jpa.xml"/>
+</beans>

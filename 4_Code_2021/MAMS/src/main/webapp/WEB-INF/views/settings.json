@@ -1,0 +1,14 @@
+{
+  "agentInfo": [
+    { "no": "1", "name": "Agent 1", "ip": "192.168.0.21", "color": "#2ECBE2", "type": "camera" },
+    { "no": "2", "name": "Agent 2", "ip": "192.168.0.22", "color": "#CE46AF", "type": "camera" },
+    { "no": "3", "name": "Agent 3", "ip": "192.168.0.23", "color": "#422C77", "type": "camera" },
+    { "no": "4", "name": "Agent 4", "ip": "192.168.0.24", "color": "#A9AB1C", "type": "camera" },
+    { "no": "5", "name": "Agent 5", "ip": "192.168.0.25", "color": "#9C2431", "type": "camera" },
+    { "no": "6", "name": "Agent 6", "ip": "192.168.0.26", "color": "#C2E216", "type": "camera" },
+    { "no": "7", "name": "Agent 7", "ip": "192.168.0.27", "color": "#5A6BDB", "type": "camera" },
+    { "no": "8", "name": "Agent 8", "ip": "192.168.0.28", "color": "#5794F8", "type": "camera" },
+    { "no": "9", "name": "Agent 9", "ip": "192.168.0.29", "color": "#32DC87", "type": "camera" },
+    { "no": "10", "name": "Agent 10", "ip": "192.168.0.30", "color": "#21770C", "type": "camera" }
+  ]
+}
