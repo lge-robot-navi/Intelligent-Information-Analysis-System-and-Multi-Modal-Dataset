@@ -12,7 +12,7 @@ public class CloudStat {
 	public int robotId;
 
 	@DateTimeFormat(pattern = "yyyyMMdd-HHmmss.SSS")
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyyMMdd-HHmmss.SSS", timezone = "KST")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyyMMdd-HHmmss.SSS", timezone = "Asia/Seoul")
 	public Date timestamp;
 
 	public String areaCode;
