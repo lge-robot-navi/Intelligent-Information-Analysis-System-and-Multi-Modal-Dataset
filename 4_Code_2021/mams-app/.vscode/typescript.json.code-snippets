@@ -1,0 +1,567 @@
+{
+  "ednl": {
+    "prefix": "ednl",
+    "body": "// eslint-disable-next-line"
+  },
+  "dlgmsg": {
+    "prefix": "dlgmsg",
+    "body": "  const dlgmsg = useRef(null as DlgMsg);"
+  },
+  "snackbar": {
+    "prefix": "snackbar",
+    "body": "  const snackbar = useRef(null as SnackBar);"
+  },
+  "implink": {
+    "prefix": "implink",
+    "body": "import { Link } from \"react-router-dom\";"
+  },
+  "impif": {
+    "prefix": "impif",
+    "body": "import * as If from \"if/\";"
+  },
+  "impapis": {
+    "prefix": "impapis",
+    "body": "import apis  from \"util/apis\";"
+  },
+  "imputil": {
+    "prefix": "imputil",
+    "body": "import * as util from \"util/index\";"
+  },
+  "imputil2": {
+    "prefix": "imputil2",
+    "body": "import * as utils from \"utils/utils\";"
+  },
+  "imploadjs": {
+    "prefix": "imploadjs",
+    "body": "var loadjs = require(\"loadjs\");"
+  },
+  "impsconf": {
+    "prefix": "impsconf",
+    "body": "import sconf from \"conf/scas-config\""
+  },
+  "impctls": {
+    "prefix": "impctls",
+    "body": "import * as ctls from \"ctls/\";"
+  },
+  "impv4": {
+    "prefix": "impv4",
+    "body": "import {v4} from \"uuid\""
+  },
+  "impfilepond": {
+    "prefix": "impfilepond",
+    "body": "import { FilePond } from \"react-filepond\";"
+  },
+  "impgrid": {
+    "prefix": "impgrid",
+    "body": "import { Grid, GridColumn as Column } from \"@progress/kendo-react-grid\";"
+  },
+  "props": {
+    "prefix": "props",
+    "body": "const props = this.props;"
+  },
+  "state": {
+    "prefix": "state",
+    "body": "const state = this.state;"
+  },
+  "splice": {
+    "prefix": "splice",
+    "body": "${1:arr}.splice(${2:idx}, ${3:delcnt}, ${4:additm1});",
+    "description": "change self"
+  },
+  "slice": {
+    "prefix": "slice",
+    "body": "${1:arr}.slice(${2:begin}, ${3:end});",
+    "description": "copy shallow."
+  },
+  "pager": {
+    "prefix": "pager",
+    "body": "let pager = { ...this.state.pager };"
+  },
+  "setpager": {
+    "prefix": "setpager",
+    "body": "this.setState({ pager });"
+  },
+  "map": {
+    "prefix": "map",
+    "body": ["${1:arr}.map( (${2:ele}) => ${3:{\\}} );"]
+  },
+  "concat": {
+    "prefix": "concat",
+    "body": "${1:arr}.concat(${2:arr})"
+  },
+  "foreach": {
+    "prefix": "foreach",
+    "body": ["${1:arr}.forEach( (${2:ele}) => ${3:{\\}} );"]
+  },
+  "filter": {
+    "prefix": "filter",
+    "body": ["${1:arr}.filter( (${2:ele}) => ${3:{\\}} );"]
+  },
+  "find": {
+    "prefix": "find",
+    "body": ["${1:arr}.find( (${2:ele}) => ${3:{\\}} );"]
+  },
+  "findindex": {
+    "prefix": "findindex",
+    "body": ["${1:arr}.findIndex( (${2:ele}) => ${3:{\\}} );"]
+  },
+  "isvalid": {
+    "prefix": "isvalid",
+    "body": ["if( !util.validator().ifempty(${1:var}, \"${2:msg}\").isvalidwithsnackbar(${3:this.refs.snackbar})", ") return;"]
+  },
+  "isvalidalert": {
+    "prefix": "isvalidalert",
+    "body": ["if( !util.validator().ifempty(${1:var}, \"${2:msg}\").isvalidwithalert()", ") return;"]
+  },
+  "axios": {
+    "prefix": "axios",
+    "body": [
+      "axios.get('${1:/api/svc/}').then(res => { ${2:console.log(res?.data);} \\}).catch(e => {  console.log('E', e);if( e?.cmd !=='cancel'){ ${3:}\\} \\}); "
+    ]
+  },
+  "axiospost": {
+    "prefix": "axiospost",
+    "body": [
+      "axios.post('${1:/api/svc/}',param).then(res => { ${2:console.log(res?.data);} \\}).catch(e => { console.log('E', e); if( e?.cmd !=='cancel'){ ${3:}\\} \\}); "
+    ]
+  },
+  "dlgshow": {
+    "prefix": "dlgshow",
+    "body": "${1:this.refs}.dlgmsg.show('${2:확인}', ['${3:msg}']).then(res => { \\}).catch(e => { console.log('E', e); if( e?.cmd !=='cancel'){ ${4}\\} \\}); "
+  },
+  "then": {
+    "prefix": "then",
+    "body": ".then( res => { ${1:console.log(\"res is\", res); } \\})"
+  },
+  "catch": {
+    "prefix": "catch",
+    "body": ".catch( e => { console.error(\"E\", e); if( e?.cmd !=='cancel'){ ${3}\\} \\})"
+  },
+  "catch2": {
+    "prefix": "catch2",
+    "body": ".catch( e => { console.error(\"E\", e); util.error(e, this.refs.snackbar); \\})"
+  },
+  "impreact": {
+    "prefix": "impreact",
+    "body": ""
+  },
+  "snippet": {
+    "prefix": "snippet",
+    "body": ["\"${1:name}\": {", "\"prefix\": \"${1:name}\",", "\"body\": '${2:body}'", "},"]
+  },
+  "impinput": {
+    "prefix": "impinput",
+    "body": "import { ${1:Checkbox} \\} from \"@progress/kendo-react-inputs\";"
+  },
+  "impbutton": {
+    "prefix": "impbutton",
+    "body": "import { ${1:Button} \\} from \"@progress/kendo-react-buttons\";"
+  },
+  "impwin": {
+    "prefix": "impwin",
+    "body": "import { ${1:Window} \\} from \"@progress/kendo-react-dialogs\";"
+  },
+  "impredux": {
+    "prefix": "impredux",
+    "body": "import { ${1:connect} \\} from \"react-redux\";"
+  },
+  "improuter": {
+    "prefix": "improuter",
+    "body": "import { ${1:Link} \\} from \"react-router-dom\";"
+  },
+  "impaxios": {
+    "prefix": "impaxios",
+    "body": "import axios from \"axios\";"
+  },
+  "implodash": {
+    "prefix": "implodash",
+    "body": "import * as _ from \"lodash\";"
+  },
+  "memb": {
+    "prefix": "memb",
+    "body": "${1:fn} = (${2:e})=>{ ${3}\\}"
+  },
+  "arrowfn": {
+    "prefix": "arrowfn",
+    "body": "(${1}) => {${2}}"
+  },
+  "propfn": {
+    "prefix": "propfn",
+    "body": "{(${1}) => {${2}}}"
+  },
+  "getpage": {
+    "prefix": "getpage",
+    "body": [
+      "getPage = (skip: number, take: number): void => {",
+      "let p = { params: util.pu.getPageReq(skip, take) };",
+      "p.params.search = JSON.stringify(${1:this.state.srch});",
+      "axios.get(\"${2:/api/svc/}\", p).then((res) => {",
+      "let pager = util.pu.getPagerFromRes(res.data);",
+      "let vkey = this.state.vkey;",
+      "pager.items = pager.items.map((ele) => {",
+      "ele.vkey = ++vkey;",
+      "return ele;",
+      "});",
+      "this.setState({ pager: util.pu.getPagerFromRes(res.data), vkey });",
+      "});",
+      "};"
+    ]
+  },
+  "promise": {
+    "prefix": "promise",
+    "body": "${1:promise}.then((res)=>{ console.log(\"res is\", res);${2} \\}).catch( (e) => { console.log(\"E\", e);  if( e?.cmd !=='cancel'){ ${3}\\} \\})"
+  },
+  "impfiledown": {
+    "prefix": "impfiledown",
+    "body": "const FileDownload = require(\"js-file-download\");"
+  },
+  "impclsnms": {
+    "prefix": "impclsnms",
+    "body": "var clsnms = require('classnames');"
+  },
+  "clsnms": {
+    "prefix": "clsnms",
+    "body": "className={clsnms(${1})}"
+  },
+  "multilinehead": {
+    "prefix": "multilinehead",
+    "body": "headerCell={(props) => <MultiLineHead titles={[\"${1}\", \"${2}\"]} />} "
+  },
+  "cell": {
+    "prefix": "cell",
+    "body": "cell={(props) => ${1:<td></td>} }"
+  },
+  "cellclick": {
+    "prefix": "cellclick",
+    "body": [
+      "cell={(props) => (",
+      "  <td onClick={(e) => clickRow(\"dtl\", props.dataItem)\\} style={{ cursor: \"pointer\", textDecoration: \"underline\" \\}\\}>",
+      "    {props.dataItem.${1}\\}",
+      "  </td>",
+      ")\\}"
+    ]
+  },
+  "as": {
+    "prefix": "as",
+    "body": "(${1} as ${2})"
+  },
+  "impqs": {
+    "prefix": "impqs",
+    "body": "const queryString = require(\"query-string\");"
+  },
+  "table": {
+    "prefix": "table",
+    "body": [
+      "<table className=\"type01\" width=\"100%\">",
+      "  <ColGroup cols={[100]}/>",
+      "  <thead>",
+      "  <tr>",
+      "    <th></th>",
+      "  </tr>",
+      "  </thead>",
+      "  <tbody>",
+      "  <tr>",
+      "    <td></td>",
+      "  </tr>",
+      "  </tbody>",
+      "</table>"
+    ],
+    "description": "table tag"
+  },
+  "column": {
+    "prefix": "column",
+    "body": "<Column field=\"${1}\" width=\"${2:100}\" title=\"${3}\" />",
+    "description": "Grid Column"
+  },
+  "chkhead": {
+    "prefix": "chkhead",
+    "body": "headerCell={(props) => <Checkbox checked={${1:this.state.chkHead} \\} onChange={(e) => ${2:this.handleChkHead(e.value)} \\} />\\}",
+    "description": "Grid Header Check"
+  },
+  "chkcell": {
+    "prefix": "chkcell",
+    "body": "cell={(props) => <ChkCell checked={${1:props.dataItem.chk} \\} onChange={(e) => ${2:this.handleChk(props.dataItem, e.value)} \\}/> \\}",
+    "description": "Grid Cell Check"
+  },
+  "onclick": {
+    "prefix": "onclick",
+    "body": "onClick={(e) => this.handleClick(e)\\}"
+  },
+  "onclickfn": {
+    "prefix": "onclickfn",
+    "body": "onClick={(e) => handleClick(e, \"${cmd}\")\\}"
+  },
+  "onchangedate": {
+    "prefix": "onchangedate",
+    "body": "onChange={(e) => ${1:this.handleChgVal}(\"${2}\", util.date.tostr(\"${3}\", e.value))}"
+  },
+  "onchange": {
+    "prefix": "onchange",
+    "body": "onChange={(e) => ${1:this.handleChgVal}(\"${2}\", ${3:e.target.value})}",
+    "description": "handleChgVal"
+  },
+  "eprevent": {
+    "prefix": "eprevent",
+    "body": "if( e && e.preventDefault ) e.preventDefault(); "
+  },
+  "estop": {
+    "prefix": "estop",
+    "body": "if( e && e.stopPropagation ) e.stopPropagation(); "
+  },
+  "ifcmd": {
+    "prefix": "ifcmd",
+    "body": ["if( cmd ===\"${cmd}\") {", "}else{", "window.alert(\"unknown cmd is \" + cmd); ", "}"]
+  },
+  "mndt": {
+    "prefix": "mndt",
+    "body": "className=\"mndt\""
+  },
+  "onchange2": {
+    "prefix": "onchange2",
+    "body": "onChange={(e) => ${1:this.handleChgItmVal}( ${2:ele}, \"${3}\", ${4:e.target.value})}",
+    "description": "handleChgItmVal"
+  },
+  "onchangefn": {
+    "prefix": "onchangefn",
+    "body": "onChange={(e) => ${1:handleChgVal}(\"${2}\", ${3:e.target.value})}",
+    "description": "handleChgVal"
+  },
+  "chgval": {
+    "prefix": "chgval",
+    "body": "handleChgVal = (prop, val) => { let state = { ...this.state }; state[prop] = val; this.setState(state);  }"
+  },
+  "chgitmval": {
+    "prefix": "chgitmval",
+    "body": "handleChgItmVal = (itm, prop, val) => {    itm[prop] = val;  }"
+  },
+  "obj": {
+    "prefix": "obj",
+    "body": "{${1}\\}"
+  },
+  "arr": {
+    "prefix": "arr",
+    "body": "[${1}]"
+  },
+  "value": {
+    "prefix": "value",
+    "body": "value={${1:this.state}\\}"
+  },
+  "fttable": {
+    "prefix": "fttable",
+    "body": [
+      "<div className=\"row ft-table mt-2\">",
+      "  <div className=\"col-sm-2 ft-head\">${1}</div>",
+      "  <div className=\"col-sm-4 ft-body\">${2}</div>",
+      "  <div className=\"col-sm-2 ft-head\">${3}</div>",
+      "  <div className=\"col-sm-4 ft-body\">${4}</div>",
+      "</div>"
+    ]
+  },
+  "srchcond": {
+    "prefix": "srchcond",
+    "body": [
+      "<Card className=\"srch-card\" type=\"primary\">",
+      "<div className=\"w33p tableCol\">",
+      "  <label className=\"k-form-field\">",
+      "    <span className=\"inBlock w100px\">${1}</span>",
+      "    <div></div>",
+      "  </label>",
+      "</div>",
+      "<div className=\"w33p tableCol\">",
+      "  <label className=\"k-form-field\">",
+      "    <span className=\"inBlock w100px\">${2}</span>",
+      "    <div></div>",
+      "  </label>",
+      "</div>",
+      "<div className=\"w33p tableCol\">",
+      "  <label className=\"k-form-field\">",
+      "    <span className=\"inBlock w100px\">${3}</span>",
+      "    <div></div>",
+      "  </label>",
+      "</div>",
+      "</Card>"
+    ]
+  },
+  "cls": {
+    "prefix": "cls",
+    "body": "className={${1:\"\"}\\}",
+    "description": "className={}"
+  },
+  "cls2": {
+    "prefix": "cls2",
+    "body": "className=\"${1}\"",
+    "description": "className=\"\""
+  },
+  "cls3": {
+    "prefix": "cls3",
+    "body": "className={classes${1}}",
+    "description": "className=\"\""
+  },
+  "label": {
+    "prefix": "label",
+    "body": "label=\"${1}\""
+  },
+  "colspan": {
+    "prefix": "colspan",
+    "body": "colSpan={${1}\\}"
+  },
+  "rowspan": {
+    "prefix": "rowspan",
+    "body": "rowSpan={${1}\\}"
+  },
+  "style": {
+    "prefix": "style",
+    "body": "style={{${1}\\}\\}"
+  },
+  "muistyle": {
+    "prefix": "muistyle",
+    "body": "const useStyles = makeStyles((theme: Theme) => ({ }));"
+  },
+  "impclsx": {
+    "prefix": "impclsx",
+    "body": "import clsx from \"clsx\""
+  },
+  "fttable-colcls": {
+    "prefix": "fttable-colcls",
+    "body": [
+      "const colcls = (...idxs: number[]) => {",
+      "  const widths = [1, 2, 1,2 ]; ",
+      "  return util.colcls(widths, idxs);",
+      "};",
+      "const colhead = (...idxs: number[]) => {",
+      "  return colcls(...idxs) + \" ft-head\";",
+      "};",
+      "const colbody = (...idxs: number[]) => {",
+      "  return colcls(...idxs) + \" ft-body\";",
+      "};"
+    ],
+    "description": "ft table colcls"
+  },
+  "fttable2": {
+    "prefix": "fttable2",
+    "body": [
+      "<div className=\"row ft-table\">",
+      "<div className={colhead(0)}>${1}</div>",
+      "<div className={colbody(1)}>${2}</div>",
+      "<div className={colhead(2)}>${3}</div>",
+      "<div className={colbody(3)}>${4}</div>",
+      "</div>"
+    ]
+  },
+  "fttable3": {
+    "prefix": "fttable3",
+    "body": [
+      "<FtTable>",
+      "<FtHead width=\"1\"></FtHead>",
+      "<FtBody width=\"2\"></FtBody>",
+      "<FtHead width=\"1\"></FtHead>",
+      "<FtBody width=\"2\"></FtBody>",
+      "<FtHead width=\"1\"></FtHead>",
+      "<FtBody width=\"2\"></FtBody>",
+      "<FtHead width=\"1\"></FtHead>",
+      "<FtBody width=\"2\"></FtBody>",
+      "</FtTable>"
+    ]
+  },
+  "ftrow": {
+    "prefix": "ftrow",
+    "body": [
+      "<FtHead width=\"1\"></FtHead>",
+      "<FtBody width=\"2\"></FtBody>",
+      "<FtHead width=\"1\"></FtHead>",
+      "<FtBody width=\"2\"></FtBody>",
+      "<FtHead width=\"1\"></FtHead>",
+      "<FtBody width=\"2\"></FtBody>",
+      "<FtHead width=\"1\"></FtHead>",
+      "<FtBody width=\"2\"></FtBody>"
+    ]
+  },
+  "srch-colcls": {
+    "prefix": "srch-colcls",
+    "body": [
+      "const srchcolcls = (...idxs: number[]) => {",
+      "  const widths = [1, 2, 1,2 ]; ",
+      "  return util.colcls(widths, idxs);",
+      "};",
+      "const srchhead = (...idxs: number[]) => {",
+      "  return srchcolcls(...idxs) + \" srch-head\";",
+      "};",
+      "const srchbody = (...idxs: number[]) => {",
+      "  return srchcolcls(...idxs) + \" srch-body\";",
+      "};"
+    ],
+    "description": "srch table colcls"
+  },
+  "srchtable": {
+    "prefix": "srchtable",
+    "body": [
+      "<div className=\"row srch-table\">",
+      "<div className={srchhead(0)}>${1}</div>",
+      "<div className={srchbody(1)}>${2}</div>",
+      "<div className={srchhead(2)}>${3}</div>",
+      "<div className={srchbody(3)}>${4}</div>",
+      "</div>"
+    ]
+  },
+  "srch3": {
+    "prefix": "srch3",
+    "body": [
+      "<div className=\"w33p tableCol\">",
+      "  <label className=\"k-form-field\">",
+      "    <span className=\"inBlock w130px\"></span>",
+      "    <Input />",
+      "  </label>",
+      "</div>",
+      "<div className=\"w33p tableCol\">",
+      "  <label className=\"k-form-field\">",
+      "    <span className=\"inBlock w110px\"></span>",
+      "    <Input />",
+      "  </label>",
+      "</div>",
+      "<div className=\"w33p tableCol\">",
+      "  <label className=\"k-form-field\">",
+      "    <span className=\"inBlock w100px\"></span>",
+      "    <Input />",
+      "  </label>",
+      "</div>"
+    ]
+  },
+  "dtos": {
+    "prefix": "dtos",
+    "body": "util.date.tostr(\"\", ${1:date})"
+  },
+  "stod": {
+    "prefix": "stod",
+    "body": "util.date.todate(${1})"
+  },
+
+  "mounted": {
+    "prefix": "mounted",
+    "body": ["_ismounted = false;", "componentDidMount() {    this._ismounted = true;  }", "componentWillUnmount() {    this._ismounted = false;  }"]
+  },
+  "impconnect": {
+    "prefix": "impconnect",
+    "body": "import { connect } from \"react-redux\";"
+  },
+  "logcmd": {
+    "prefix": "logcmd",
+    "body": ["componentDidMount() {    sconf.regist(this);  }", "componentWillUnmount() {    sconf.unregist(this);  }"]
+  },
+  "impactiontype": {
+    "prefix": "impactiontype",
+    "body": "import * as types from \"store/actions/ActionTypes\";"
+  },
+  "prop": {
+    "prefix": "prop",
+    "body": "${1}={${2}\\}",
+    "description": "prop={}"
+  },
+  "event": {
+    "prefix": "event",
+    "body": "${1} = {(e)=> ${2} \\}"
+  },
+  "reduce": {
+    "prefix": "reduce",
+    "body": ".reduce( (acc, curr)=>{ return acc + curr; }, 0)"
+  }
+}

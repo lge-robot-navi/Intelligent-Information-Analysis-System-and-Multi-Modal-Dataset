@@ -1,0 +1,62 @@
+###
+POST http://127.0.0.1:52000/monitoring/agentif/log
+Content-Type: application/json; charset=utf-8
+
+
+{
+	level:"DEBUG", 
+	msg:"LOG TEST"
+}
+
+
+###
+POST http://127.0.0.1:52000/monitoring/agentif/event 
+Content-Type: application/json; charset=utf-8
+
+
+{
+	header:{
+		robotId:4,
+		timestamp:"20190603-101010.323",
+		msgId:"agent.event"
+	}, 
+	data:{
+		deviceId:100,
+		abnormalId:2,
+		eventTimestamp:"20190603-101010.334",
+		//eventPosX:36.0910,eventPosY:129.3332 
+		//eventPosX:36.090551, eventPosY:129.332452
+		//eventPosX:36.089601, eventPosY:129.334129
+		eventPosX:36.090376, eventPosY:129.333727
+		//eventPosX:36.090719, eventPosY:129.334053
+	}
+}
+###
+POST http://127.0.0.1:52000/monitoring/agentif/stat 
+Content-Type: application/json; charset=utf-8
+
+
+{
+	header:{
+		robotId:102,
+		timestamp:"20190101-101010.333",
+		msgId:"agent.event"
+	}, 
+	data:{
+		lat:36.091235, lon:129.332385,
+		//lat:36.091070, lon:129.333780,
+		pan:10,
+		tilt:10,
+		compass:10,
+		imuRate:10.1,
+		imuAngle:20.1,
+		encL:10,
+		encR:20,
+		velL:30,
+		velR:40,
+		tv:1111,
+		rv:2222
+	}
+}
+
+###

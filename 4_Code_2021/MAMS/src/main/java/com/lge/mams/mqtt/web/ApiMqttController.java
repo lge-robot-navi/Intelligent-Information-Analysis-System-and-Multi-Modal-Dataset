@@ -52,17 +52,19 @@ public class ApiMqttController {
 		Long eventSn = Long.valueOf(jutil.treeToStr("eventSn"));
 
 		// update to
+		String areaCode = "";
 		try {
 			TbEventInfo evt = repoEventInfo.findOne(eventSn);
 			if (evt != null) {
 				evt.setConfirmYn("Y");
 				repoEventInfo.save(evt);
+				areaCode = evt.getAreaCode();
 			}
 		} catch (Exception ex) {
 			logger.error("EX", ex);
 		}
 
-		wsAgent.pushClearEvent(eventSn);
+		wsAgent.pushClearEvent(eventSn, areaCode);
 
 		String jsonmsg = jutil.treeToJson("body");
 

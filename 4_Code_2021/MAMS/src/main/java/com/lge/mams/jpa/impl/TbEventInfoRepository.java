@@ -17,6 +17,8 @@ public interface TbEventInfoRepository extends JpaRepository<TbEventInfo, Long> 
 
 	Page<TbEventInfo> findByConfirmYn(Pageable page, String confirmYn);
 
+	Page<TbEventInfo> findByAreaCodeAndConfirmYn(Pageable page, String areaCodePG, String confirmYn);
+
 	Page<TbEventInfo> findByEventDtBetween(Pageable page, Date start, Date end);
 
 	@Modifying

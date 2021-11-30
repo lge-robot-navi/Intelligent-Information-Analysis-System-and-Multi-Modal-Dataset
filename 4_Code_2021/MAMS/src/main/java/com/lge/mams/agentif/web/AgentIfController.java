@@ -196,7 +196,7 @@ public class AgentIfController {
 			o.setConfirmYn("Y");
 			repoEvent.save(o);
 
-			wsAgent.pushClearEvent(evt.getEventSn());
+			wsAgent.pushClearEvent(evt.getEventSn(), o.getAreaCode());
 
 			return AgentResult.success("LOG PUSH OK");
 		} catch (Exception e) {

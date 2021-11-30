@@ -1,0 +1,34 @@
+
+
+
+### 최신 상태.
+GET http://175.197.51.165:52000/monitoring/agentif/stat
+
+### 최신 이벤트
+GET http://175.197.51.165:52000/monitoring/agentif/event
+
+### 테스트 맵.
+GET http://175.197.51.165:52000/monitoring/test/map
+
+
+### CONFIG 확인
+http://175.197.51.165:52000/monitoring/test/config
+
+### UDP TRUE
+http://175.197.51.165:52000/monitoring/test/config?type=udp&val=true
+
+### EVENT TRUE
+http://175.197.51.165:52000/monitoring/test/config?type=event&val=true
+
+### STAT TRUE
+http://175.197.51.165:52000/monitoring/test/config?type=stat&val=true
+
+### UDP FALSE
+http://175.197.51.165:52000/monitoring/test/config?type=udp&val=false
+
+### EVENT FALSE
+http://175.197.51.165:52000/monitoring/test/config?type=event&val=false
+
+### STAT FALSE
+http://175.197.51.165:52000/monitoring/test/config?type=stat&val=false
+

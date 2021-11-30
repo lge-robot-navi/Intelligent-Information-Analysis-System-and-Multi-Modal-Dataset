@@ -1,0 +1,28 @@
+
+
+1. tomcat에 rewrite.config 위치
+1) tomcat/conf/server.xml 의 host 하위에 rewrite valve 추가
+<Valve className="org.apache.catalina.valves.rewrite.RewriteValve" />
+
+2) tomcat/conf/Catalina/host/ 디렉토리에
+rewrite.config 파일을 두고 해당 파일에 rule 설정
+
+2. 자신의 소스에 rewirte.config 위치
+1) tomcat/conf/context.xml 에 rewrite valve 추가
+<Valve className="org.apache.catalina.valves.rewrite.RewriteValve" />
+
+2) 소스에 있는 WEB-INF/ 디렉토리에 
+rewrite.config 파일을 두고 해당 파일에 rule 설정
+
+rewrite.config 설정
+RewriteCond %{REQUEST_PATH} !-f 
+RewriteRule ^/api/(.*) /api/index.html
+RewriteCond %{REQUEST_PATH} !-f
+
+#REQUEST_PATH : 요청하는 url 전체 내용이다.
+
+# ! 는 앞에 -f 부정한다.
+# -f 는 요청으로 들어온 url의 파일이 존재시 실행한다. 
+RewriteRule ^/api/(.*) /api/index.html
+# ^/api/(.*) /api/index.html : /api 라는 prefix가 붙어있는경우 /api/index.html로rewrite시킨다.
+

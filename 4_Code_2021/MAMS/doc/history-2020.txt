@@ -1,0 +1,18 @@
+
+
+
+
+
+1. 개발 환경에서 반영한 것들은, 클라우드 환경에서도 반영할 수 있도록 기록 및 SQL로 남겨 놓을 것. 
+
+
+INSERT INTO `ta_code_info` (`CODE_CD`, `CODE_NM`, `CODE_DS`, `USE_YN`, `IF_CD`, `INSERT_DT`, `INSERT_ID`, `UPDATE_DT`, `UPDATE_ID`, `ORDER_NO`, `CDGRP_CD`) VALUES
+	('106', 'P : 에이전트7(이동)', '{lat:36.091418, lon:129.331982, fixed:Y, markerImage:robot.png ,agentId:7,areaCode:P}', 'Y', '', '2019-05-28 12:12:49', 'A000000001', '2019-07-17 09:03:05', 'A000000001', '1', 'TA009'),
+	('107', 'P : 에이전트8(이동)', '{lat:36.090453, lon:129.332206, fixed:Y, markerImage:robot.png ,agentId:8,areaCode:P}', 'Y', '', '2019-05-28 12:13:17', 'A000000001', '2019-07-17 09:03:14', 'A000000001', '2', 'TA009'),
+	('108', 'P : 에이전트9(이동)', '{lat:36.090388, lon:129.333351, fixed:Y, markerImage:robot.png ,agentId:9,areaCode:P}', 'Y', '', '2019-05-28 12:13:41', 'A000000001', '2019-07-17 09:03:23', 'A000000001', '3', 'TA009'),
+	('206', 'G : 에이전트7(이동)', '{lat:35.1064, lon:126.8951, fixed:Y, markerImage:robot.png ,agentId:7,areaCode:G}', 'Y', '', '2019-05-28 12:18:10', 'A000000001', '2019-06-24 11:15:20', 'A000000001', '1', 'TA010'),
+	('207', 'G : 에이전트8(이동)', '{lat:35.106918, lon:126.895787, fixed:Y, markerImage:robot.png ,agentId:8,areaCode:G}', 'Y', '', '2019-05-28 12:18:26', 'A000000001', '2019-06-24 11:15:32', 'A000000001', '2', 'TA010'),
+	('208', 'G : 에이전트9(이동)', '{lat:35.104987, lon:126.893684, fixed:Y, markerImage:robot.png ,agentId:9,areaCode:G}', 'Y', '', '2019-05-28 12:18:47', 'A000000001', '2019-06-24 11:15:44', 'A000000001', '3', 'TA010') ;
+	
+	
+	

@@ -24,7 +24,8 @@ public class LgicConfig {
 			config.eventImageDir = "C:/test/images/events/";
 			config.mntrImageDir = "C:/test/images/mntr/";
 			config.voiceDir = "C:/test/voices/mntr/";
-			config.mqttServer = "tcp://192.168.111.26:1883";
+			// config.mqttServer = "tcp://192.168.111.26:1883";
+			config.mqttServer = "tcp://192.168.0.190:1883";
 			// config.mqttServer = "tcp://220.81.76.111:1883";
 		} else if ("AWS".equals(devtype)) {
 			config.eventImageDir = "/home/lgic/cia2019/images/events/";

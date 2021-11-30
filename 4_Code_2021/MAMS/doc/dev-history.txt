@@ -1,0 +1,96 @@
+
+
+<< 2020.08.21 금 >> 
+- 	@DateTimeFormat(pattern = "yyyyMMdd-HHmmss.SSS")
+	@JsonFormat(pattern = "yyyyMMdd-HHmmss.SSS")
+	와 같은 annotation 은 getXxx에 사용해야 한다. field 에 사용해서는, 문제가 발생하고 있었음. 
+
+
+<< 2020.08.15 토 >>
+- 할일. 
+ . ETRI
+  + 이벤트 처리 . : HIL 처리.  
+  + 
+ . 금오공대
+  + 리스케쥴링 테스트. 
+  + 초기 스케쥴링 인터페이스 개발.   
+  
+ . 라스테크
+  + 이벤트 전송. 
+ 
+
+
+
+<< 2020.07.21 화 >>
+1. 이미지 테스트. 
+- 
+
+
+
+<< 2020.07.13 월 >>
+- 상태관리 처리할 것. : 접속상태 관리자만들 것. 
+- ETRI 이벤트 처리할 것. : 문제가 있으면 이슈화할 것. 
+ ** 중요함. 
+- 스케쥴링 마지막 2개의 데이터 보관하도록 처리할 것. 
+- 위경도 변환 관련하여 hooking 지점 고려. 
+- 이미지 드로잉 기능 처리할 것. 
+ . 방안1) 클라이언트에서 javascript로 처리. 
+ . 방안2) 서버에서 java로 처리하여 image를 던져줄 것. 
+
+- 상태 관리 내용 확인. 
+http://localhost:52000/monitoring/test/c
+[{"agentId":1,"agentType":"ROBOT","location":"ph","isHealthy":false},{"agentId":2,"agentType":"ROBOT","location":"ph","isHealthy":false},{"agentId":3,"agentType":"ROBOT","location":"ph","isHealthy":false},{"agentId":7,"agentType":"ROBOT","location":"ph","isHealthy":false},{"agentId":8,"agentType":"ROBOT","location":"ph","isHealthy":false},{"agentId":9,"agentType":"ROBOT","location":"ph","isHealthy":false},{"agentId":10,"agentType":"ROBOT","location":"ph","isHealthy":false},{"agentId":11,"agentType":"ROBOT","location":"ph","isHealthy":false},{"agentId":9,"agentType":"ROBOT","location":"ph","isHealthy":false},{"agentId":1,"agentType":"DRONE","location":"ph","isHealthy":false},{"agentId":1,"agentType":"ENVMAP","location":"ph","isHealthy":false},{"agentId":1,"agentType":"SCHEDULER","location":"ph","isHealthy":false},{"agentId":1,"agentType":"ROBOT","location":"gw","isHealthy":false},{"agentId":2,"agentType":"ROBOT","location":"gw","isHealthy":false},{"agentId":3,"agentType":"ROBOT","location":"gw","isHealthy":false},{"agentId":4,"agentType":"ROBOT","location":"gw","isHealthy":false},{"agentId":5,"agentType":"ROBOT","location":"gw","isHealthy":false},{"agentId":6,"agentType":"ROBOT","location":"gw","isHealthy":false},{"agentId":7,"agentType":"ROBOT","location":"gw","isHealthy":false},{"agentId":8,"agentType":"ROBOT","location":"gw","isHealthy":false},{"agentId":9,"agentType":"ROBOT","location":"gw","isHealthy":false},{"agentId":1,"agentType":"DRONE","location":"gw","isHealthy":false},{"agentId":1,"agentType":"ENVMAP","location":"gw","isHealthy":false},{"agentId":1,"agentType":"SCHEDULER","location":"gw","isHealthy":false}]
+10초 이내에 healthCheck 가 발생하면 online으로 체크한다. 
+주기적으로 메인모니터링 화면에 상태 정보 전송하도록 할 것. 
+
+
+- mqtt 상태 정보 조회. 
+http://localhost:52000/monitoring/api/mqtt/mqttagentstats
+
+- mqtt pong 메시지 전송.
+ MqttTest 프로젝트에서, 
+ yarn t3 
+ tsc 
+
+
+# old schedule
+http://localhost:52000/monitoring/api/mqtt/mqttoldschedule
+# new schedule
+http://localhost:52000/monitoring/api/mqtt/mqttnewschedule
+
+
+# 이미지. 
+http://localhost:52000/monitoring/resources/images/pohang-map.jpg
+
+
+# 이미데이터를 서버에서 PNG로 드로잉해서, 클라이언트로 보내주는 것이 나아 보임. 
+
+
+# 이미지 요청. 
+요청 파라미터. 
+	public Integer width; // 이미지 가로 크기. 
+	public Integer height; // 이미지 세로 크기. 
+	public String location; // ph or gw (지역구분)
+	public boolean mapsearch; // 수색영역
+	public boolean mapheight ; // 높이지도. 
+	public boolean maptemperature; // 온도. 
+	public boolean mapobjprob; // 사람, 차량 존재 확률. 
+	public boolean mapheightprob; // 장애물 확률지도. 
+
+요청 URL ( GET방식으로 위의 파라미터로 요청하면 됨. )
+http://localhost:52000/monitoring/mqtt/getenvmap?width=500&height=500
+
+http://localhost:52000/monitoring/mqtt/getenvmap?width=500&height=500&location=ph
+http://localhost:52000/monitoring/mqtt/getenvmap?width=500&height=500&location=gw
+
+http://localhost:52000/monitoring/mqtt/getenvmap?width=500&height=500&location=ph&mapsearch=true
+http://localhost:52000/monitoring/mqtt/getenvmap?width=500&height=500&location=ph&mapheightprob=true
+
+# hue value 참고 
+http://learn.leighcotnoir.com/artspeak/elements-color/hue-value-saturation/
+
+
+# parsing 
+SeqImgHead
+UdpServer
+

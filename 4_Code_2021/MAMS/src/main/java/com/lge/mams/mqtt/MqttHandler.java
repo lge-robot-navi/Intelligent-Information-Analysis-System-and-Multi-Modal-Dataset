@@ -1,6 +1,8 @@
 package com.lge.mams.mqtt;
 
 import java.util.Date;
+import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
@@ -16,6 +18,9 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -24,6 +29,7 @@ import com.lge.mams.agentif.model.AgentResult;
 import com.lge.mams.agentif.service.AgentManager;
 import com.lge.mams.agentif.service.EventTimerMgr;
 import com.lge.mams.agentif.udperver.SeqImageProvider;
+import com.lge.mams.common.util.DateUtil;
 import com.lge.mams.config.LgicConfig;
 import com.lge.mams.jpa.impl.TbAgentStatRepository;
 import com.lge.mams.jpa.impl.TbEventInfoRepository;
@@ -64,8 +70,14 @@ public class MqttHandler implements MqttCallback {
 		logger.debug("START MQTT Subscriber ");
 
 //		String[] topics = { "/mams/+/cloud/pong", "/mams/+/etri/event", "/mams/+/etri/map/#", "/mams/+/scheduler/res" };
-		String[] topics = { "/mams/+/cloud/#", "/mams/+/etri/event", "/mams/+/etri/map/#", "/mams/+/scheduler/res" }; // cloud 하위까지
-		int[] qoss = { 0, 0, 0, 0 };
+		String[] topics = {
+				"/mams/+/cloud/#",
+				"/mams/+/etri/event",
+				"/mams/+/etri/map/#",
+				"/mams/+/scheduler/res",
+				"/mams/+/roid/req_event_list"
+		}; // cloud 하위까지
+		int[] qoss = { 0, 0, 0, 0, 0 };
 		// String broker = "tcp://192.168.0.190:1883";
 		String broker = config.getMqttServer();
 		long time = new Date().getTime();
@@ -78,21 +90,21 @@ public class MqttHandler implements MqttCallback {
 			connOpts.setCleanSession(true);
 			connOpts.setKeepAliveInterval(300);
 			mqttClient.setCallback(this);
-			logger.debug("Connecting to broker: " + broker);
+			logger.debug("[mqtt] Connecting to broker: " + broker);
 			mqttClient.connect(connOpts);
-			logger.debug("Connected");
+			logger.debug("[mqtt] Connected");
 			Thread.sleep(1000);
 			mqttClient.subscribe(topics, qoss);
-			logger.debug("Subscribed");
+			logger.debug("[mqtt] Subscribed");
 		} catch (Exception me) {
 			if (me instanceof MqttException) {
-				logger.error("reason " + ((MqttException) me).getReasonCode());
+				logger.error("[mqtt] reason " + ((MqttException) me).getReasonCode());
 			}
-			logger.error("msg " + me.getMessage());
-			logger.error("loc " + me.getLocalizedMessage());
-			logger.error("cause " + me.getCause());
-			logger.error("excep " + me);
-			logger.error("mqtt error", me);
+			logger.error("[mqtt] msg " + me.getMessage());
+			logger.error("[mqtt] loc " + me.getLocalizedMessage());
+			logger.error("[mqtt] cause " + me.getCause());
+			logger.error("[mqtt] excep " + me);
+			logger.error("[mqtt] mqtt error", me);
 		}
 
 	}
@@ -121,20 +133,20 @@ public class MqttHandler implements MqttCallback {
 
 	@PreDestroy
 	private void stop() {
-		logger.debug("STOP MQTT Subscriber");
+		logger.debug("[mqtt] STOP MQTT Subscriber");
 		if (mqttClient != null && mqttClient.isConnected()) {
 			try {
 				mqttClient.disconnect();
 				mqttClient = null;
 			} catch (MqttException e) {
-				logger.error("stop", e);
+				logger.error("[mqtt] stop", e);
 				mqttClient = null;
 			}
 		}
 	}
 
 	public void connectionLost(Throwable arg0) {
-		logger.error("connection lost", arg0);
+		logger.error("[mqtt] connection lost", arg0);
 	}
 
 	public void deliveryComplete(IMqttDeliveryToken arg0) {
@@ -194,13 +206,13 @@ public class MqttHandler implements MqttCallback {
 	public AgentResult saveEvent(TbEventInfo event) {
 		try {
 			if ("0".contentEquals(event.getAbnormalId())) {
-				logger.error("abnormalid is zero");
+				logger.error("[mqtt] abnormalid is zero");
 				return AgentResult.success("abnormalid is zero");
 			}
 
 			if (!"Y".contentEquals(event.getFbNeed())) {
 				if (!eventTimerMgr.isEventTime(event.getAreaCode(), event.getRobotId(), event.getAbnormalId())) {
-					logger.error("{}", String.format("not event time %s %d", event.getAreaCode(), event.getRobotId()));
+					logger.error("[mqtt] {}", String.format("not event time %s %d", event.getAreaCode(), event.getRobotId()));
 					return AgentResult.success(String.format("not event time %s %d", event.getAreaCode(), event.getRobotId()));
 				}
 			}
@@ -225,7 +237,7 @@ public class MqttHandler implements MqttCallback {
 
 	public void messageArrived(String topic, MqttMessage message) throws Exception {
 
-		logger.debug("topic: " + topic);
+		logger.debug("[mqtt] topic: " + topic);
 
 		// logger.debug("message: " + msg);
 
@@ -242,7 +254,7 @@ public class MqttHandler implements MqttCallback {
 		// "res".equals(toks[4])) {
 		if (istopic(toks, new String[] { "+", "mams", "+", "scheduler", "res" })) {
 			String msg = new String(message.getPayload());
-			logger.debug("message: " + msg);
+			logger.debug("[mqtt] message: " + msg);
 			// 스케쥴러 응답.
 			wsagent.pushScheduleResData(msg);
 			mqttScheduler.addSchedulingData(msg);
@@ -251,7 +263,7 @@ public class MqttHandler implements MqttCallback {
 			// "pong".equals(toks[4])) {
 		} else if (istopic(toks, new String[] { "+", "mams", "+", "cloud", "status" })) {
 			String msg = new String(message.getPayload());
-			logger.debug("message: " + msg);
+			logger.debug("[mqtt] message: " + msg);
 
 			// wsagent.pushMqttAgents(msg);
 
@@ -261,16 +273,16 @@ public class MqttHandler implements MqttCallback {
 			// 상태 설정.
 			mqttAgents.setHealthy(loc, stat.getRobotId(), stat);
 
-			logger.debug("(cloudstat)parsed json : {},  {}", stat.getTimestamp(), JsonUtil.pretty(stat));
+			logger.debug("[mqtt] (cloudstat)parsed json : {},  {}", stat.getTimestamp(), JsonUtil.pretty(stat));
 
 			doCloudStat(stat, loc);
 
 		} else if (istopic(toks, new String[] { "+", "mams", "+", "cloud", "pong" })) {
 			String msg = new String(message.getPayload());
-			logger.debug("message: " + msg);
+			logger.debug("[mqtt] message: " + msg);
 			JsonUtil jutil = new JsonUtil(msg);
 			Map map = jutil.treeToMap();
-			logger.debug("pong", JsonUtil.pretty(map));
+			logger.debug("[mqtt] pong", JsonUtil.pretty(map));
 			mqttAgents.setHealthy(toks[1], MapUtil.toint(map, "agentId"));
 		} else if (istopic(toks, new String[] { "+", "mams", "+", "etri", "map", "search" })) {
 			byte[] bytes = message.getPayload();
@@ -311,20 +323,58 @@ public class MqttHandler implements MqttCallback {
 			}
 		} else if (istopic(toks, new String[] { "+", "mams", "+", "etri", "event" })) {
 			String json = new String(message.getPayload());
-			logger.debug("message: " + json);
+			logger.debug("[mqtt] message: " + json);
 			JsonUtil jutil = new JsonUtil(json);
 			EtriEvent event = jutil.treeToValue(EtriEvent.class);
 
-			logger.debug("parsed json : {}", JsonUtil.pretty(event));
+			logger.debug("[mqtt] parsed json : {}", JsonUtil.pretty(event));
 			// 이벤트 변환하여, 저장.
 
 			doEtriEvent(event, loc);
 			// 이벤트 신규 포맷으로 변경하도록 할 것.
+		} else if (istopic(toks, new String[] { "+", "mams", "+", "roid", "req_event_list" })) {
+			logger.debug("[mqtt] roid > req_event_list > message: {} {}", toks[0], toks[2]);
+			doRoidEventList(loc);
 		} else {
 			String msg = new String(message.getPayload());
-			logger.debug("message: " + msg);
+			logger.debug("[mqtt] message: " + msg);
 		}
 
+	}
+
+	private void doRoidEventList(String loc) {
+		//
+
+		Pageable page = new PageRequest(0, 100);
+		String PG = "";
+		if ("ph".equals(loc)) {
+			PG = "P";
+		} else if ("gw".equals(loc)) {
+			PG = "G";
+		}
+
+		Page<TbEventInfo> pageStat = repoEvent.findByAreaCodeAndConfirmYn(page, PG, "N");
+		List<TbEventInfo> list = pageStat.getContent();
+
+		if (list == null || list.size() == 0) {
+			publish("/mams/" + loc + "/roid/rsp_event_list", "[]");
+		} else {
+			Object ojson = list.stream().map(ele -> {
+				Map map = new Hashtable<>();
+				map.put("eventSn", ele.getEventSn());
+				map.put("eventDt", DateUtil.format(ele.getEventDt(), "yyyyMMdd-HHmmss.SSS"));
+				map.put("robotId", ele.getRobotId());
+				map.put("areaCode", ele.getAreaCode());
+				map.put("eventPosX", ele.getEventPosX());
+				map.put("eventPosY", ele.getEventPosY());
+				return map;
+			}).toArray();
+
+			String json = JsonUtil.pretty(ojson);
+			logger.debug("[mqtt] rsp event list {}", json);
+			publish("/mams/" + loc + "/roid/rsp_event_list", json);
+		}
+		// return pageStat.getContent();
 	}
 
 	private void doCloudStat(CloudStat stat, String loc) {
@@ -359,13 +409,13 @@ public class MqttHandler implements MqttCallback {
 			PG = "G";
 		}
 		tbevt.load(evt, PG);
-		logger.debug("convert to tbevent : {}", JsonUtil.pretty(tbevt));
+		logger.debug("[mqtt] convert to tbevent : {}", JsonUtil.pretty(tbevt));
 		saveEvent(tbevt);
 	}
 
 	public synchronized void publish(String topic, String msg) {
 		if (mqttClient == null || !mqttClient.isConnected()) {
-			logger.error("mqtt client is null or disconnected.");
+			logger.error("[mqtt] mqtt client is null or disconnected.");
 			return;
 		}
 
@@ -375,7 +425,7 @@ public class MqttHandler implements MqttCallback {
 		try {
 			mqttClient.publish(topic, message);
 		} catch (MqttException e) {
-			logger.error("publish error", e);
+			logger.error("[mqtt] publish error", e);
 		}
 	}
 }

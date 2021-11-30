@@ -29,19 +29,19 @@ public class WsMqttHandler extends TextWebSocketHandler {
 	@Override
 	public void handleTextMessage(WebSocketSession session, TextMessage message)
 			throws InterruptedException, IOException {
-		logger.info("[mqtt]payload: " + message.getPayload());
+		logger.info("[ws:mqtt] payload: " + message.getPayload());
 	}
 
 	@Override
 	public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-		logger.info("[mqtt]new Sessioin ID: {}", session.getId());
+		logger.info("[ws:mqtt] new Sessioin ID: {}", session.getId());
 		users.put(session.getId(), session);
 	}
 
 	@Override
 	public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
 		super.afterConnectionClosed(session, status);
-		logger.info("[mqtt]closed Sessioin ID: {}  CloseStatus: {}", session.getId(), status);
+		logger.info("[ws:mqtt] closed Sessioin ID: {}  CloseStatus: {}", session.getId(), status);
 		users.remove(session.getId());
 	}
 
@@ -49,14 +49,14 @@ public class WsMqttHandler extends TextWebSocketHandler {
 
 	public void testMsg() {
 		String jsonStr = "json : " + cnt++;
-		logger.debug("test msg send :" + jsonStr);
+		logger.debug("[ws:mqtt] test msg send :" + jsonStr);
 
 		try {
 			for (WebSocketSession s : users.values()) {
 				s.sendMessage(new TextMessage(jsonStr));
 			}
 		} catch (IOException e) {
-			logger.error("E", e);
+			logger.error("[ws:mqtt] E", e);
 		}
 	}
 
@@ -64,15 +64,15 @@ public class WsMqttHandler extends TextWebSocketHandler {
 		String jsonStr = "";
 		jsonStr = gson.toJson(data);
 		// wsagent.pushData("MQTT", data);
-		logger.debug("msg send :" + jsonStr + ", cnt : " + users.values().size());
+		logger.debug("[ws:mqtt] msg send :" + jsonStr + ", cnt : " + users.values().size());
 
 		try {
 			for (WebSocketSession s : users.values()) {
-				logger.debug("id:" + s.getId());
+				logger.debug("[ws:mqtt] id:" + s.getId());
 				s.sendMessage(new TextMessage(jsonStr));
 			}
 		} catch (IOException e) {
-			logger.error("E", e);
+			logger.error("[ws:mqtt] E", e);
 		}
 	}
 }

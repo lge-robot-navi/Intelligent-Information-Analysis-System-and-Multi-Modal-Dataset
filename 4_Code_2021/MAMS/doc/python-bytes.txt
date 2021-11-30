@@ -1,0 +1,47 @@
+
+
+
+bytes 는 1 바이트 단위의 값을 연속적으로 저장하는 시퀀스 자료형이다. 보통 1바이트는 8비트로 정의. 
+
+bytearray 
+bytearray 도 1바이트의 단위의 값을 연속적으로 저장하는 시퀀스 자료형임. bytes와 차이점은 요소를 
+변경할수 있는지의 여부이다. 
+
+파이썬에서 문자열(str)의 기본인코딩은 utf-8인데 문자열을 바이트 객체로 만들면 각 문자를 ascii코드로 저장한다. 
+보통 문자열을 utf-8이 아닌 ascii코드로 처리하고 싶을 때 바이트 객체를 사용한다. 
+문자열.encode() # str을 bytes로 변환. 
+
+반대로 바이트 객체를 문자열로 바꾸려면 decode를 사용하면 된다. 
+
+bytes의 사용. 
+사용방법은 문자열 ㅇ파에 b를 입력한다. 
+bytes는 split을 하여도 내부 원소는 bytes형태가 된다. 
+
+str to bytes, bytes to str : encode, decode. 
+
+
+struct 
+struct.pack, struct.unpack 는 python 타입고 byte사이의 변환을 담당. 
+
+array.array 는 reads binary data of a single type into an object that is functionally much like a list. 
+
+
+buffer protocol 
+the buffer protocol allows access to the memory underlying an objects's interesting data. 
+
+buffer object : a python object that allows an indexed view on a buffer-protocol object. 
+
+
+struct.pack('IHHH',1,1,1,1)
+
+a = bytearray([0,0,0])
+b = bytearray([1,1])
+a[:]=b[:]
+
+a[start:end]
+동일한 숫자인경우, 0바이트를 선택한다. 즉, 위치만을 선택한다. 
+
+>>> x[0] = ord('a')    # ord는 문자의 ASCII 코드를 반환
+>>> x
+bytearray(b'aello')
+
