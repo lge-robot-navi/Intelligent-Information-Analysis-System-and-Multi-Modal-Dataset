@@ -24,3 +24,14 @@ system at Pohang and Gwangju in South Korea between
 April 2017 and August 2021. The system was composed of
 mobile robots, fixed sensor modules, and a cloud system for
 outdoor surveillance.
+* Environments
+A robot patrols around the building, and fixed cameras
+are installed at the borders of the building and significant
+points to collect the multi-modal sensor dataset for
+surveillance tasks. Therefore, we selected two big sites for
+operating our surveillance robots. The
+robot moved along the pavement around the buildings under
+various weather conditions including rainy and foggy days.
+Walker, cyclists, and cars pass by the mobile robots and fixed
+multi-modal sensor module. While the mobile robot patrols,
+humans, cyclists, and cars are observed.
