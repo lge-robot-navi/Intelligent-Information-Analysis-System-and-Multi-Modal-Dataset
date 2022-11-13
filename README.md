@@ -56,3 +56,5 @@ average height of male actors is about 175 cm.
 
 * Information on Action Recognition DB
  ![ActionDB](https://user-images.githubusercontent.com/51143120/201524932-06204fc5-18ad-4cdb-b66f-42946c76fc71.jpg)
+ 
+# USE CASES OF DEVELOPING SURVEILLANCE ALGORITHMS USING THE DATASET
