@@ -6,6 +6,7 @@ Intelligent Information Analysis Platform and Multi-modal Dataset
 * Seungmin Baek, VP, Advanced Robotics Lab. LG Electronics Inc. (E-mail: seungmin2.baek@lge.com)
 * Hyoung-Rock Kim, Research Fellow, Advanced Robotics Lab. LG Electronics Inc. (E-mail: hyoungrock.kim@lge.com )
 * DongKi Noh, Chief Eng`r, Advanced Robotics Lab. LG Electronics Inc. (E-mail: dongki.noh@lge.com)
+* Teayoung Uhm, Korea Institute of Robotics and Technology Convergence (KIRO). (E-mail: uty@kiro.re.kr)
 
 
 # Goals
