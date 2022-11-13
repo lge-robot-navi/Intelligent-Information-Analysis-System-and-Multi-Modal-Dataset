@@ -41,6 +41,6 @@ humans, cyclists, and cars are observed.
 
 Our sensor module includes five different sensors. For the detailed information on the sensor
 configuration, calibration, and synchronization, please refer
-to our previous work. (H. Shin, K.-I. Na, J. Chang, and T. Uhm, “Multimodal layer surveillance
-map based on anomaly detection using multi-agents for smart
-city security,” ETRI Journal, vol. 44, no. 2, pp. 183–193, 2022.)
+to our previous work. (T. Uhm, J. Park, J. Lee, G. Bae, G. Ki, and Y. Choi, “Design of
+multimodal sensor module for outdoor robot surveillance system,”
+Electronics, vol. 11, no. 14, p. 2214, 2022.)
