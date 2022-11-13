@@ -19,3 +19,8 @@ Intelligent Information Analysis Platform and Multi-modal Dataset
 * Outdoor abnormal situation DB purification/tagging
 
 # Information on our Dataset 
+The dataset was collected using a cloud-based surveillance
+system at Pohang and Gwangju in South Korea between
+April 2017 and August 2021. The system was composed of
+mobile robots, fixed sensor modules, and a cloud system for
+outdoor surveillance.
