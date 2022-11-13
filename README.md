@@ -56,7 +56,7 @@ Electronics, vol. 11, no. 14, p. 2214, 2022.)
 * Information on Actors 
 
 The numerous prominent researchers of LG Electronics, KIRO, SNU, KAIST, and ETRI for their hard work in developing, evaluating, and constructing datasets over the past
-five years.We used professional actors to provide various scenarios and realistic actions for our dataset. We hired two female and two male actors. The age of the actors is 20∼30. All actors are Korean. The average height of female actors is about 160 cm. The average height of male actors is about 175 cm.
+five years. We also used professional actors to provide various scenarios and realistic actions for our dataset. We hired two female and two male actors. The age of the actors is 20∼30. All actors are Korean. The average height of female actors is about 160 cm. The average height of male actors is about 175 cm.
 
 * Information on Action Recognition DB related to surveillance tasks
  ![ActionDB](https://user-images.githubusercontent.com/51143120/201524932-06204fc5-18ad-4cdb-b66f-42946c76fc71.jpg)
