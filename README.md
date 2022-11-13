@@ -36,8 +36,7 @@ various weather conditions including rainy and foggy days.
 Walker, cyclists, and cars pass by the mobile robots and fixed
 multi-modal sensor module. While the mobile robot patrols,
 humans, cyclists, and cars are observed.
-*![Testbed](./GoogleMapsoftheTestBeds4.pdf)
-
+*![Testbed](https://github.com/lge-robot-navi/Intelligent-Information-Analysis-System-and-Multi-Modal-Dataset/issues/38#issue-1446927446)
 
 * Multi-Modal Sensor Module
 
