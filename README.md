@@ -36,3 +36,11 @@ various weather conditions including rainy and foggy days.
 Walker, cyclists, and cars pass by the mobile robots and fixed
 multi-modal sensor module. While the mobile robot patrols,
 humans, cyclists, and cars are observed.
+
+* Multi-Modal Sensor Module
+
+Our sensor module includes five different sensors. For the detailed information on the sensor
+configuration, calibration, and synchronization, please refer
+to our previous work. (H. Shin, K.-I. Na, J. Chang, and T. Uhm, “Multimodal layer surveillance
+map based on anomaly detection using multi-agents for smart
+city security,” ETRI Journal, vol. 44, no. 2, pp. 183–193, 2022.)
