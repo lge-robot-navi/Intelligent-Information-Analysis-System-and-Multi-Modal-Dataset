@@ -67,6 +67,8 @@ five years. We also used professional actors to provide various scenarios and re
 * Note that we open our source code used in our surveillance system via
 GitHub (https://github.com/kyuewang17/SNU_USR_dev). In the following sub-sections, the study presents various approaches for each module and results.
 
+* Various use-cases will be introduced by our recent paper.  
+
 * Real-time Tracking in the nighttime with RGB and nightvision images
 
 In our work, we used a high-performance night vision camera so that it can collect high-quality grayscale images. We have analyzed the performance of the foreground/background segmentation and detection with the night vision camera qualitatively. As can be seen in the below figure, the night vision showed better performance than the thermal camera.
