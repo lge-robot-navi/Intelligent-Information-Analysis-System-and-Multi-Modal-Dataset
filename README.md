@@ -69,11 +69,7 @@ GitHub (https://github.com/kyuewang17/SNU_USR_dev). In the following sub-section
 
 * Real-time Tracking in the nighttime with RGB and nightvision images
 
-In our work, we focused on surveillance robots and real-time applications, so we have 
-implemented Kalman filter-based data association for the multi-object tracking
-(MOT). Multi-modal data (RGB, thermal, depth images, and LiDAR scans) are utilized in the framework. The depth images are
-utilized to find the association of nearby objects; on the other hand, LiDAR is used to find the association of farther objects. Therefore, we achieve real-time
-processing and enhance credibility because accurate range information helps in finding data association. Thus, we present our result as below.
+In our work, we used a high-performance night vision camera so that it can collect high-quality grayscale images. We have analyzed the performance of the foreground/background segmentation and detection with the night vision camera qualitatively. As can be seen in the below figure, the night vision showed better performance than the thermal camera.
 
 ![NigthVision](https://user-images.githubusercontent.com/51143120/201526405-5413ed80-9a44-4efb-acd2-a04918fdfdba.jpg)
 
