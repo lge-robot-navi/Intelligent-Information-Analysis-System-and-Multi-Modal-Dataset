@@ -48,6 +48,8 @@ Electronics, vol. 11, no. 14, p. 2214, 2022.)
 * Information on Actors 
 
 We also used professional actors to provide various
-scenarios and realistic actions for our dataset.
+scenarios and realistic actions for our dataset. We hired two female and two male actors. The age of the actors is 20∼30. All
+actors are Korean. The average height of female actors is about 160 cm. The
+average height of male actors is about 175 cm.
 
 
