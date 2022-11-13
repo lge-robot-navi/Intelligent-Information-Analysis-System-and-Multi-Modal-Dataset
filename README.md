@@ -53,4 +53,4 @@ actors are Korean. The average height of female actors is about 160 cm. The
 average height of male actors is about 175 cm.
 
 * Information on Action Recognition DB
-* ![](https://github.com/lge-robot-navi/Intelligent-Information-Analysis-System-and-Multi-Modal-Dataset/issues/39#issue-1446932411)
+ ![](https://github.com/lge-robot-navi/Intelligent-Information-Analysis-System-and-Multi-Modal-Dataset/issues/39#issue-1446932411)
