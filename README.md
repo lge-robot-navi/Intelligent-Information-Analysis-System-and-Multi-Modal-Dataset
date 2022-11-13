@@ -44,3 +44,10 @@ configuration, calibration, and synchronization, please refer
 to our previous work. (T. Uhm, J. Park, J. Lee, G. Bae, G. Ki, and Y. Choi, “Design of
 multimodal sensor module for outdoor robot surveillance system,”
 Electronics, vol. 11, no. 14, p. 2214, 2022.)
+
+* Information on Actors 
+
+We also used professional actors to provide various
+scenarios and realistic actions for our dataset.
+
+
