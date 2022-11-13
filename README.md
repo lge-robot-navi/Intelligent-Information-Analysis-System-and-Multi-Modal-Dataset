@@ -60,7 +60,7 @@ scenarios and realistic actions for our dataset. We hired two female and two mal
 actors are Korean. The average height of female actors is about 160 cm. The
 average height of male actors is about 175 cm.
 
-* Information on Action Recognition DB
+* Information on Action Recognition DB related to surveillance tasks
  ![ActionDB](https://user-images.githubusercontent.com/51143120/201524932-06204fc5-18ad-4cdb-b66f-42946c76fc71.jpg)
  
 # USE CASES OF DEVELOPING SURVEILLANCE ALGORITHMS USING THE DATASET
