@@ -17,3 +17,5 @@ Intelligent Information Analysis Platform and Multi-modal Dataset
 * Information analysis system design/implementation
 * Multi-modal monitoring data management (MAMS - Multi-Agent Monitoring System)
 * Outdoor abnormal situation DB purification/tagging
+
+# Information on our Dataset 
