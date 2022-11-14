@@ -42,6 +42,8 @@ various weather conditions including rainy and foggy days.
 Walker, cyclists, and cars pass by the mobile robots and fixed
 multi-modal sensor module. While the mobile robot patrols,
 humans, cyclists, and cars are observed.
+<img width="80%" src="https://user-images.githubusercontent.com/51143120/201525234-75ffbe8b-3ecc-48f3-a932-2bf89804a9eb.png"/>
+
 ![TestBedPH](https://user-images.githubusercontent.com/51143120/201525234-75ffbe8b-3ecc-48f3-a932-2bf89804a9eb.png)
 ![TestBedGW](https://user-images.githubusercontent.com/51143120/201525301-803dde23-df82-48d4-95eb-5a886c7a3e4a.png)
 
