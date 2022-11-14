@@ -74,5 +74,4 @@ GitHub (https://github.com/kyuewang17/SNU_USR_dev). In the following sub-section
 In our work, we used a high-performance night vision camera so that it can collect high-quality grayscale images. We have analyzed the performance of the foreground/background segmentation and detection with the night vision camera qualitatively. As can be seen in the below figure, the night vision showed better performance than the thermal camera.
 
 <img width="70%" src="https://user-images.githubusercontent.com/51143120/201526405-5413ed80-9a44-4efb-acd2-a04918fdfdba.jpg"/>
-
-![ThermalCam](https://user-images.githubusercontent.com/51143120/201578420-86dd32cb-4cf6-47c2-9f2a-ce22bf437b10.jpg)
+<img width="70%" src="https://user-images.githubusercontent.com/51143120/201578420-86dd32cb-4cf6-47c2-9f2a-ce22bf437b10.jpg"/>
