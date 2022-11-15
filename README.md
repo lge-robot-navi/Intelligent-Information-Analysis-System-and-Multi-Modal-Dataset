@@ -56,7 +56,7 @@ Electronics, vol. 11, no. 14, p. 2214, 2022.)
 
 * Detail Descriptions on our Dataset
 
-<img width="70%" src="https://user-images.githubusercontent.com/51143120/202032290-92e1da50-a16c-49a1-aeb3-30b8cc12cdd0.jpg"/>
+<img width="70%" src="https://user-images.githubusercontent.com/51143120/202033192-71e75529-5fdb-4523-8320-50443b359604.jpg"/>
 <img width="70%" src="https://user-images.githubusercontent.com/51143120/202032420-c23d6336-7994-4236-84a6-c66adc5bf693.jpg"/>
 
 
