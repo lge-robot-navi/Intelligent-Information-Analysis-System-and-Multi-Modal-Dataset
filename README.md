@@ -54,6 +54,14 @@ multimodal sensor module for outdoor robot surveillance system,”
 Electronics, vol. 11, no. 14, p. 2214, 2022.)
 ![SensorConfiguration](https://user-images.githubusercontent.com/51143120/201525432-29c7a41b-cd18-447e-b1ce-a07e2fcc5f80.png)
 
+* Detail Descriptions on our Dataset
+
+<img width="70%" src="https://user-images.githubusercontent.com/51143120/202032290-92e1da50-a16c-49a1-aeb3-30b8cc12cdd0.jpg"/>
+<img width="70%" src="https://user-images.githubusercontent.com/51143120/202032420-c23d6336-7994-4236-84a6-c66adc5bf693.jpg"/>
+
+
+
+
 * Information on Actors 
 
 The numerous prominent researchers of LG Electronics, KIRO, SNU, KAIST, and ETRI for their hard work in developing, evaluating, and constructing datasets over the past
