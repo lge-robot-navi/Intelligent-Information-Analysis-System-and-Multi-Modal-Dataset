@@ -70,6 +70,10 @@ five years. We also used professional actors to provide various scenarios and re
 * Information on Action Recognition DB related to surveillance tasks
  ![ActionDB](https://user-images.githubusercontent.com/51143120/201524932-06204fc5-18ad-4cdb-b66f-42946c76fc71.jpg)
  
+# Sensor Sychronization 
+ 
+ 
+ 
 # USE CASES OF DEVELOPING SURVEILLANCE ALGORITHMS USING THE DATASET
 
 * Note that we open our source code used in our surveillance system via
