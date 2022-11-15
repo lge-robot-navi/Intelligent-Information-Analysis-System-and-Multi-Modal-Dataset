@@ -72,7 +72,7 @@ five years. We also used professional actors to provide various scenarios and re
  
 # Sensor Sychronization 
  
- 
+<img width="70%" src="https://user-images.githubusercontent.com/51143120/202033649-369ea5a9-7c3f-4b75-b1e9-c9b30e0a1b08.png"/> 
  
 # USE CASES OF DEVELOPING SURVEILLANCE ALGORITHMS USING THE DATASET
 
