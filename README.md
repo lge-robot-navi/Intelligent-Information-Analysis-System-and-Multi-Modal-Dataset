@@ -70,7 +70,7 @@ five years. We also used professional actors to provide various scenarios and re
 * Information on Action Recognition DB related to surveillance tasks
  ![ActionDB](https://user-images.githubusercontent.com/51143120/201524932-06204fc5-18ad-4cdb-b66f-42946c76fc71.jpg)
  
-# Sensor Sychronization 
+# Sensor data Sychronization 
  
 <img width="70%" src="https://user-images.githubusercontent.com/51143120/202033649-369ea5a9-7c3f-4b75-b1e9-c9b30e0a1b08.png"/> 
  
