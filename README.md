@@ -30,6 +30,13 @@ outdoor surveillance.
 If you send the purpose, name (including affiliation), and email
 address to the author (uty@kiro.re.kr), the download website and password will be delivered. 
 
+* Statistics on the dataset 
+
+The X-MAS dataset contains 2,624 sequences
+and 556,499 pairs and is analyzed by place, agent, category, time, weather, and situation, as shown in Fig. 5. The number
+of action classification sequences is 2,388 and the number
+of detection/tracking sequences is 236.
+
 * Environments
 
 A robot patrols around the building, and fixed cameras
