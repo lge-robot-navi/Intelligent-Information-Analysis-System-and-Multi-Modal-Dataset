@@ -32,7 +32,7 @@ address to the author (uty@kiro.re.kr), the download website and password will b
 
 * Statistics on the dataset 
 
-The X-MAS dataset contains 2,624 sequences
+The X-MAS dataset contains annotated 2,624 sequences
 and 556,499 pairs and is analyzed by place, agent, category, time, weather, and situation, as shown in Fig. 5. The number
 of action classification sequences is 2,388 and the number
 of detection/tracking sequences is 236.
