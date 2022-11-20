@@ -38,6 +38,7 @@ of action classification sequences is 2,388 and the number
 of detection/tracking sequences is 236.
 However, total dataset including non-annotated dataset is as below:
 
+<img width="70%" src="https://user-images.githubusercontent.com/51143120/202905372-ed457edc-7e8c-43bb-be76-d12eb346c7f5.png"/>
 
 * Environments
 
