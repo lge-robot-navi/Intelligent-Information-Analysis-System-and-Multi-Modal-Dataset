@@ -95,7 +95,7 @@ five years. We also used professional actors to provide various scenarios and re
 * Note that we open our source code used in our surveillance system via
 GitHub (https://github.com/kyuewang17/SNU_USR_dev). In the following sub-sections, the study presents various approaches for each module and results.
 
-* Various use-cases will be introduced by our recent paper. 
+* Various use-cases have been introduced by our recent paper. 
   
   Title: X-MAS: Extremely Large-Scale Multi-Modal Sensor Dataset for Outdoor Surveillance in Real Environments (https://arxiv.org/abs/2212.14574)
 
