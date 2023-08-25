@@ -38,6 +38,8 @@ Intelligent Information Analysis Platform and Multi-modal Dataset
 
 This datasets are released under GNU LGPL (Lesser General Public License).
 
+GNU Lesser General Public License Version 2.1, February 1999
+
 # Information on our Dataset 
 The dataset was collected using a cloud-based surveillance
 system at Pohang and Gwangju in South Korea between
