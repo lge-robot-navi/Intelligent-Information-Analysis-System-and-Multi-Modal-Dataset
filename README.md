@@ -21,7 +21,7 @@ Intelligent Information Analysis Platform and Multi-modal Dataset
 
 # Citation
 
-* BibTeX X-MAS(RA-L)
+* BibTeX X-MAS (RA-L)
 
   @article{noh2023x,
   title={X-MAS: Extremely Large-Scale Multi-Modal Sensor Dataset for Outdoor Surveillance in Real Environments},
