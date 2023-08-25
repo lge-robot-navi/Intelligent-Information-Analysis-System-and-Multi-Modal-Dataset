@@ -34,6 +34,8 @@ Intelligent Information Analysis Platform and Multi-modal Dataset
   publisher={IEEE}
 }
 
+# License
+
 # Information on our Dataset 
 The dataset was collected using a cloud-based surveillance
 system at Pohang and Gwangju in South Korea between
