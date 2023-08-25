@@ -122,6 +122,19 @@ GitHub (https://github.com/kyuewang17/SNU_USR_dev). In the following sub-section
   
   Title: X-MAS: Extremely Large-Scale Multi-Modal Sensor Dataset for Outdoor Surveillance in Real Environments (https://arxiv.org/abs/2212.14574)
 
+  * BibTeX X-MAS (RA-L)
+
+  @article{noh2023x,
+  title={X-MAS: Extremely Large-Scale Multi-Modal Sensor Dataset for Outdoor Surveillance in Real Environments},
+  author={Noh, DongKi and Sung, Changki and Uhm, Teayoung and Lee, WooJu and Lim, Hyungtae and Choi, Jaeseok and Lee, Kyuewang and Hong, Dasol and Um, Daeho and Chung, Inseop and others},
+  journal={IEEE Robotics and Automation Letters},
+  volume={8},
+  number={2},
+  pages={1093--1100},
+  year={2023},
+  publisher={IEEE}
+}
+
 * Real-time Tracking in the nighttime with RGB and nightvision images
 
 In our work, we used a high-performance night vision camera so that it can collect high-quality grayscale images. We have analyzed the performance of the foreground/background segmentation and detection with the night vision camera qualitatively. As can be seen in the below figure, the night vision showed better performance than the thermal camera.
