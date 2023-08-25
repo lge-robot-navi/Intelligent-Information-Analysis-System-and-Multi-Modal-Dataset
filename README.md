@@ -30,6 +30,19 @@ outdoor surveillance.
 If you send the purpose, name (including affiliation), and email
 address to the author (uty@kiro.re.kr), the download website and password will be delivered. 
 
+* BibTeX X-MAS(RA-L)
+
+  @article{noh2023x,
+  title={X-MAS: Extremely Large-Scale Multi-Modal Sensor Dataset for Outdoor Surveillance in Real Environments},
+  author={Noh, DongKi and Sung, Changki and Uhm, Teayoung and Lee, WooJu and Lim, Hyungtae and Choi, Jaeseok and Lee, Kyuewang and Hong, Dasol and Um, Daeho and Chung, Inseop and others},
+  journal={IEEE Robotics and Automation Letters},
+  volume={8},
+  number={2},
+  pages={1093--1100},
+  year={2023},
+  publisher={IEEE}
+}
+
 * Statistics on the dataset 
 
 The X-MAS dataset contains annotated 2,624 sequences
