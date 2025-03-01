@@ -78,8 +78,9 @@ humans, cyclists, and cars are observed.
 
 (The disaster robotics center in Pohang)
 
+<p align="center">
 <img width="70%" src="https://user-images.githubusercontent.com/51143120/201525234-75ffbe8b-3ecc-48f3-a932-2bf89804a9eb.png"/>
-
+</p>
 (The Nano industrial complex in Gwangju)
 
 <img width="70%" src="https://user-images.githubusercontent.com/51143120/201525301-803dde23-df82-48d4-95eb-5a886c7a3e4a.png"/>
