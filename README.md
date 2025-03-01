@@ -83,8 +83,9 @@ humans, cyclists, and cars are observed.
 </p>
 (The Nano industrial complex in Gwangju)
 
+<p align="center">
 <img width="70%" src="https://user-images.githubusercontent.com/51143120/201525301-803dde23-df82-48d4-95eb-5a886c7a3e4a.png"/>
-
+</p>
 * Multi-Modal Sensor Module
 
 Our sensor module includes five different sensors. For the detailed information on the sensor
@@ -95,10 +96,10 @@ Electronics, vol. 11, no. 14, p. 2214, 2022.)
 ![SensorConfiguration](https://user-images.githubusercontent.com/51143120/201525432-29c7a41b-cd18-447e-b1ce-a07e2fcc5f80.png)
 
 * Detail Descriptions on our Dataset
-
+<p align="center">
 <img width="70%" src="https://user-images.githubusercontent.com/51143120/202033192-71e75529-5fdb-4523-8320-50443b359604.jpg"/>
 <img width="70%" src="https://user-images.githubusercontent.com/51143120/202032420-c23d6336-7994-4236-84a6-c66adc5bf693.jpg"/>
-
+</p>
 
 
 
@@ -139,6 +140,7 @@ GitHub (https://github.com/kyuewang17/SNU_USR_dev). In the following sub-section
 * Real-time Tracking in the nighttime with RGB and nightvision images
 
 In our work, we used a high-performance night vision camera so that it can collect high-quality grayscale images. We have analyzed the performance of the foreground/background segmentation and detection with the night vision camera qualitatively. As can be seen in the below figure, the night vision showed better performance than the thermal camera.
-
+<p align="center">
 <img width="70%" src="https://user-images.githubusercontent.com/51143120/201526405-5413ed80-9a44-4efb-acd2-a04918fdfdba.jpg"/>
 <img width="70%" src="https://user-images.githubusercontent.com/51143120/201578420-86dd32cb-4cf6-47c2-9f2a-ce22bf437b10.jpg"/>
+</p>
