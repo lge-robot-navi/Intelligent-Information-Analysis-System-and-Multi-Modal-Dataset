@@ -41,7 +41,7 @@
   },
   "homepage": "https://github.com/tus/tus-js-client",
   "devDependencies": {
-    "axios": "^0.18.0",
+    "axios": "^0.21.2",
     "babel-cli": "^6.6.5",
     "babel-preset-es2015": "^6.1.18",
     "babelify": "^7.3.0",
