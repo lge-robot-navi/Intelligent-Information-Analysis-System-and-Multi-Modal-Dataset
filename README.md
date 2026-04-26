@@ -1,4 +1,4 @@
-# X:MAS Extremely Large-Scale Multi-Modal Sensor Dataset for Outdoor Surveillance in Real Environments
+# X-MAS: Extremely Large-Scale Multi-Modal Sensor Dataset for Outdoor Surveillance in Real Environments
 
 # Organizations and participants
 * ![](https://www.lge.co.kr/lgekor/asset/company/images/about/ci_img03.jpg)
